@@ -80,7 +80,7 @@ export class RfqPipeline {
     if (draft.suggestedUnitPriceEur === null) {
       reviewQueue.push({
         field: 'PRICE',
-        reason: 'No sufficiently similar historic quote — technical estimate required.',
+        reason: 'Nessuna offerta storica sufficientemente simile: serve una stima tecnica.',
         confidence: 0,
         evidence: '',
       });
@@ -130,14 +130,14 @@ function gateFields(extracted: ExtractedRfq): ReviewItem[] {
 
     if (field.value === null || field.value === undefined) {
       if (required) {
-        queue.push({ field: name, reason: 'Required field not found in the document.', confidence: 0, evidence: '' });
+        queue.push({ field: name, reason: 'Campo obbligatorio non trovato nel documento.', confidence: 0, evidence: '' });
       }
       continue;
     }
     if (field.confidence < floor) {
       queue.push({
         field: name,
-        reason: `Confidence ${field.confidence.toFixed(2)} is below the ${floor} threshold for this field.`,
+        reason: `Confidenza ${field.confidence.toFixed(2)} sotto la soglia di ${floor} prevista per questo campo.`,
         confidence: field.confidence,
         evidence: field.evidence,
       });

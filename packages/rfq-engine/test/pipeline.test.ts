@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MockProvider } from '@dolmir/ai-core';
+import { MockProvider } from '@dolmir/ai-core/providers/mock';
 import { RfqPipeline } from '../src/pipeline.js';
 import { EXAMPLE_SHOP } from '../src/pricing.js';
 import { classify } from '../src/stages/classify.js';

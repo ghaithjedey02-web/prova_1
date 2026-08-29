@@ -9,6 +9,22 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./registry": {
+      "types": "./dist/registry.d.ts",
+      "default": "./dist/registry.js"
+    },
+    "./providers/mock": {
+      "types": "./dist/providers/mock.d.ts",
+      "default": "./dist/providers/mock.js"
+    },
+    "./providers/anthropic": {
+      "types": "./dist/providers/anthropic.d.ts",
+      "default": "./dist/providers/anthropic.js"
+    },
+    "./providers/openai-compatible": {
+      "types": "./dist/providers/openai-compatible.d.ts",
+      "default": "./dist/providers/openai-compatible.js"
     }
   },
   "scripts": {

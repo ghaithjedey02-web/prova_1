@@ -1,0 +1,252 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   DOLMIR DESIGN SYSTEM
+   Direction: Technical Editorial. An engineering document, not a marketing site.
+
+   Every value a component uses comes from here. No component may hard-code a
+   colour, spacing step, radius, duration or type size — that single rule is what
+   keeps design iteration cheap instead of a find-and-replace exercise.
+   ========================================================================= */
+
+/* --- Colour: cool graphite and steel on a drafting-paper ground, with one
+       steel-blue accent. Oxide amber is reserved strictly for attention and
+       uncertainty — never decoration — so when it appears the eye is right
+       to go there. --- */
+:root {
+  --c-ground:        #F1F2F0;
+  --c-surface:       #FAFBFA;
+  --c-raised:        #FFFFFF;
+  --c-ink:           #0E1113;
+  --c-ink-2:         #3A4245;
+  --c-muted:         #5E6866;
+  --c-rule:          #D6DBD9;
+  --c-rule-strong:   #A9B2AF;
+  --c-accent:        #14495C;
+  --c-accent-hover:  #0E3746;
+  --c-accent-ink:    #FFFFFF;
+  --c-accent-soft:   #DCE8ED;
+  --c-amber:         #94551A;
+  --c-amber-soft:    #F0E4D6;
+  --c-good:          #266044;
+  --c-good-soft:     #DCE9E2;
+  --c-bad:           #87332A;
+  --c-bad-soft:      #F1DFDC;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --c-ground:       #0A0D0E;
+    --c-surface:      #111618;
+    --c-raised:       #171D20;
+    --c-ink:          #E9EDEB;
+    --c-ink-2:        #B4BEBB;
+    --c-muted:        #7E8A87;
+    --c-rule:         #212A2D;
+    --c-rule-strong:  #36423F;
+    --c-accent:       #6EB6D0;
+    --c-accent-hover: #8CC8DD;
+    --c-accent-ink:   #06181F;
+    --c-accent-soft:  #11303C;
+    --c-amber:        #D2924F;
+    --c-amber-soft:   #2E2113;
+    --c-good:         #5CAB85;
+    --c-good-soft:    #12281F;
+    --c-bad:          #CB7466;
+    --c-bad-soft:     #2C1815;
+  }
+}
+
+:root[data-theme="dark"] {
+  --c-ground:       #0A0D0E;
+  --c-surface:      #111618;
+  --c-raised:       #171D20;
+  --c-ink:          #E9EDEB;
+  --c-ink-2:        #B4BEBB;
+  --c-muted:        #7E8A87;
+  --c-rule:         #212A2D;
+  --c-rule-strong:  #36423F;
+  --c-accent:       #6EB6D0;
+  --c-accent-hover: #8CC8DD;
+  --c-accent-ink:   #06181F;
+  --c-accent-soft:  #11303C;
+  --c-amber:        #D2924F;
+  --c-amber-soft:   #2E2113;
+  --c-good:         #5CAB85;
+  --c-good-soft:    #12281F;
+  --c-bad:          #CB7466;
+  --c-bad-soft:     #2C1815;
+}
+
+@theme inline {
+  --color-ground:       var(--c-ground);
+  --color-surface:      var(--c-surface);
+  --color-raised:       var(--c-raised);
+  --color-ink:          var(--c-ink);
+  --color-ink-2:        var(--c-ink-2);
+  --color-muted:        var(--c-muted);
+  --color-rule:         var(--c-rule);
+  --color-rule-strong:  var(--c-rule-strong);
+  --color-accent:       var(--c-accent);
+  --color-accent-hover: var(--c-accent-hover);
+  --color-accent-ink:   var(--c-accent-ink);
+  --color-accent-soft:  var(--c-accent-soft);
+  --color-amber:        var(--c-amber);
+  --color-amber-soft:   var(--c-amber-soft);
+  --color-good:         var(--c-good);
+  --color-good-soft:    var(--c-good-soft);
+  --color-bad:          var(--c-bad);
+  --color-bad-soft:     var(--c-bad-soft);
+
+  /* --- Type: display serif for voice, technical sans for reading,
+         mono for anything the machine produced. --- */
+  --font-display: var(--font-instrument-serif), "Iowan Old Style", Georgia, serif;
+  --font-sans:    var(--font-instrument-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:    var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --text-display-xl: clamp(3rem, 7.4vw, 6.75rem);
+  --text-display-l:  clamp(2.35rem, 5vw, 4.25rem);
+  --text-display-m:  clamp(1.9rem, 3.4vw, 2.85rem);
+  --text-display-s:  clamp(1.5rem, 2.4vw, 2rem);
+  --text-lead:       clamp(1.0625rem, 1.5vw, 1.3125rem);
+  --text-body:       1.0625rem;
+  --text-small:      0.9375rem;
+  --text-micro:      0.8125rem;
+  --text-label:      0.6875rem;
+
+  /* --- Radius: industrial work is square. Softer reads as SaaS. --- */
+  --radius-xs: 1px;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+
+  /* --- Motion: mechanical, never bouncy. These curves accelerate and settle
+         like a linear actuator — no spring, no overshoot, nothing playful. --- */
+  --ease-mech:     cubic-bezier(0.16, 0.84, 0.44, 1);
+  --ease-mech-in:  cubic-bezier(0.55, 0, 0.85, 0.35);
+  --ease-mech-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --duration-fast:  160ms;
+  --duration-base:  260ms;
+  --duration-slow:  460ms;
+  --duration-scene: 760ms;
+}
+
+/* --- Spacing rhythm for vertical section pacing. --- */
+:root {
+  --space-section: clamp(4.5rem, 9vw, 9.5rem);
+  --space-block:   clamp(2rem, 4vw, 3.5rem);
+  --gutter:        clamp(1.25rem, 4vw, 3.5rem);
+  --measure:       66ch;
+  --nav-h:         4.25rem;
+}
+
+/* ============================================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  background: var(--c-ground);
+  color: var(--c-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-synthesis-weight: none;
+  overflow-x: clip;
+}
+
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; font-weight: inherit; }
+p { margin: 0; text-wrap: pretty; }
+img, svg, video, canvas { display: block; max-width: 100%; }
+
+::selection { background: var(--c-accent); color: var(--c-accent-ink); }
+
+:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; border-radius: 1px; }
+:focus:not(:focus-visible) { outline: none; }
+
+.skip {
+  position: absolute; left: 0.75rem; top: -100%;
+  background: var(--c-accent); color: var(--c-accent-ink);
+  padding: 0.6rem 1rem; z-index: 100; font-size: var(--text-small);
+  transition: top var(--duration-fast) var(--ease-mech);
+}
+.skip:focus { top: 0.75rem; }
+
+/* ---------------------------------------------------------------- Primitives */
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  font-weight: 500;
+}
+
+.display  {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.01;
+  letter-spacing: -0.022em;
+  padding-bottom: 0.06em;
+}
+.headline {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.016em;
+  padding-bottom: 0.04em;
+}
+
+.lead { font-size: var(--text-lead); line-height: 1.52; color: var(--c-ink-2); max-width: var(--measure); }
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* Reveal on scroll. JS adds .is-in; with no JS everything is visible. */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--duration-slow) var(--ease-mech-out),
+    transform var(--duration-slow) var(--ease-mech-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.is-in { opacity: 1; transform: none; }
+
+/* Hairline grid — the drawing-sheet motif, kept very quiet. */
+.sheet {
+  background-image:
+    linear-gradient(to right, var(--c-rule) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--c-rule) 1px, transparent 1px);
+  background-size: 72px 72px;
+  -webkit-mask-image: radial-gradient(ellipse 78% 62% at 50% 0%, #000 0%, transparent 76%);
+  mask-image: radial-gradient(ellipse 78% 62% at 50% 0%, #000 0%, transparent 76%);
+  opacity: 0.5;
+}
+
+@media (max-width: 480px) {
+  .label { letter-spacing: 0.09em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; color: #000; }
+}

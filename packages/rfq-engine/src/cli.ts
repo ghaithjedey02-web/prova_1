@@ -2,7 +2,8 @@
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ConsoleLogger, createProviderFromEnv, SilentLogger } from '@dolmir/ai-core';
+import { ConsoleLogger, SilentLogger } from '@dolmir/ai-core';
+import { createProviderFromEnv } from '@dolmir/ai-core/registry';
 import { RfqPipeline } from './pipeline.js';
 import { EXAMPLE_SHOP } from './pricing.js';
 import { computeMachineStats, computeRoi, type Baseline } from './metrics.js';

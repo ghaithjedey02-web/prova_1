@@ -20,14 +20,14 @@ export function triage(extracted: ExtractedRfq, shop: ShopProfile): Triage {
   const qty = extracted.quantity.value;
   if (typeof qty === 'number') {
     if (qty < shop.minQuantity) {
-      reasons.push(`Quantity ${qty} is below the shop minimum of ${shop.minQuantity}.`);
+      reasons.push(`Quantità ${qty} sotto il minimo di lavorazione dell'officina (${shop.minQuantity} pz).`);
       hardFail = true;
     } else if (shop.maxQuantity !== null && qty > shop.maxQuantity) {
-      reasons.push(`Quantity ${qty} exceeds the typical batch ceiling of ${shop.maxQuantity}.`);
+      reasons.push(`Quantità ${qty} oltre il lotto massimo abituale (${shop.maxQuantity} pz).`);
       hardFail = true;
     }
   } else {
-    reasons.push('Quantity not identified — cannot assess batch fit.');
+    reasons.push('Quantità non identificata: impossibile valutare la fattibilità del lotto.');
   }
 
   const material = extracted.material.value;
@@ -35,24 +35,24 @@ export function triage(extracted: ExtractedRfq, shop: ShopProfile): Triage {
     const normalised = material.toLowerCase();
     const supported = shop.materials.some((m) => normalised.includes(m.toLowerCase()));
     if (!supported) {
-      reasons.push(`Material "${material}" is not in the shop's declared list — verify feasibility.`);
+      reasons.push(`Materiale "${material}" non presente fra quelli dichiarati: verificare la fattibilità.`);
     }
   } else {
-    reasons.push('Material not identified.');
+    reasons.push('Materiale non identificato.');
   }
 
   const treatment = extracted.surfaceTreatment.value;
   if (typeof treatment === 'string' && treatment.length > 0 && !shop.treatmentsOutsourced) {
-    reasons.push(`Surface treatment "${treatment}" requested but no outsourcing partner configured.`);
+    reasons.push(`Trattamento "${treatment}" richiesto ma nessun partner esterno configurato.`);
   }
 
   if (extracted.isRecurringOrder.value === true) {
-    reasons.push('Flagged as a repeat/framework order — prioritise: higher win probability.');
+    reasons.push('Segnalata come fornitura ricorrente o contratto quadro: priorità alta, probabilità di acquisizione superiore.');
   }
 
   if (hardFail) return { decision: 'NO_BID', reasons };
   if (reasons.length === 0) {
-    return { decision: 'BID', reasons: ['Within declared shop capability; no blockers found.'] };
+    return { decision: 'BID', reasons: ['Rientra nella capacità dichiarata dell\u2019officina. Nessun ostacolo rilevato.'] };
   }
   return { decision: 'REVIEW', reasons };
 }

@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Dolmir \u2014 AI implementation for Lombardy SMEs. Monorepo.",
+  "description": "Dolmir — AI implementation for Lombardy SMEs. Monorepo.",
   "workspaces": [
+    "apps/*",
     "packages/*"
   ],
   "engines": {
@@ -16,10 +17,15 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "demo": "npm run demo --workspace @dolmir/rfq-engine",
-    "prospect": "npm run build --workspace @dolmir/prospecting >/dev/null && node packages/prospecting/dist/cli.js"
+    "prospect": "npm run build --workspace @dolmir/prospecting >/dev/null && node packages/prospecting/dist/cli.js",
+    "build:packages": "tsc --build",
+    "dev": "npm run build:packages && npm run dev --workspace=@dolmir/web",
+    "build:web": "npm run build:packages && npm run build --workspace=@dolmir/web",
+    "start:web": "npm run start --workspace=@dolmir/web"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "playwright": "^1.62.1",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   }

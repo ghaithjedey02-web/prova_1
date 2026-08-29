@@ -1,8 +1,17 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/ai-core" },
-    { "path": "./packages/rfq-engine" },
-    { "path": "./packages/prospecting" }
+    {
+      "path": "./packages/ai-core"
+    },
+    {
+      "path": "./packages/rfq-engine"
+    },
+    {
+      "path": "./packages/prospecting"
+    },
+    {
+      "path": "./packages/workflows"
+    }
   ]
 }

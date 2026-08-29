@@ -2,7 +2,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createProviderFromEnv } from '@dolmir/ai-core';
+import { createProviderFromEnv } from '@dolmir/ai-core/registry';
 import { buildAll } from './build.js';
 import { enrichRecord } from './enrich.js';
 import { toBriefing, toCsv } from './export.js';
