@@ -1,0 +1,46 @@
+[
+  {
+    "quoteId": "OFF-2026-118",
+    "date": "2026-03-14",
+    "customerCompany": "Tecnoflex Lecco S.r.l.",
+    "partNumber": "FL-2280",
+    "partDescription": "flangia tornita con foratura periferica",
+    "material": "acciaio C40",
+    "quantity": 150,
+    "unitPriceEur": 14.2,
+    "won": true
+  },
+  {
+    "quoteId": "OFF-2026-092",
+    "date": "2026-02-02",
+    "customerCompany": "Tecnoflex Lecco S.r.l.",
+    "partNumber": "FL-2101",
+    "partDescription": "flangia tornita cieca",
+    "material": "acciaio C40",
+    "quantity": 300,
+    "unitPriceEur": 11.8,
+    "won": false
+  },
+  {
+    "quoteId": "OFF-2025-441",
+    "date": "2025-11-19",
+    "customerCompany": "Meccanica Sebina S.r.l.",
+    "partNumber": "SUP-090",
+    "partDescription": "staffa di supporto piegata",
+    "material": "inox AISI 304",
+    "quantity": 800,
+    "unitPriceEur": 3.45,
+    "won": true
+  },
+  {
+    "quoteId": "OFF-2025-388",
+    "date": "2025-09-30",
+    "customerCompany": "Idrotecnica Brianza S.r.l.",
+    "partNumber": "BOC-14",
+    "partDescription": "boccola tornita in ottone",
+    "material": "ottone",
+    "quantity": 500,
+    "unitPriceEur": 2.1,
+    "won": true
+  }
+]

@@ -1,0 +1,45 @@
+[
+  {
+    "id": "RFQ-2026-0412",
+    "receivedAt": "2026-08-24T08:12:00+02:00",
+    "from": "m.brambilla@tecnoflex-lecco.example",
+    "subject": "Richiesta di offerta - flangia tornita cod. FL-2280",
+    "body": "Buongiorno,\n\nDa: Tecnoflex Lecco S.r.l.\n\nVi chiediamo cortesemente un preventivo per la produzione del seguente particolare.\n\nDescrizione: flangia tornita con foratura periferica\nCodice: FL-2280\nQuantita: 250\nMateriale: acciaio C40\nTolleranze: H7 sui fori, +/- 0,05 mm sul diametro esterno\nTrattamento: zincatura bianca\n\nConsegna: entro il 30 ottobre 2026\n\nIn allegato il disegno aggiornato rev. C.\n\nRestiamo in attesa di un Vostro riscontro.\n\nCordiali saluti,\nMarco Brambilla\nUfficio Acquisti",
+    "attachments": [
+      { "filename": "DIS-FL-2280-revC.pdf", "sizeBytes": 284000 },
+      { "filename": "FL-2280.step", "sizeBytes": 1840000 }
+    ]
+  },
+  {
+    "id": "RFQ-2026-0413",
+    "receivedAt": "2026-08-24T09:47:00+02:00",
+    "from": "acquisti@valvenord.example",
+    "subject": "RdO - staffe in acciaio inox",
+    "body": "Spett.le Officina,\n\nDa: Valve Nord S.p.A.\n\nsiamo interessati a ricevere quotazione per staffe di supporto in lamiera piegata.\n\nParticolare: staffa di supporto piegata\nQ.ta: 1200 pezzi\nMateriale: inox AISI 304\nConsegna: 6 settimane\n\nSi tratta di una fornitura ricorrente, come da ordine precedente.\n\nGrazie,\nLaura Fontana",
+    "attachments": [{ "filename": "staffa-SUP-118.dwg", "sizeBytes": 512000 }]
+  },
+  {
+    "id": "RFQ-2026-0414",
+    "receivedAt": "2026-08-24T11:03:00+02:00",
+    "from": "info@microcomp.example",
+    "subject": "preventivo urgente",
+    "body": "Salve,\n\nci servirebbe un preventivo per delle boccole.\n\nQuantita: 4\n\nGrazie\nG. Rossi",
+    "attachments": []
+  },
+  {
+    "id": "ORD-2026-0331",
+    "receivedAt": "2026-08-24T14:20:00+02:00",
+    "from": "ordini@tecnoflex-lecco.example",
+    "subject": "Conferma d'ordine n. 4471/2026",
+    "body": "Buongiorno,\n\nCon la presente confermiamo l'ordine n. 4471/2026 relativo alla Vostra offerta OFF-2026-118.\n\nCordiali saluti,\nTecnoflex Lecco S.r.l.",
+    "attachments": [{ "filename": "ODA-4471.pdf", "sizeBytes": 92000 }]
+  },
+  {
+    "id": "SPAM-2026-8891",
+    "receivedAt": "2026-08-24T15:55:00+02:00",
+    "from": "marketing@leadgen-pro.example",
+    "subject": "Posizionamento sui motori di ricerca garantito per la tua azienda",
+    "body": "Ciao,\n\nvuoi piu clienti? Il nostro servizio di posizionamento sui motori di ricerca ti garantisce la prima pagina.\n\nWebinar gratuito giovedi.\n\nPer disiscriverti clicca qui.",
+    "attachments": []
+  }
+]
