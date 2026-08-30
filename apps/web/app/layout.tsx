@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Archivo, IBM_Plex_Mono, Instrument_Sans } from 'next/font/google';
 import { Nav } from '@/components/site/Nav';
+import { SystemBackdrop, SystemReadout } from '@/components/system/SystemBackdrop';
+import { Reticle } from '@/components/ui/Reticle';
 import { Footer } from '@/components/site/Footer';
 import { site } from '@/content/site';
 import './globals.css';
@@ -89,9 +91,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <a href="#main" className="skip">Vai al contenuto</a>
-        <Nav />
-        <main id="main">{children}</main>
-        <Footer />
+        {/* The machine the whole site sits on. Fixed, behind everything, driven
+            by one scroll scalar. */}
+        <SystemBackdrop />
+        <Reticle />
+        <div className="relative z-10">
+          <Nav />
+          <main id="main">{children}</main>
+          <Footer />
+        </div>
+        <SystemReadout />
       </body>
     </html>
   );

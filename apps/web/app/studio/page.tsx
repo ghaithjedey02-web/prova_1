@@ -15,8 +15,7 @@ export default function StudioPage() {
   return (
     <>
       <section className="relative overflow-hidden border-b border-rule">
-        <div aria-hidden className="pointer-events-none absolute inset-0 sheet" />
-        <Container className="relative py-[clamp(3rem,6.5vw,5.5rem)]">
+                <Container className="relative py-[clamp(3rem,6.5vw,5.5rem)]">
           <Reveal><p className="chapter">{s.title}</p></Reveal>
           <Reveal delay={70}>
             <h1 className="display mt-8 max-w-[14ch] text-[length:var(--text-display-xl)]">{s.headline}</h1>
@@ -51,7 +50,7 @@ export default function StudioPage() {
       </section>
 
       {/* ------------------------------------------------------------ refuse */}
-      <section className="border-b border-rule bg-void py-[var(--space-section)]">
+      <section className="border-b border-rule bg-void/85 backdrop-blur-md py-[var(--space-section)]">
         <Container>
           <div className="grid gap-[var(--space-block)] lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
             <Reveal>

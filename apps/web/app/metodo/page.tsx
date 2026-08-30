@@ -15,8 +15,7 @@ export default function MetodoPage() {
   return (
     <>
       <section className="relative overflow-hidden border-b border-rule">
-        <div aria-hidden className="pointer-events-none absolute inset-0 sheet" />
-        <Container className="relative py-[clamp(3rem,6.5vw,5.5rem)]">
+                <Container className="relative py-[clamp(3rem,6.5vw,5.5rem)]">
           <Reveal><p className="chapter">{m.title}</p></Reveal>
           <Reveal delay={70}>
             <h1 className="display mt-8 max-w-[17ch] text-[length:var(--text-display-xl)]">{m.headline}</h1>
@@ -32,7 +31,7 @@ export default function MetodoPage() {
       <section className="border-b border-rule py-[var(--space-section)]">
         <Container>
           <ol className="relative">
-            <span aria-hidden className="absolute left-[0.3rem] top-2 bottom-2 hidden w-px bg-rule md:block" />
+            <span aria-hidden className="absolute left-[0.3rem] top-2 bottom-2 hidden w-px bg-rule/70 md:block" />
             {m.phases.map((p, i) => (
               <Reveal key={p.k} as="li" delay={i * 50}>
                 <div className="relative grid gap-4 py-9 md:grid-cols-[auto_10rem_1fr_1fr] md:items-baseline md:gap-10 md:pl-0">
@@ -86,9 +85,9 @@ export default function MetodoPage() {
               <h2 className="headline mt-7 text-[length:var(--text-display-m)]">{m.handover.headline}</h2>
             </Reveal>
           </header>
-          <ul className="mt-[var(--space-block)] grid gap-px border border-rule bg-rule md:grid-cols-3">
+          <ul className="mt-[var(--space-block)] grid gap-px border border-rule bg-rule/70 md:grid-cols-3">
             {m.handover.items.map((item, i) => (
-              <Reveal key={item.t} as="li" delay={i * 70} className="bg-surface">
+              <Reveal key={item.t} as="li" delay={i * 70} className="bg-surface/92 backdrop-blur-md">
                 <div className="h-full p-8">
                   <h3 className="text-[var(--text-body)] font-medium text-ink">{item.t}</h3>
                   <p className="mt-3 text-[var(--text-small)] leading-relaxed text-muted">{item.d}</p>

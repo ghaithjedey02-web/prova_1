@@ -17,8 +17,7 @@ export default function DemoPage() {
   return (
     <>
       <section className="relative overflow-hidden border-b border-rule">
-        <div aria-hidden className="pointer-events-none absolute inset-0 sheet" />
-        <Container className="relative py-[clamp(3rem,6vw,5rem)]">
+                <Container className="relative py-[clamp(3rem,6vw,5rem)]">
           <Reveal>
             <p className="chapter">{demoCopy.title}</p>
           </Reveal>

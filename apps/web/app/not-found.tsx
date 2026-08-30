@@ -6,8 +6,7 @@ import { cta } from '@/content/site';
 export default function NotFound() {
   return (
     <section className="relative overflow-hidden py-[clamp(5rem,14vw,10rem)]">
-      <div aria-hidden className="pointer-events-none absolute inset-0 sheet" />
-      <Container className="relative">
+            <Container className="relative">
         <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
             <p className="chapter"><span className="tnum text-accent">404</span><span>Pagina non trovata</span></p>

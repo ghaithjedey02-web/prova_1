@@ -49,6 +49,11 @@
   --c-accent-soft:   #0C2C34;
   --c-accent-line:   #1D4E5B;
 
+  /* secondary signal — used sparingly, only for AI/inference states */
+  --c-violet:        #9B8CFF;
+  --c-violet-soft:   #1A1730;
+  --c-violet-line:   #332C63;
+
   /* uncertainty */
   --c-amber:         #E3A551;
   --c-amber-soft:    #2A1F10;
@@ -93,6 +98,10 @@
   --c-accent-soft:   #DCEBEF;
   --c-accent-line:   #A8CBD4;
 
+  --c-violet:        #4B3FA8;
+  --c-violet-soft:   #E7E4F7;
+  --c-violet-line:   #C3BCE8;
+
   --c-amber:         #8A4F16;
   --c-amber-soft:    #F3E7D8;
   --c-amber-line:    #D8BE9B;
@@ -128,6 +137,9 @@
   --color-accent-ink:   var(--c-accent-ink);
   --color-accent-soft:  var(--c-accent-soft);
   --color-accent-line:  var(--c-accent-line);
+  --color-violet:       var(--c-violet);
+  --color-violet-soft:  var(--c-violet-soft);
+  --color-violet-line:  var(--c-violet-line);
   --color-amber:        var(--c-amber);
   --color-amber-soft:   var(--c-amber-soft);
   --color-amber-line:   var(--c-amber-line);
@@ -145,7 +157,7 @@
   --font-sans:    var(--font-instrument-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono:    var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --text-hero:       clamp(2.6rem, 5.6vw, 5.25rem);
+  --text-hero:       clamp(2.35rem, 4.6vw, 4.5rem);
   --text-display-xl: clamp(2.25rem, 4.4vw, 4rem);
   --text-display-l:  clamp(1.95rem, 3.4vw, 3rem);
   --text-display-m:  clamp(1.6rem, 2.5vw, 2.3rem);
@@ -407,4 +419,115 @@ img, svg, video, canvas { display: block; max-width: 100%; }
 @media print {
   .no-print { display: none !important; }
   body { background: #fff; color: #000; }
+}
+
+
+/* ============================================================================
+   SYSTEM LAYER
+   The site is presented as an operating system rather than a document. These
+   primitives are the chrome of that system: telemetry type, glass surfaces,
+   scan lines, node graphs and the decoding transition used when a value
+   resolves.
+   ========================================================================= */
+
+.telemetry {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.glass {
+  background: color-mix(in oklab, var(--c-surface) 78%, transparent);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  border: 1px solid color-mix(in oklab, var(--c-rule-strong) 70%, transparent);
+}
+
+/* Data-dense panels sit on a near-solid ground: a readable table beats a
+   transparent one, and the machine still shows around the edges. */
+.glass-solid {
+  background: color-mix(in oklab, var(--c-surface) 95%, transparent);
+  backdrop-filter: blur(22px) saturate(120%);
+  -webkit-backdrop-filter: blur(22px) saturate(120%);
+  border: 1px solid color-mix(in oklab, var(--c-rule-strong) 80%, transparent);
+}
+
+/* A corner-bracketed frame — the way an instrument marks a region of interest. */
+.bracket { position: relative; }
+.bracket::before,
+.bracket::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--c-accent);
+  pointer-events: none;
+}
+.bracket::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+.bracket::after  { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+/* Scan pass. Used once, when a region is first read by the system. */
+@keyframes dolmir-scan {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+.scan { position: relative; overflow: hidden; }
+.scan::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  height: 36%;
+  top: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in oklab, var(--c-accent) 16%, transparent),
+    transparent
+  );
+  animation: dolmir-scan 2.6s var(--ease-mech) 1 forwards;
+  pointer-events: none;
+}
+
+/* A value that has just been computed. */
+@keyframes dolmir-settle {
+  from { opacity: 0; transform: translateY(4px); filter: blur(3px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+.settle { animation: dolmir-settle var(--duration-base) var(--ease-mech-out) both; }
+
+/* Connection line between two system nodes. */
+.wire {
+  background: linear-gradient(90deg,
+    transparent,
+    color-mix(in oklab, var(--c-accent) 40%, transparent) 20%,
+    color-mix(in oklab, var(--c-accent) 40%, transparent) 80%,
+    transparent);
+}
+
+/* The custom pointer. Kept to a 10px reticle so it never becomes a toy. */
+.cursor-host { cursor: none; }
+.reticle {
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 300;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-host { cursor: auto; }
+  .reticle { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan::after, .settle { animation: none; }
+  .scan::after { display: none; }
+  .cursor-host { cursor: auto; }
+  .reticle { display: none; }
 }

@@ -21,8 +21,7 @@ export function LegalPage({
 }) {
   return (
     <section className="relative overflow-hidden py-[clamp(3.5rem,8vw,6.5rem)]">
-      <div aria-hidden className="pointer-events-none absolute inset-0 sheet" />
-      <Container size="read" className="relative">
+            <Container size="read" className="relative">
         <p className="chapter">Documento legale</p>
         <h1 className="display mt-8 max-w-[16ch] text-[length:var(--text-display-l)]">{title}</h1>
 

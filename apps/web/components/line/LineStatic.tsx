@@ -6,7 +6,7 @@ import { stations } from './stations';
  */
 export function LineStatic() {
   return (
-    <ol className="stack-rules border border-rule bg-surface">
+    <ol className="stack-rules border border-rule bg-surface/92 backdrop-blur-md">
       {stations.map((s) => (
         <li key={s.k} className="grid gap-3 p-6 sm:grid-cols-[auto_9rem_1fr] sm:items-baseline sm:gap-6">
           <span className="font-mono text-[var(--text-label)] tnum text-accent">{s.k}</span>

@@ -15,8 +15,7 @@ export default function SoluzioniPage() {
   return (
     <>
       <section className="relative overflow-hidden border-b border-rule">
-        <div aria-hidden className="pointer-events-none absolute inset-0 sheet" />
-        <Container className="relative py-[clamp(3rem,6.5vw,5.5rem)]">
+                <Container className="relative py-[clamp(3rem,6.5vw,5.5rem)]">
           <Reveal><p className="chapter">{s.title}</p></Reveal>
           <Reveal delay={70}>
             <h1 className="display mt-8 max-w-[16ch] text-[length:var(--text-display-xl)]">{s.headline}</h1>

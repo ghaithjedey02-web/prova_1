@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useRef, useState } from 'react';
 import { Container } from '@/components/ui/Container';
 import { usePalette } from '@/lib/palette';
+import { chapters } from '@/content/site';
 import { LineStatic } from './LineStatic';
 import { stationFromProgress, stations } from './stations';
 
@@ -61,22 +62,19 @@ export function TheLine() {
     };
   }, [enabled]);
 
+  const c = chapters.automation;
   const head = (
     <header className="max-w-[54ch]">
-      <p className="chapter"><span className="tnum text-accent">04</span><span>Il percorso</span></p>
-      <h2 className="headline mt-7 text-[length:var(--text-display-m)]">
-        Una richiesta, dall’arrivo all’approvazione.
-      </h2>
-      <p className="lead mt-7">
-        Lo stesso percorso che un documento compie dentro i sistemi che consegniamo.
-        Al quinto passaggio si ferma, e aspetta una persona.
-      </p>
+      <p className="chapter"><span className="tnum text-accent">{c.n}</span><span>{c.label}</span></p>
+      <h2 className="headline mt-7 text-[length:var(--text-display-m)]">{c.headline}</h2>
+      <div className="mt-8 h-px w-full max-w-[16rem] bg-gradient-to-r from-accent to-transparent" />
+      <p className="lead mt-7">{c.body}</p>
     </header>
   );
 
   if (enabled === null || enabled === false || !palette) {
     return (
-      <section className="border-t border-rule py-[var(--space-section)]">
+      <section className="relative py-[var(--space-section)]">
         <Container>
           {head}
           <div className="mt-[var(--space-block)]">
@@ -90,7 +88,7 @@ export function TheLine() {
   const station = stations[active] ?? stations[0]!;
 
   return (
-    <section className="relative border-t border-rule" aria-labelledby="line-heading">
+    <section className="relative" aria-labelledby="line-heading">
       <Container>
         <div className="pt-[var(--space-section)]" id="line-heading">{head}</div>
       </Container>

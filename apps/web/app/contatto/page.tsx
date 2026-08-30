@@ -14,8 +14,7 @@ export const metadata: Metadata = {
 export default function ContattoPage() {
   return (
     <section className="relative overflow-hidden">
-      <div aria-hidden className="pointer-events-none absolute inset-0 sheet" />
-      <Container className="relative py-[clamp(3.5rem,8vw,6.5rem)]">
+            <Container className="relative py-[clamp(3.5rem,8vw,6.5rem)]">
         <div className="grid gap-[var(--space-block)] lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <div>
             <Reveal><p className="chapter">{c.title}</p></Reveal>

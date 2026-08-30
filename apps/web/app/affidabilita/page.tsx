@@ -16,8 +16,7 @@ export default function AffidabilitaPage() {
     <>
       {/* ------------------------------------------------------------ hero */}
       <section className="relative overflow-hidden border-b border-rule bg-void">
-        <div aria-hidden className="pointer-events-none absolute inset-0 sheet" />
-        <Container className="relative py-[clamp(3rem,6.5vw,5.5rem)]">
+                <Container className="relative py-[clamp(3rem,6.5vw,5.5rem)]">
           <Reveal><p className="chapter">{a.title}</p></Reveal>
           <Reveal delay={70}>
             <h1 className="display mt-8 max-w-[15ch] text-[length:var(--text-display-xl)]">{a.headline}</h1>
@@ -32,9 +31,9 @@ export default function AffidabilitaPage() {
       {/* ----------------------------------------------------------- chain */}
       <section className="border-b border-rule py-[var(--space-section)]">
         <Container>
-          <ol className="grid gap-px border border-rule bg-rule lg:grid-cols-4">
+          <ol className="grid gap-px border border-rule bg-rule/70 lg:grid-cols-4">
             {a.chain.map((step, i) => (
-              <Reveal key={step.k} as="li" delay={i * 90} className="bg-surface">
+              <Reveal key={step.k} as="li" delay={i * 90} className="bg-surface/92 backdrop-blur-md">
                 <div className="relative flex h-full flex-col p-8">
                   {/* the connector: on wide screens the chain reads left to right */}
                   <span
@@ -75,9 +74,9 @@ export default function AffidabilitaPage() {
             <Reveal delay={140}><p className="lead mt-7">{a.guarantees.body}</p></Reveal>
           </header>
 
-          <ul className="mt-[var(--space-block)] grid gap-px border border-rule bg-rule md:grid-cols-2">
+          <ul className="mt-[var(--space-block)] grid gap-px border border-rule bg-rule/70 md:grid-cols-2">
             {a.guarantees.items.map((item, i) => (
-              <Reveal key={item.t} as="li" delay={i * 45} className="bg-surface">
+              <Reveal key={item.t} as="li" delay={i * 45} className="bg-surface/92 backdrop-blur-md">
                 <div className="flex h-full gap-4 p-7">
                   <span aria-hidden className="mt-1 font-mono text-[var(--text-body)] leading-none text-bad">×</span>
                   <div>

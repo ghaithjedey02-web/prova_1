@@ -20,9 +20,9 @@ export const site = {
   name: 'DOLMIR',
   domain: 'dolmir.com',
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://dolmir.com',
-  tagline: 'Infrastruttura AI per aziende industriali',
+  tagline: 'Sistemi digitali e AI per le imprese',
   description:
-    'DOLMIR costruisce l’infrastruttura digitale e AI delle aziende manifatturiere italiane: richieste di offerta, documenti e flussi di ufficio tecnico diventano processi strutturati, con una persona che approva.',
+    'DOLMIR costruisce sistemi digitali su misura: software, automazioni AI, integrazioni e interfacce che collegano il lavoro disperso di un’azienda in un processo unico — con una persona che approva.',
   locale: 'it_IT',
   email: 'info@dolmir.com',
   region: 'Lombardia',
@@ -44,216 +44,181 @@ export const cta = {
 /* =========================================================== home === hero ===*/
 
 export const hero = {
-  eyebrow: 'Infrastruttura digitale e AI · PMI industriali · Lombardia',
-  line1: 'Il lavoro industriale',
-  line2: 'non dovrebbe',
-  line3: 'perdersi nelle email.',
+  sysId: 'SYS.ID 00482',
+  eyebrow: 'Sistemi digitali · Automazione AI · Integrazioni',
+  /* The boot sequence. Six lines, ~1.6s, then the system hands over to the
+     headline. Each line is a real stage of what DOLMIR builds, not set dressing. */
+  boot: [
+    { t: 'AVVIO SISTEMA', v: 'DOLMIR CORE' },
+    { t: 'CANALI IN INGRESSO', v: 'EMAIL · PDF · ERP · API' },
+    { t: 'MOTORE DI ESTRAZIONE', v: 'ONLINE' },
+    { t: 'SOGLIE DI CONFIDENZA', v: 'ATTIVE' },
+    { t: 'CONTROLLO UMANO', v: 'RICHIESTO' },
+    { t: 'SISTEMA', v: 'PRONTO' },
+  ],
+  line1: 'Il lavoro si disperde.',
+  line2: 'Noi lo rendiamo',
+  line3: 'un sistema.',
   lead:
-    'Ogni richiesta che entra in azienda è lavoro potenziale. Oggi entra come testo libero, PDF e disegni, e diventa ore di ufficio tecnico. DOLMIR costruisce lo strato che la trasforma in un processo — con una persona che decide, sempre.',
-  specimen: {
-    label: 'Particolare in esame',
-    lines: [
-      ['Codice', 'FL-2280 · rev. C'],
-      ['Materiale', 'Acciaio C40'],
-      ['Origine', 'Allegato email, 06:41'],
-      ['Stato', 'Estratto · in attesa di approvazione'],
-    ] as const,
-  },
-  scroll: 'Scorri',
+    'Email, documenti, fogli, gestionali che non si parlano. Costruiamo il sistema che tiene insieme tutto questo: software su misura, automazioni che capiscono i documenti, integrazioni. Con una persona che approva.',
+  telemetry: [
+    ['CANALI', '7 collegati'],
+    ['LATENZA', '< 900 ms'],
+    ['CONFIDENZA', 'dichiarata per campo'],
+    ['DECISIONE', 'umana'],
+  ] as const,
+  scroll: 'Entra nel sistema',
 } as const;
 
 /* ================================================== home === the story ========*/
 
 export const chapters = {
-  noise: {
+  fragmentation: {
     n: '01',
-    label: 'Il rumore',
-    headline: 'Il lavoro arriva da dodici parti diverse.',
+    label: 'Frammentazione',
+    headline: 'L’azienda funziona. Il sistema no.',
     body:
-      'In un’azienda manifatturiera il lavoro non entra da un sistema. Entra da una casella di posta condivisa, da un PDF, da un allegato senza nome, da un messaggio la sera, da una telefonata che qualcuno annota su un foglio. L’informazione c’è. La struttura no.',
-    channels: [
-      { k: 'Email', d: 'Testo libero, ogni cliente scrive in modo diverso.' },
-      { k: 'PDF', d: 'Ordini e specifiche, spesso scansionati.' },
-      { k: 'Disegni', d: 'DWG, STEP, o una foto del foglio.' },
-      { k: 'Excel', d: 'Distinte inviate come allegato.' },
-      { k: 'Messaggi', d: 'Richieste urgenti fuori orario.' },
-      { k: 'Telefonate', d: 'Annotate a mano, se va bene.' },
+      'Il lavoro esiste già ed è ordinato nella testa delle persone. Quello che manca è il posto dove vive. Sta in undici strumenti che non si parlano, e ogni passaggio fra uno e l’altro lo fa qualcuno a mano.',
+    nodes: [
+      { k: 'Email', d: 'Richieste, ordini, allegati' },
+      { k: 'PDF', d: 'Documenti da rileggere ogni volta' },
+      { k: 'Excel', d: 'La verità parallela al gestionale' },
+      { k: 'Gestionale', d: 'Aggiornato a mano, in ritardo' },
+      { k: 'Drive', d: 'File senza un nome condiviso' },
+      { k: 'Messaggi', d: 'Decisioni prese fuori dai sistemi' },
+      { k: 'Telefonate', d: 'Che non lasciano traccia' },
+      { k: 'Persone', d: 'Che tengono insieme il resto' },
     ],
     kicker:
-      'Nessuno di questi canali è sbagliato. Il problema è che finiscono tutti nella stessa persona.',
-  },
-
-  cost: {
-    n: '02',
-    label: 'Il costo',
-    headline: 'È lavoro qualificato, ripetitivo e invisibile.',
-    body: [
-      'Leggere la richiesta. Capire cosa serve davvero. Cercare cosa era stato quotato l’ultima volta. Ricopiare i dati nel gestionale. Scrivere l’offerta. Ricontrollare.',
-      'Non compare in nessun report, non ha un centro di costo, e quando la persona che lo fa è occupata il processo si ferma. È il collo di bottiglia meno documentato dell’azienda.',
-    ],
-    costs: [
-      { t: 'Il tempo di risposta', d: 'Nel conto terzi il cliente sceglie spesso chi risponde per primo. Un’offerta in ritardo non è un’offerta lenta: è un ordine perso.' },
-      { t: 'La memoria dell’azienda', d: 'La logica di prezzo vive nella testa di due o tre persone. Non è scritta, non è trasferibile, e va in ferie ad agosto.' },
-      { t: 'Gli errori di trascrizione', d: 'Un materiale sbagliato, una quantità copiata male, una revisione vecchia. Costano più del tempo che avrebbero fatto risparmiare.' },
-      { t: 'La capacità che non si libera', d: 'Ogni ora spesa a ricopiare dati è un’ora non spesa su un lavoro più redditizio.' },
-    ],
+      'Nessuno di questi strumenti è sbagliato. Il problema è che fra l’uno e l’altro c’è sempre una persona che ricopia.',
   },
 
   layer: {
-    n: '03',
+    n: '02',
     label: 'Lo strato',
-    headline: 'DOLMIR sta fra la casella di posta e il gestionale.',
+    headline: 'Costruiamo il livello che manca in mezzo.',
     body:
-      'Non sostituiamo niente. Copriamo i trenta metri che nessuno ha mai informatizzato, perché sono irregolari: il tratto fra “è arrivata una richiesta” e “il dato è nel sistema”. Il gestionale resta dov’è, l’officina resta com’è, le persone restano al loro posto — con meno trascrizione da fare.',
-    steps: [
-      { k: 'LEGGE', d: 'Mittente, oggetto, corpo, allegati. Anche quando il formato cambia ogni volta.' },
-      { k: 'CAPISCE', d: 'Riconosce di cosa si tratta prima di elaborare: richiesta, ordine, altro.' },
-      { k: 'ESTRAE', d: 'Materiale, quantità, tolleranze, trattamenti, tempi. Con la frase esatta da cui viene ogni dato.' },
-      { k: 'VERIFICA', d: 'Dichiara quanto è sicuro di ogni campo. Sotto soglia, non procede.' },
-      { k: 'CONFRONTA', d: 'Cerca nelle offerte passate quelle davvero comparabili.' },
-      { k: 'PREPARA', d: 'Una bozza in italiano, con la motivazione di ogni valore proposto.' },
+      'Non sostituiamo quello che avete. Copriamo il tratto che nessuno ha mai informatizzato — quello fra “è arrivata una cosa” e “il dato è nel sistema” — perché è irregolare, e finora l’unico modo di percorrerlo era a mano.',
+    verbs: [
+      { k: 'LEGGE', d: 'Testo, allegati, documenti, moduli. Anche quando il formato cambia ogni volta.' },
+      { k: 'CAPISCE', d: 'Riconosce di cosa si tratta prima di elaborare qualsiasi cosa.' },
+      { k: 'ESTRAE', d: 'Campo per campo, con la frase esatta del documento da cui viene ogni dato.' },
+      { k: 'VERIFICA', d: 'Dichiara quanto è sicuro. Sotto soglia, non procede.' },
+      { k: 'COLLEGA', d: 'Scrive nei sistemi che usate già, senza chiedervi di cambiarli.' },
+      { k: 'CONSEGNA', d: 'Un risultato strutturato, con la motivazione di ogni valore.' },
     ],
   },
 
-  decision: {
-    n: '05',
-    label: 'La decisione',
-    headline: 'Il sistema sa cosa non sa.',
+  intelligence: {
+    n: '03',
+    label: 'Intelligenza',
+    headline: 'Un nucleo che legge, confronta e dichiara.',
     body:
-      'Questa è la differenza fra uno strumento che viene usato per anni e uno che viene abbandonato dopo tre settimane. Un modello linguistico, lasciato a sé stesso, produce sempre una risposta plausibile. In un preventivo, plausibile è la cosa più pericolosa che esista.',
-    verdicts: [
-      { code: 'AUTO', t: 'Bozza pronta', d: 'Dati completi, precedenti comparabili trovati. La bozza è pronta per un’approvazione rapida.', tone: 'good' },
-      { code: 'REVIEW', t: 'Campi da verificare', d: 'Qualcosa è sotto la soglia di confidenza. I campi incerti vengono evidenziati, non indovinati.', tone: 'amber' },
-      { code: 'STIMA', t: 'Serve stima tecnica', d: 'Nessun precedente regge il confronto. Il sistema non propone un prezzo e passa la pratica al preventivista.', tone: 'amber' },
-      { code: 'NO-BID', t: 'Fuori capacità', d: 'La richiesta non rientra nelle lavorazioni dichiarate. Viene segnalata subito, non dopo due giorni.', tone: 'bad' },
+      'Al centro c’è un motore che riceve tutto ciò che entra, lo classifica, ne estrae i dati e li confronta con quello che l’azienda ha già fatto. Non è un assistente conversazionale: è un componente di processo, con soglie e confini scritti.',
+    inputs: ['Email', 'Documenti', 'Gestionale', 'CRM', 'File', 'Ordini', 'Fogli'],
+    outputs: ['Decisione', 'Flusso', 'Bozza', 'Aggiornamento', 'Segnalazione'],
+    core: 'DOLMIR CORE',
+    metrics: [
+      { k: 'Campi estratti per documento', v: 10 },
+      { k: 'Confidenza dichiarata', v: 100, suffix: '%' },
+      { k: 'Decisioni prese senza una persona', v: 0 },
     ],
-    quote: 'REQUIRES_TECHNICAL_ESTIMATE',
-    quoteNote:
-      'È una riga vera del motore. Quando compare, il sistema ha deciso di non rispondere. Non è un guasto: è la funzione più importante che abbiamo scritto.',
+    note: 'Valori della configurazione dimostrativa presente su questo sito.',
+  },
+
+  automation: {
+    n: '04',
+    label: 'Automazione',
+    headline: 'Il flusso, dall’ingresso alla firma.',
+    body:
+      'Ogni processo che costruiamo ha la stessa forma: entra qualcosa, il sistema lo capisce, verifica di poterlo trattare, prepara il risultato e si ferma davanti a una persona. Quello che cambia da azienda ad azienda è il contenuto, non l’architettura.',
+  },
+
+  software: {
+    n: '05',
+    label: 'Software',
+    headline: 'Non solo automazioni. Interfacce.',
+    body:
+      'Quando un processo diventa sistema serve anche un posto dove guardarlo. Costruiamo l’applicazione: elenchi, ricerca, stati, approvazioni, documenti collegati, indicatori. Su misura del vostro processo, non un gestionale generico da adattare.',
+    app: {
+      title: 'DOLMIR · Operativo',
+      nav: ['Panoramica', 'Richieste', 'Documenti', 'Clienti', 'Flussi', 'Impostazioni'],
+      stats: [
+        { k: 'In coda', v: 12, tone: 'ink' },
+        { k: 'Elaborate oggi', v: 47, tone: 'accent' },
+        { k: 'In attesa di persona', v: 3, tone: 'amber' },
+        { k: 'Completate', v: 219, tone: 'good' },
+      ],
+      rows: [
+        { id: 'RIC-4471', c: 'Cliente A', s: 'Bozza pronta', tone: 'good', conf: 0.94, t: '08:41' },
+        { id: 'RIC-4472', c: 'Cliente B', s: 'Campi da verificare', tone: 'amber', conf: 0.61, t: '08:44' },
+        { id: 'RIC-4473', c: 'Cliente C', s: 'Serve stima tecnica', tone: 'amber', conf: 0.22, t: '08:52' },
+        { id: 'RIC-4474', c: 'Cliente D', s: 'Instradata', tone: 'neutral', conf: 0.88, t: '09:03' },
+        { id: 'RIC-4475', c: 'Cliente E', s: 'Bozza pronta', tone: 'good', conf: 0.91, t: '09:11' },
+      ],
+      disclaimer: 'Interfaccia dimostrativa con dati di esempio.',
+    },
+  },
+
+  integrations: {
+    n: '06',
+    label: 'Integrazioni',
+    headline: 'Ci colleghiamo a quello che c’è già.',
+    body:
+      'Un sistema che chiede di abbandonare gli strumenti esistenti non viene adottato. Il nostro strato si innesta su quello che l’azienda usa oggi, e dove non esiste un’interfaccia programmabile lo diciamo prima di firmare.',
+    groups: [
+      { k: 'Posta e file', items: ['Google Workspace', 'Microsoft 365', 'Drive', 'SharePoint'] },
+      { k: 'Gestione', items: ['Gestionali ERP', 'CRM', 'Fatturazione', 'Magazzino'] },
+      { k: 'Dati', items: ['Database', 'API REST', 'Webhook', 'Esportazioni'] },
+      { k: 'Superfici', items: ['Sito', 'Portale clienti', 'Moduli', 'Applicazioni interne'] },
+    ],
+    caveat: 'Dove un sistema non è integrabile in modo affidabile, il perimetro lo dichiara prima dell’inizio.',
   },
 
   human: {
-    n: '06',
-    label: 'La persona',
-    headline: 'Niente lascia l’azienda senza che qualcuno lo abbia guardato.',
+    n: '07',
+    label: 'Controllo',
+    headline: 'Il sistema si ferma prima di decidere.',
     body:
-      'Il sistema prepara, una persona approva. Non è una limitazione tecnica che toglieremo in una versione futura: è il perimetro. Tiene il processo fuori dalle categorie ad alto rischio del regolamento europeo sull’AI, e soprattutto tiene la responsabilità commerciale dove deve stare.',
-    points: [
-      { t: 'Confidenza dichiarata', d: 'Ogni dato estratto porta con sé quanto il sistema è sicuro e la frase esatta del documento da cui viene.' },
-      { t: 'Il dubbio è un risultato valido', d: 'Quando non c’è una base solida il sistema lo dice e si ferma.' },
-      { t: 'Tracciabilità completa', d: 'Cosa è stato letto, cosa è stato proposto, chi ha approvato. Verificabile a posteriori.' },
+      'È la parte che ci interessa di più. Un modello linguistico ha sempre una risposta fluente disponibile: il comportamento “non lo so” va costruito contro il modello, con soglie, evidenze e cancelli espliciti. Quando la confidenza non basta, il processo si interrompe e passa a una persona.',
+    chain: [
+      { k: 'NON SO', d: 'Nessun precedente comparabile, un campo sotto soglia, un documento illeggibile.' },
+      { k: 'FERMA', d: 'Non viene prodotto un valore plausibile. Non viene prodotto niente.' },
+      { k: 'PERSONA', d: 'La pratica viene assegnata con indicato cosa manca e perché.' },
+      { k: 'DECIDE', d: 'Una persona completa, corregge e approva. Poi il flusso riprende.' },
     ],
+    quote: 'REQUIRES_TECHNICAL_ESTIMATE',
+    quoteNote:
+      'È una riga vera del motore che gira su questo sito. Quando compare, il sistema ha deciso di non rispondere. Non è un guasto: è la funzione più importante che abbiamo scritto.',
   },
 
-  result: {
-    n: '07',
-    label: 'Il risultato',
-    headline: 'Due numeri che il titolare ha già in testa.',
+  proof: {
+    n: '08',
+    label: 'Misura',
+    headline: 'Quello che diventa misurabile.',
     body:
-      'Non pubblichiamo percentuali di miglioramento prima di aver misurato. Ma i numeri su cui si lavora sono due, e non serve un consulente per capirli: quanto tempo passa fra la richiesta e la risposta, e quante richieste si riescono a evadere in una settimana.',
+      'Quando il lavoro passa da un processo invece che da una casella, per la prima volta esistono i numeri. Non pubblichiamo percentuali di clienti che non abbiamo: questi sono i contatori della configurazione dimostrativa che gira su questo sito.',
     metrics: [
-      { k: 'Tempo di risposta', before: 'giorni', after: 'ore', note: 'Il dato che il cliente finale percepisce.' },
-      { k: 'Richieste evase', before: 'quelle che si riescono', after: 'tutte', note: 'La capacità che si libera.' },
+      { k: 'Documenti elaborati nella dimostrazione', v: 5, suffix: '' },
+      { k: 'Campi estratti con confidenza dichiarata', v: 10, suffix: '' },
+      { k: 'Casi in cui il sistema rifiuta di rispondere', v: 1, suffix: '' },
+      { k: 'Decisioni prese senza una persona', v: 0, suffix: '' },
     ],
     caveat:
-      'Il valore di partenza si misura durante il rilievo, sui vostri dati. Prima di quel momento non esiste un numero onesto da dichiarare, e chi ve ne dichiara uno lo sta inventando.',
+      'I valori di un progetto reale si misurano durante il rilievo, sui vostri dati. Prima di quel momento non esiste un numero onesto da dichiarare, e chi ve ne dichiara uno lo sta inventando.',
   },
 } as const;
 
-/* ============================================== home === digital presence =====*/
 
-export const presence = {
-  n: '08',
-  label: 'Presenza digitale',
-  headline: 'Quello che l’azienda è, e quello che Google mostra.',
-  body:
-    'C’è un’asimmetria che si vede in tutta la manifattura italiana: officine con macchine da centinaia di migliaia di euro, certificazioni, competenze costruite in trent’anni — e un indirizzo web che comunica meno di un biglietto da visita. Non è un problema estetico. È un problema di richieste che non arrivano.',
-  real: {
-    label: 'Quello che l’azienda è',
-    items: [
-      'Centro di lavoro a 5 assi, tornitura fino a Ø400',
-      'Tolleranze in H7 su serie da 1.000 pezzi',
-      'Trent’anni di commesse in automotive e idraulica',
-      'Certificazione di sistema, controllo dimensionale interno',
-      'Un ufficio tecnico che legge disegni difficili',
-    ],
-  },
-  shown: {
-    label: 'Quello che si vede online',
-    items: [
-      'Nome, indirizzo, numero di telefono',
-      'Una scheda su un portale di categoria',
-      'Tre foto del capannone del 2014',
-      'Nessuna indicazione di cosa si può chiedere',
-      'Nessun modo di mandare un disegno',
-    ],
-  },
-  kicker:
-    'Un buyer che cerca un fornitore per una lavorazione specifica non trova niente da valutare. Passa oltre. Questo non si vede in nessun report, perché la richiesta che non arriva non lascia traccia.',
-  build: {
-    label: 'Cosa costruiamo',
-    headline: 'Un front office industriale, non un sito vetrina.',
-    body:
-      'Lo stesso strato che struttura le richieste in entrata serve anche a far arrivare quelle giuste. Le due cose sono lo stesso progetto: una porta d’ingresso che dice esattamente cosa l’azienda sa fare, e un processo che raccoglie quello che entra.',
-    items: [
-      { t: 'Capacità produttive', d: 'Macchine, dimensioni massime, tolleranze, materiali lavorati. In modo che un buyer possa qualificarvi in trenta secondi.' },
-      { t: 'Settori e referenze', d: 'Dove avete già lavorato, con che tipo di componenti. Senza inventare nomi che non potete pubblicare.' },
-      { t: 'Documentazione tecnica', d: 'Certificazioni, schede materiali, procedure di controllo, scaricabili.' },
-      { t: 'Ingresso richieste strutturato', d: 'Un modulo che raccoglie quantità, materiale, tolleranze e disegno — e che alimenta direttamente il processo di preventivazione.' },
-    ],
-  },
-} as const;
 
-/* ==================================================== home === ai office ======*/
-
-export const office = {
-  n: '09',
-  label: 'Ufficio AI',
-  headline: 'La mattina, prima che qualcuno apra la posta.',
-  body:
-    'Lo stesso strato applicato all’intera casella condivisa: ogni messaggio letto, classificato, instradato e messo in coda con una priorità. Chi arriva alle otto non trova quarantadue email da smistare, ma un elenco di cose da decidere.',
-  clock: '08:04',
-  stats: [
-    { v: '14', k: 'Messaggi ricevuti', tone: 'ink' },
-    { v: '9', k: 'Elaborati senza intervento', tone: 'good' },
-    { v: '3', k: 'Richieste di offerta', tone: 'accent' },
-    { v: '1', k: 'Richiede una persona', tone: 'amber' },
-  ],
-  rows: [
-    { t: '06:41', from: 'acquisti@tecnoflex-lecco.example', s: 'Richiesta di offerta — flangia FL-2280', tag: 'RFQ', tone: 'accent', note: 'Bozza pronta · precedente OFF-2026-118' },
-    { t: '07:02', from: 'ordini@valvenord.example', s: 'Conferma d’ordine 4471/2026', tag: 'ORDINE', tone: 'neutral', note: 'Instradato all’amministrazione' },
-    { t: '07:18', from: 'info@microcomp.example', s: 'preventivo urgente', tag: 'STIMA', tone: 'amber', note: 'Dati insufficienti · assegnato al preventivista' },
-    { t: '07:35', from: 'marketing@leadgen-pro.example', s: 'Posizionamento garantito sui motori di ricerca', tag: 'SCARTATO', tone: 'muted', note: 'Filtrato prima di qualsiasi elaborazione' },
-    { t: '07:52', from: 'qualita@idrotecnica.example', s: 'Certificati materiale lotto 8841', tag: 'DOCUMENTO', tone: 'neutral', note: 'Archiviato e collegato alla commessa' },
-  ],
-  disclaimer: 'Schermata con dati di esempio. Nessuna delle aziende indicate è reale.',
-} as const;
-
-/* ======================================== home === management intelligence ====*/
-
-export const intelligence = {
-  n: '10',
-  label: 'Visibilità',
-  headline: 'Quello che il titolare non ha mai avuto sotto controllo.',
-  body:
-    'Quando le richieste passano da un processo invece che da una casella, diventano misurabili per la prima volta. Non è una dashboard in più: è la prima volta che esistono i numeri.',
-  panels: [
-    { k: 'Richieste ricevute', v: '112', sub: 'ultimi 30 giorni', bar: 0.82 },
-    { k: 'Tempo medio di risposta', v: '5h 20m', sub: 'da 2 giorni e mezzo', bar: 0.31 },
-    { k: 'Offerte aperte', v: '38', sub: 'in attesa di risposta cliente', bar: 0.55 },
-    { k: 'In attesa di stima tecnica', v: '6', sub: 'assegnate a una persona', bar: 0.18 },
-  ],
-  series: [42, 51, 38, 66, 59, 74, 61, 88, 79, 92, 84, 112],
-  disclaimer: 'Dati di esempio, a scopo illustrativo. I valori reali si misurano durante il rilievo.',
-} as const;
 
 /* ====================================================== home === closing ======*/
 
 export const closing = {
   label: 'Il passo successivo',
-  headline: 'Portateci un processo, non un’idea.',
+  headline: 'Vediamo cosa può diventare la vostra azienda.',
   body:
-    'La prima conversazione dura venticinque minuti ed è diagnostica, non commerciale. Sei domande sul vostro processo. Alla fine sapremo entrambi se ha senso continuare — e se non ha senso, lo diremo noi.',
+    'La prima conversazione dura venticinque minuti ed è diagnostica, non commerciale. Sei domande sul vostro processo, nessuna presentazione. Alla fine sapremo entrambi se ha senso continuare — e se non ha senso, lo diremo noi.',
   bring: [
     'Quante richieste ricevete in una settimana',
     'Chi prepara le offerte, e quanto tempo serve',

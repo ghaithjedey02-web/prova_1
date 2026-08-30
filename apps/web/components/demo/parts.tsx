@@ -33,7 +33,7 @@ export function Confidence({ value, floor }: { value: number; floor?: number }) 
   const tone = value === 0 ? 'bg-rule-strong' : low ? 'bg-amber' : 'bg-accent';
   return (
     <span className="flex items-center gap-2.5" title={`Confidenza ${pct}%`}>
-      <span className="relative block h-1 w-12 overflow-hidden bg-rule">
+      <span className="relative block h-1 w-12 overflow-hidden bg-rule/70">
         <span className={`block h-full ${tone}`} style={{ width: `${Math.max(pct, 2)}%` }} />
       </span>
       <span className={`font-mono text-[var(--text-label)] tnum ${low ? 'text-amber' : 'text-muted'}`}>{pct}%</span>

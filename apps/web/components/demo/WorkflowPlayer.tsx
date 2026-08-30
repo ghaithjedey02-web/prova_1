@@ -102,17 +102,52 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
   const activeStages = notApplicable ? workflow.stages.slice(0, 2) : workflow.stages;
   const caseMeta = demoCopy.cases.find((c) => c.id === sample.id);
 
+  const meanConfidence = (() => {
+    if (!result?.extracted) return null;
+    const cells = Object.values(result.extracted as unknown as Record<string, { confidence: number }>);
+    return cells.reduce((a, c) => a + c.confidence, 0) / cells.length;
+  })();
+
+  const statusCode =
+    phase === 'idle' ? 'IN ATTESA'
+      : phase === 'running' ? 'ELABORAZIONE'
+        : result?.status === 'NEEDS_ESTIMATE' ? 'SOSPESO'
+          : result?.status === 'NEEDS_REVIEW' ? 'VERIFICA'
+            : result?.classification !== 'RFQ' ? 'INSTRADATO'
+              : 'PRONTO';
+
   return (
     <div className="flex flex-col gap-6">
+      {/* ------------------------------------------------------- system bar */}
+      <dl className="glass-solid grid grid-cols-2 gap-px bg-rule/70 sm:grid-cols-4">
+        {[
+          ['SYS.ID', 'DOLMIR-RFQ-01'],
+          ['STATO', statusCode],
+          ['CONFIDENZA MEDIA', meanConfidence === null ? '—' : `${Math.round(meanConfidence * 100)}%`],
+          ['DECISIONE', 'umana'],
+        ].map(([k, v]) => (
+          <div key={k} className="bg-surface/92 px-5 py-4">
+            <dt className="telemetry text-faint">{k}</dt>
+            <dd
+              className={`mt-1.5 font-mono text-[var(--text-micro)] ${
+                v === 'SOSPESO' ? 'text-amber' : v === 'ELABORAZIONE' ? 'text-accent' : 'text-ink-2'
+              }`}
+            >
+              {v}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
       {/* ------------------------------------------------------ case selector */}
       <div>
         <p className="label mb-4">Scegli un caso</p>
-        <ul className="grid gap-px border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-5">
+        <ul className="grid gap-px border border-rule bg-rule/70 sm:grid-cols-2 lg:grid-cols-5">
           {workflow.samples.map((s) => {
             const on = s.id === sample.id;
             const meta = demoCopy.cases.find((c) => c.id === s.id);
             return (
-              <li key={s.id} className="bg-surface">
+              <li key={s.id} className="bg-surface/92 backdrop-blur-md">
                 <button
                   type="button"
                   onClick={() => pick(s)}
@@ -328,10 +363,10 @@ function Outcome({
         {priced ? <Tag tone="good">Bozza pronta</Tag> : <Tag tone="amber">Serve stima tecnica</Tag>}
       </header>
 
-      <div className="grid gap-px bg-rule lg:grid-cols-[1.05fr_1fr]">
-        <div className="bg-surface p-6 sm:p-8">
+      <div className="grid gap-px bg-rule/70 lg:grid-cols-[1.05fr_1fr]">
+        <div className="bg-surface/92 backdrop-blur-md p-6 sm:p-8">
           {priced ? (
-            <p className="font-display text-[length:var(--text-display-m)] font-semibold tnum text-ink">
+            <p className="font-display text-[length:var(--text-display-l)] font-semibold tnum text-ink">
               € {draft.suggestedUnitPriceEur!.toFixed(2)}
               <span className="ml-2 font-sans text-[var(--text-small)] font-normal text-muted">/pz</span>
               <span className="ml-4 font-sans text-[var(--text-small)] font-normal text-muted">
@@ -340,11 +375,15 @@ function Outcome({
             </p>
           ) : (
             <>
-              <p className="font-mono text-[var(--text-label)] uppercase tracking-[0.2em] text-amber">
-                priceBasis · {draft.priceBasis}
+              <p className="flex items-center gap-3 telemetry text-amber">
+                <span aria-hidden className="block size-1.5 bg-amber pulse" />
+                priceBasis
               </p>
-              <p className="mt-4 font-display text-[length:var(--text-display-m)] font-semibold leading-tight tracking-[-0.02em] text-amber">
-                Nessun prezzo proposto.
+              <code className="mt-4 block font-mono text-[clamp(0.95rem,2.4vw,1.5rem)] leading-tight tracking-[-0.01em] text-amber">
+                {draft.priceBasis}
+              </code>
+              <p className="mt-5 font-display text-[length:var(--text-display-m)] font-semibold leading-tight tracking-[-0.02em] text-ink">
+                Il sistema non propone un prezzo.
               </p>
             </>
           )}
