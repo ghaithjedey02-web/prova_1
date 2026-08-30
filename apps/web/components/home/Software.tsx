@@ -51,7 +51,7 @@ export function Software() {
   }, []);
 
   return (
-    <section className="relative py-[var(--space-section)]">
+    <section className="relative py-[var(--space-section)]" data-inspect="Software · interfaccia dimostrativa">
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
 

@@ -20,7 +20,7 @@ const LineCanvas = dynamic(() => import('./LineCanvas'), { ssr: false });
 export function TheLine() {
   const [active, setActive] = useState(0);
   const [enabled, setEnabled] = useState<boolean | null>(null);
-  const { palette } = usePalette();
+  const palette = usePalette();
 
   const wrap = useRef<HTMLDivElement>(null);
   const progress = useRef(0);
@@ -74,7 +74,7 @@ export function TheLine() {
 
   if (enabled === null || enabled === false || !palette) {
     return (
-      <section className="relative py-[var(--space-section)]">
+      <section className="relative py-[var(--space-section)]" data-inspect="TheLine · percorso di una richiesta">
         <Container>
           {head}
           <div className="mt-[var(--space-block)]">
@@ -88,7 +88,7 @@ export function TheLine() {
   const station = stations[active] ?? stations[0]!;
 
   return (
-    <section className="relative" aria-labelledby="line-heading">
+    <section className="relative" aria-labelledby="line-heading" data-inspect="TheLine · percorso di una richiesta">
       <Container>
         <div className="pt-[var(--space-section)]" id="line-heading">{head}</div>
       </Container>

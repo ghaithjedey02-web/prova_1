@@ -16,7 +16,7 @@ export default function Page() {
       <dl className="mt-12 max-w-[64ch] stack-rules border-y border-rule">
         {[
           ['Cookie tecnici', 'Nessuno strettamente necessario oltre a quelli eventualmente impostati dall’infrastruttura di hosting.'],
-          ['Memoria locale', 'Una sola voce, dolmir-theme, che ricorda se avete scelto il tema chiaro. Resta nel vostro browser e non ci raggiunge mai.'],
+          ['Memoria locale', 'Non utilizziamo la memoria locale del browser per nessuna finalità.'],
           ['Terze parti', 'I caratteri tipografici sono serviti insieme al sito. Nessun servizio di analisi, nessun social plugin, nessuna pubblicità.'],
         ].map(([k, v]) => (
           <div key={k} className="grid gap-2 py-6 sm:grid-cols-[12rem_1fr] sm:gap-8">

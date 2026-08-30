@@ -22,7 +22,7 @@ const ForgeCanvas2D = dynamic(() => import('./ForgeCanvas2D'), { ssr: false });
 export function Forge({ className = '' }: { className?: string }) {
   const [tier, setTier] = useState<Tier | null>(null);
   const [visible, setVisible] = useState(false);
-  const { palette, dark } = usePalette();
+  const palette = usePalette();
   const host = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export function Forge({ className = '' }: { className?: string }) {
       ) : !visible ? (
         <ForgeStatic className="absolute inset-0 h-full w-full opacity-40" />
       ) : tier === 'three' ? (
-        <ForgeScene palette={palette!} dark={dark} />
+        <ForgeScene palette={palette!} />
       ) : (
         <ForgeCanvas2D palette={palette!} />
       )}

@@ -34,7 +34,7 @@ export function SystemBackdrop() {
   // need a GPU context.
   const full = pathname === '/';
   const [tier, setTier] = useState<Tier | null>(null);
-  const { palette, dark } = usePalette();
+  const palette = usePalette();
   const { progress } = usePageProgress();
 
   useEffect(() => { setTier(detectTier()); }, []);
@@ -65,7 +65,7 @@ export function SystemBackdrop() {
       <div className="absolute inset-0 pool" />
 
       <div ref={layer} className="absolute inset-0 transition-none">
-        {full && ready && tier === 'three' && <SystemScene palette={palette!} dark={dark} progress={progress} />}
+        {full && ready && tier === 'three' && <SystemScene palette={palette!} progress={progress} />}
         {full && ready && tier === 'canvas' && <SystemCanvas2D palette={palette!} progress={progress} />}
       </div>
       {(!full || !ready || tier === 'static') && (

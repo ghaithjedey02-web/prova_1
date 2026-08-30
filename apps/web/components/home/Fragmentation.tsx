@@ -15,7 +15,7 @@ const c = chapters.fragmentation;
  */
 export function Fragmentation() {
   return (
-    <section className="relative py-[var(--space-section)]">
+    <section className="relative py-[var(--space-section)]" data-inspect="Fragmentation · stato iniziale">
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
 

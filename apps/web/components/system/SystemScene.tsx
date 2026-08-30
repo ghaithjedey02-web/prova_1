@@ -4,6 +4,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import type { Palette } from '@/lib/palette';
+import { activityDrive } from '@/lib/system-bus';
 import { stagePosition } from './stages';
 
 /**
@@ -30,9 +31,21 @@ import { stagePosition } from './stages';
 const FRAGMENTS = 150;
 const MODULES = 8;
 
-type Props = { palette: Palette; dark: boolean; progress: React.RefObject<number> };
+type Props = { palette: Palette; progress: React.RefObject<number> };
 
 /* --------------------------------------------------------------- helpers ---*/
+
+/**
+ * How hard the machine is working right now, smoothed.
+ *
+ * Scroll decides which *state* the system is in; the demonstrations decide how
+ * hard it is *running*. When a visitor starts the flow demo two thirds of the
+ * way down the page, the core in the background accelerates, brightens and then
+ * settles — the machine reacts to being used, which is the whole point of the
+ * thing being one system rather than a background image.
+ */
+const drive = { value: 0 };
+
 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
 function clamp01(v: number) { return Math.min(1, Math.max(0, v)); }
@@ -41,7 +54,7 @@ function band(x: number, a: number, b: number, fade = 0.6) {
   return clamp01(Math.min((x - a + fade) / fade, (b + fade - x) / fade));
 }
 
-function useEnvironment(dark: boolean) {
+function useEnvironment() {
   const { gl, scene } = useThree();
   useEffect(() => {
     const c = document.createElement('canvas');
@@ -50,13 +63,8 @@ function useEnvironment(dark: boolean) {
     if (!ctx) return;
 
     const g = ctx.createLinearGradient(0, 0, 0, 256);
-    if (dark) {
-      g.addColorStop(0, '#1b2126'); g.addColorStop(0.45, '#0b0e11');
-      g.addColorStop(0.55, '#050708'); g.addColorStop(1, '#0a0d10');
-    } else {
-      g.addColorStop(0, '#ffffff'); g.addColorStop(0.45, '#d5dbde');
-      g.addColorStop(0.55, '#a3adb2'); g.addColorStop(1, '#e9eded');
-    }
+    g.addColorStop(0, '#1b2126'); g.addColorStop(0.45, '#0b0e11');
+    g.addColorStop(0.55, '#050708'); g.addColorStop(1, '#0a0d10');
     ctx.fillStyle = g; ctx.fillRect(0, 0, 512, 256);
 
     const key = ctx.createRadialGradient(150, 30, 4, 150, 30, 130);
@@ -64,7 +72,7 @@ function useEnvironment(dark: boolean) {
     ctx.fillStyle = key; ctx.fillRect(0, 0, 512, 170);
 
     const rim = ctx.createRadialGradient(400, 100, 2, 400, 100, 120);
-    rim.addColorStop(0, dark ? 'rgba(110,215,240,0.9)' : 'rgba(80,150,175,0.6)');
+    rim.addColorStop(0, 'rgba(110,215,240,0.9)');
     rim.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = rim; ctx.fillRect(200, 10, 312, 220);
 
@@ -76,18 +84,18 @@ function useEnvironment(dark: boolean) {
     const rt = pmrem.fromEquirectangular(tex);
     scene.environment = rt.texture;
     return () => { scene.environment = null; rt.dispose(); pmrem.dispose(); tex.dispose(); };
-  }, [gl, scene, dark]);
+  }, [gl, scene]);
 }
 
 /* ------------------------------------------------------------------ core ---*/
 
-function Core({ palette, dark, stage }: { palette: Palette; dark: boolean; stage: React.RefObject<number> }) {
+function Core({ palette, stage }: { palette: Palette; stage: React.RefObject<number> }) {
   const group = useRef<THREE.Group>(null);
   const shell = useRef<THREE.LineSegments>(null);
   const inner = useRef<THREE.Mesh>(null);
   const halo = useRef<THREE.Mesh>(null);
 
-  useEnvironment(dark);
+  useEnvironment();
 
   const shellGeo = useMemo(() => new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(1.15, 1)), []);
   const innerGeo = useMemo(() => new THREE.IcosahedronGeometry(0.58, 1), []);
@@ -100,13 +108,13 @@ function Core({ palette, dark, stage }: { palette: Palette; dark: boolean; stage
 
   const innerMat = useMemo(
     () => new THREE.MeshPhysicalMaterial({
-      color: new THREE.Color(dark ? '#0d1418' : '#8f9ba1'),
+      color: new THREE.Color('#0d1418'),
       metalness: 0.82, roughness: 0.22,
       transmission: 0.35, thickness: 1.4, ior: 1.48,
       emissive: new THREE.Color(palette.accent), emissiveIntensity: 0.22,
       envMapIntensity: 1.9,
     }),
-    [dark, palette.accent],
+    [palette.accent],
   );
 
   // Additive halo. This is what reads as "the core is powered" without a bloom
@@ -138,18 +146,21 @@ function Core({ palette, dark, stage }: { palette: Palette; dark: boolean; stage
     const t = state.clock.elapsedTime;
     const g = group.current;
     if (!g) return;
+    drive.value += (activityDrive() - drive.value) * Math.min(1, delta * 2.2);
+    const d = drive.value;
 
     // The whole core stops turning at HOLD. Freezing a live scene is the most
     // direct way to say "the machine is waiting for a person".
     const holding = band(s, 4.85, 5.35, 0.45);
-    const spin = lerp(0.16, 0.005, holding);
+    // A working core turns faster; a holding one nearly stops.
+    const spin = lerp(0.16, 0.005, holding) * (1 + d * 2.4);
     g.rotation.y += delta * spin;
     g.rotation.x = Math.sin(t * 0.12) * 0.07;
 
     // Separation: the shell lifts off the core during the exploded view.
     const explode = band(s, 3.7, 5.6, 0.7);
     if (shell.current) {
-      shell.current.scale.setScalar(1 + explode * 0.55);
+      shell.current.scale.setScalar(1 + explode * 0.55 + Math.sin(t * 3.4) * 0.02 * d);
       (shell.current.material as THREE.LineBasicMaterial).opacity = 0.24 + explode * 0.4;
       shell.current.rotation.y -= delta * 0.09;
     }
@@ -158,13 +169,13 @@ function Core({ palette, dark, stage }: { palette: Palette; dark: boolean; stage
     const live = clamp01((s - 2.2) / 1.1);
     if (inner.current) {
       const m = inner.current.material as THREE.MeshPhysicalMaterial;
-      m.emissiveIntensity = 0.22 + live * 0.8 + Math.sin(t * 1.7) * 0.06;
+      m.emissiveIntensity = 0.22 + live * 0.8 + d * 1.5 + Math.sin(t * (1.7 + d * 5)) * (0.06 + d * 0.22);
       m.emissive.set(holding > 0.4 ? palette.amber : palette.accent);
       inner.current.scale.setScalar(1 + Math.sin(t * 1.1) * 0.012);
     }
     if (halo.current) {
       const m = halo.current.material as THREE.MeshBasicMaterial;
-      m.opacity = 0.3 + live * 0.42;
+      m.opacity = 0.3 + live * 0.42 + d * 0.3;
       m.color.set(holding > 0.4 ? palette.amber : palette.accent);
       halo.current.quaternion.copy(state.camera.quaternion);
     }
@@ -200,7 +211,7 @@ function Rings({ palette, stage }: { palette: Palette; stage: React.RefObject<nu
   useFrame((_, delta) => {
     const s = stage.current ?? 0;
     const hold = band(s, 4.85, 5.35, 0.45);
-    const speed = lerp(1, 0.03, hold);
+    const speed = lerp(1, 0.03, hold) * (1 + drive.value * 4);
     refs.forEach((r, i) => {
       if (!r.current) return;
       r.current.rotation.z += delta * (0.05 + i * 0.035) * speed * (i % 2 ? -1 : 1);
@@ -417,7 +428,7 @@ function Rig({ stage, pointer }: { stage: React.RefObject<number>; pointer: Reac
 
 /* --------------------------------------------------------------- exported --*/
 
-export default function SystemScene({ palette, dark, progress }: Props) {
+export default function SystemScene({ palette, progress }: Props) {
   const stage = useRef(0);
   const pointer = useRef({ x: 0, y: 0 });
 
@@ -452,15 +463,15 @@ export default function SystemScene({ palette, dark, progress }: Props) {
       camera={{ position: [0, 0, 6.4], fov: 40 }}
       onCreated={({ gl }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
-        gl.toneMappingExposure = dark ? 1.1 : 1.0;
+        gl.toneMappingExposure = 1.1;
       }}
     >
-      <ambientLight intensity={dark ? 0.3 : 0.7} />
-      <directionalLight position={[4, 5, 4]} intensity={dark ? 2.0 : 1.8} />
-      <directionalLight position={[-5, -2, 2]} intensity={dark ? 0.9 : 0.5} color={palette.accent} />
-      <pointLight position={[0, 0, 0]} intensity={dark ? 4 : 1.5} color={palette.accent} distance={7} />
+      <ambientLight intensity={0.3} />
+      <directionalLight position={[4, 5, 4]} intensity={2.0} />
+      <directionalLight position={[-5, -2, 2]} intensity={0.9} color={palette.accent} />
+      <pointLight position={[0, 0, 0]} intensity={4} color={palette.accent} distance={7} />
       <Rig stage={stage} pointer={pointer} />
-      <Core palette={palette} dark={dark} stage={stage} />
+      <Core palette={palette} stage={stage} />
       <Fragments palette={palette} stage={stage} />
       <Modules palette={palette} stage={stage} />
     </Canvas>

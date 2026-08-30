@@ -3,6 +3,7 @@ import { Archivo, IBM_Plex_Mono, Instrument_Sans } from 'next/font/google';
 import { Nav } from '@/components/site/Nav';
 import { SystemBackdrop, SystemReadout } from '@/components/system/SystemBackdrop';
 import { Reticle } from '@/components/ui/Reticle';
+import { Inspect } from '@/components/system/Inspect';
 import { Footer } from '@/components/site/Footer';
 import { site } from '@/content/site';
 import './globals.css';
@@ -66,29 +67,16 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#08090B' },
-    { media: '(prefers-color-scheme: dark)', color: '#08090B' },
+    { color: '#08090B' },
   ],
 };
-
-/**
- * Applies the stored theme before first paint. The site is dark by default —
- * that is the identity, not a system preference — so this only ever has to
- * switch someone into the daylight skin.
- */
-const themeScript = `(function(){try{var t=localStorage.getItem('dolmir-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}})()`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="it"
-      data-theme="dark"
       className={`${display.variable} ${sans.variable} ${mono.variable}`}
-      suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
       <body>
         <a href="#main" className="skip">Vai al contenuto</a>
         {/* The machine the whole site sits on. Fixed, behind everything, driven
@@ -101,6 +89,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
         </div>
         <SystemReadout />
+        <Inspect />
       </body>
     </html>
   );

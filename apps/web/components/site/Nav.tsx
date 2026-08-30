@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Container } from '@/components/ui/Container';
-import { ThemeToggle } from './ThemeToggle';
+import { InspectButton } from '@/components/system/Inspect';
 import { cta, nav, site } from '@/content/site';
 
 export function Nav() {
@@ -61,7 +61,7 @@ export function Nav() {
           </nav>
 
           <div className="flex items-center gap-2.5">
-            <ThemeToggle />
+            <InspectButton />
             <Link
               href={cta.primary.href}
               className="hidden rounded-sm bg-accent px-5 py-2.5 text-[var(--text-micro)] font-medium text-accent-ink transition-colors duration-[var(--duration-fast)] hover:bg-accent-hover sm:inline-flex"

@@ -80,7 +80,7 @@ function useHubGeometry() {
  * whole lighting rig for the reflections; the actual lights below only carve
  * the form.
  */
-function useStudioEnvironment(dark: boolean) {
+function useStudioEnvironment() {
   const { gl, scene } = useThree();
 
   useEffect(() => {
@@ -91,30 +91,23 @@ function useStudioEnvironment(dark: boolean) {
     if (!ctx) return;
 
     const sky = ctx.createLinearGradient(0, 0, 0, 256);
-    if (dark) {
-      sky.addColorStop(0, '#20262b');
-      sky.addColorStop(0.42, '#0d1013');
-      sky.addColorStop(0.52, '#050708');
-      sky.addColorStop(1, '#0b0e10');
-    } else {
-      sky.addColorStop(0, '#ffffff');
-      sky.addColorStop(0.45, '#cfd6d9');
-      sky.addColorStop(0.55, '#9aa4a9');
-      sky.addColorStop(1, '#e6eaea');
-    }
+    sky.addColorStop(0, '#20262b');
+    sky.addColorStop(0.42, '#0d1013');
+    sky.addColorStop(0.52, '#050708');
+    sky.addColorStop(1, '#0b0e10');
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, 512, 256);
 
     // Key softbox, upper left-of-centre.
     const key = ctx.createRadialGradient(170, 34, 4, 170, 34, 120);
-    key.addColorStop(0, dark ? '#ffffff' : '#ffffff');
+    key.addColorStop(0, '#ffffff');
     key.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = key;
     ctx.fillRect(0, 0, 512, 160);
 
     // Cold instrument bounce, right side — where the accent colour comes from.
     const rim = ctx.createRadialGradient(392, 96, 2, 392, 96, 108);
-    rim.addColorStop(0, dark ? 'rgba(120,220,240,0.85)' : 'rgba(90,160,180,0.6)');
+    rim.addColorStop(0, 'rgba(120,220,240,0.85)');
     rim.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = rim;
     ctx.fillRect(200, 20, 312, 200);
@@ -134,40 +127,40 @@ function useStudioEnvironment(dark: boolean) {
       pmrem.dispose();
       tex.dispose();
     };
-  }, [gl, scene, dark]);
+  }, [gl, scene]);
 }
 
 /* ------------------------------------------------------------------ part ----*/
 
-function Part({ palette, dark, pointer }: { palette: Palette; dark: boolean; pointer: React.RefObject<{ x: number; y: number }> }) {
+function Part({ palette, pointer }: { palette: Palette; pointer: React.RefObject<{ x: number; y: number }> }) {
   const group = useRef<THREE.Group>(null);
   const ring = useRef<THREE.Mesh>(null);
   const flange = useFlangeGeometry();
   const hub = useHubGeometry();
 
-  useStudioEnvironment(dark);
+  useStudioEnvironment();
 
   const steel = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: new THREE.Color(dark ? '#8b969c' : '#b9c1c5'),
+        color: new THREE.Color('#8b969c'),
         metalness: 1,
         roughness: 0.29,
-        envMapIntensity: dark ? 1.15 : 0.9,
+        envMapIntensity: 1.15,
       }),
-    [dark],
+    [],
   );
 
   const machined = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: new THREE.Color(dark ? '#6d777c' : '#a3acb0'),
+        color: new THREE.Color('#6d777c'),
         metalness: 1,
         roughness: 0.46,
-        envMapIntensity: dark ? 1 : 0.8,
+        envMapIntensity: 1,
         side: THREE.DoubleSide,
       }),
-    [dark],
+    [],
   );
 
   const accentRing = useMemo(
@@ -262,7 +255,7 @@ function Motes({ color }: { color: string }) {
 
 /* ---------------------------------------------------------------- export ----*/
 
-export default function ForgeScene({ palette, dark }: { palette: Palette; dark: boolean }) {
+export default function ForgeScene({ palette }: { palette: Palette }) {
   const pointer = useRef({ x: 0, y: 0 });
   const host = useRef<HTMLDivElement>(null);
 
@@ -293,15 +286,15 @@ export default function ForgeScene({ palette, dark }: { palette: Palette; dark: 
         camera={{ position: [0, 0, 5.1], fov: 32 }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.toneMappingExposure = dark ? 1.15 : 1.02;
+          gl.toneMappingExposure = 1.15;
         }}
       >
-        <ambientLight intensity={dark ? 0.28 : 0.7} />
-        <directionalLight position={[3.2, 4.4, 3]} intensity={dark ? 2.4 : 2.1} color="#ffffff" />
-        <directionalLight position={[-4, -1.5, 2]} intensity={dark ? 1.1 : 0.6} color={palette.accent} />
-        <pointLight position={[0, 0, -3.4]} intensity={dark ? 3.2 : 1.2} color={palette.accent} distance={9} />
-        <Part palette={palette} dark={dark} pointer={pointer} />
-        <Motes color={dark ? palette.steel : palette.accent} />
+        <ambientLight intensity={0.28} />
+        <directionalLight position={[3.2, 4.4, 3]} intensity={2.4} color="#ffffff" />
+        <directionalLight position={[-4, -1.5, 2]} intensity={1.1} color={palette.accent} />
+        <pointLight position={[0, 0, -3.4]} intensity={3.2} color={palette.accent} distance={9} />
+        <Part palette={palette} pointer={pointer} />
+        <Motes color={palette.steel} />
       </Canvas>
     </div>
   );

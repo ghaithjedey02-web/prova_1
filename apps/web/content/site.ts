@@ -93,41 +93,8 @@ export const chapters = {
       'Nessuno di questi strumenti è sbagliato. Il problema è che fra l’uno e l’altro c’è sempre una persona che ricopia.',
   },
 
-  layer: {
-    n: '02',
-    label: 'Lo strato',
-    headline: 'Costruiamo il livello che manca in mezzo.',
-    body:
-      'Non sostituiamo quello che avete. Copriamo il tratto che nessuno ha mai informatizzato — quello fra “è arrivata una cosa” e “il dato è nel sistema” — perché è irregolare, e finora l’unico modo di percorrerlo era a mano.',
-    verbs: [
-      { k: 'LEGGE', d: 'Testo, allegati, documenti, moduli. Anche quando il formato cambia ogni volta.' },
-      { k: 'CAPISCE', d: 'Riconosce di cosa si tratta prima di elaborare qualsiasi cosa.' },
-      { k: 'ESTRAE', d: 'Campo per campo, con la frase esatta del documento da cui viene ogni dato.' },
-      { k: 'VERIFICA', d: 'Dichiara quanto è sicuro. Sotto soglia, non procede.' },
-      { k: 'COLLEGA', d: 'Scrive nei sistemi che usate già, senza chiedervi di cambiarli.' },
-      { k: 'CONSEGNA', d: 'Un risultato strutturato, con la motivazione di ogni valore.' },
-    ],
-  },
-
-  intelligence: {
-    n: '03',
-    label: 'Intelligenza',
-    headline: 'Un nucleo che legge, confronta e dichiara.',
-    body:
-      'Al centro c’è un motore che riceve tutto ciò che entra, lo classifica, ne estrae i dati e li confronta con quello che l’azienda ha già fatto. Non è un assistente conversazionale: è un componente di processo, con soglie e confini scritti.',
-    inputs: ['Email', 'Documenti', 'Gestionale', 'CRM', 'File', 'Ordini', 'Fogli'],
-    outputs: ['Decisione', 'Flusso', 'Bozza', 'Aggiornamento', 'Segnalazione'],
-    core: 'DOLMIR CORE',
-    metrics: [
-      { k: 'Campi estratti per documento', v: 10 },
-      { k: 'Confidenza dichiarata', v: 100, suffix: '%' },
-      { k: 'Decisioni prese senza una persona', v: 0 },
-    ],
-    note: 'Valori della configurazione dimostrativa presente su questo sito.',
-  },
-
   automation: {
-    n: '04',
+    n: '05',
     label: 'Automazione',
     headline: 'Il flusso, dall’ingresso alla firma.',
     body:
@@ -135,7 +102,7 @@ export const chapters = {
   },
 
   software: {
-    n: '05',
+    n: '06',
     label: 'Software',
     headline: 'Non solo automazioni. Interfacce.',
     body:
@@ -160,21 +127,6 @@ export const chapters = {
     },
   },
 
-  integrations: {
-    n: '06',
-    label: 'Integrazioni',
-    headline: 'Ci colleghiamo a quello che c’è già.',
-    body:
-      'Un sistema che chiede di abbandonare gli strumenti esistenti non viene adottato. Il nostro strato si innesta su quello che l’azienda usa oggi, e dove non esiste un’interfaccia programmabile lo diciamo prima di firmare.',
-    groups: [
-      { k: 'Posta e file', items: ['Google Workspace', 'Microsoft 365', 'Drive', 'SharePoint'] },
-      { k: 'Gestione', items: ['Gestionali ERP', 'CRM', 'Fatturazione', 'Magazzino'] },
-      { k: 'Dati', items: ['Database', 'API REST', 'Webhook', 'Esportazioni'] },
-      { k: 'Superfici', items: ['Sito', 'Portale clienti', 'Moduli', 'Applicazioni interne'] },
-    ],
-    caveat: 'Dove un sistema non è integrabile in modo affidabile, il perimetro lo dichiara prima dell’inizio.',
-  },
-
   human: {
     n: '07',
     label: 'Controllo',
@@ -191,22 +143,6 @@ export const chapters = {
     quoteNote:
       'È una riga vera del motore che gira su questo sito. Quando compare, il sistema ha deciso di non rispondere. Non è un guasto: è la funzione più importante che abbiamo scritto.',
   },
-
-  proof: {
-    n: '08',
-    label: 'Misura',
-    headline: 'Quello che diventa misurabile.',
-    body:
-      'Quando il lavoro passa da un processo invece che da una casella, per la prima volta esistono i numeri. Non pubblichiamo percentuali di clienti che non abbiamo: questi sono i contatori della configurazione dimostrativa che gira su questo sito.',
-    metrics: [
-      { k: 'Documenti elaborati nella dimostrazione', v: 5, suffix: '' },
-      { k: 'Campi estratti con confidenza dichiarata', v: 10, suffix: '' },
-      { k: 'Casi in cui il sistema rifiuta di rispondere', v: 1, suffix: '' },
-      { k: 'Decisioni prese senza una persona', v: 0, suffix: '' },
-    ],
-    caveat:
-      'I valori di un progetto reale si misurano durante il rilievo, sui vostri dati. Prima di quel momento non esiste un numero onesto da dichiarare, e chi ve ne dichiara uno lo sta inventando.',
-  },
 } as const;
 
 
@@ -216,9 +152,9 @@ export const chapters = {
 
 export const closing = {
   label: 'Il passo successivo',
-  headline: 'Vediamo cosa può diventare la vostra azienda.',
+  headline: 'Il prossimo sistema potrebbe essere il vostro.',
   body:
-    'La prima conversazione dura venticinque minuti ed è diagnostica, non commerciale. Sei domande sul vostro processo, nessuna presentazione. Alla fine sapremo entrambi se ha senso continuare — e se non ha senso, lo diremo noi.',
+    'Venticinque minuti, sei domande sul vostro processo, nessuna presentazione. Alla fine sapremo entrambi se ha senso continuare — e se non ha senso, lo diremo noi.',
   bring: [
     'Quante richieste ricevete in una settimana',
     'Chi prepara le offerte, e quanto tempo serve',

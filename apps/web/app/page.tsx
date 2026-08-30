@@ -1,12 +1,11 @@
 import { Hero } from '@/components/home/Hero';
 import { Fragmentation } from '@/components/home/Fragmentation';
-import { Layer } from '@/components/home/Layer';
-import { Intelligence } from '@/components/home/Intelligence';
+import { Twin } from '@/components/live/Twin';
+import { FlowDemo } from '@/components/live/FlowDemo';
+import { FrictionScan } from '@/components/live/FrictionScan';
 import { TheLine } from '@/components/line/TheLine';
 import { Software } from '@/components/home/Software';
-import { Integrations } from '@/components/home/Integrations';
 import { HumanGate } from '@/components/home/HumanGate';
-import { Proof } from '@/components/home/Proof';
 import { Closing } from '@/components/home/Closing';
 import { site } from '@/content/site';
 
@@ -22,14 +21,17 @@ const jsonLd = {
 };
 
 /**
- * The homepage is one continuous machine.
+ * Nine experiences, not thirty sections.
  *
- * There is no background image behind these sections: `SystemBackdrop` in the
- * layout renders a single fixed scene that changes state as the page scrolls,
- * and every section here sits on top of it with translucent surfaces so the
- * machine is visible through the content. The order of the sections is the
- * order of the system's states — that is why they read as one sequence rather
- * than as a stack of blocks.
+ * Three of them are the product rather than a description of it: the twin is a
+ * live graph the visitor inspects, the flow demo instantiates the real
+ * `RfqPipeline`, and the friction scan runs an analysis on whatever the visitor
+ * says hurts. Each drives the intelligence core in the background through the
+ * system bus, so the machine visibly reacts to being used.
+ *
+ * `SystemBackdrop` in the layout renders the one fixed scene behind all of it;
+ * these sections sit on translucent surfaces so the machine reads through
+ * without ever competing with the words.
  */
 export default function HomePage() {
   return (
@@ -37,13 +39,12 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Hero />
       <Fragmentation />
-      <Layer />
-      <Intelligence />
+      <Twin />
+      <FlowDemo />
+      <FrictionScan />
       <TheLine />
       <Software />
-      <Integrations />
       <HumanGate />
-      <Proof />
       <Closing />
     </>
   );

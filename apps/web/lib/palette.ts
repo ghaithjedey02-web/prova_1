@@ -2,50 +2,37 @@
 
 import { useEffect, useState } from 'react';
 
-/**
- * Reads the live design tokens so canvas and WebGL draw in the same colours as
- * the DOM. Without this the 3D keeps its old palette when the theme changes,
- * which is the single most obvious tell that a scene was bolted on.
- */
+/** The design tokens, read once, so every renderer shares one palette. */
 export interface Palette {
   ink: string;
   accent: string;
   amber: string;
+  violet: string;
   muted: string;
   rule: string;
   steel: string;
 }
 
-function read(): { palette: Palette; dark: boolean } {
+function read(): Palette {
   const s = getComputedStyle(document.documentElement);
   const v = (n: string, f: string) => s.getPropertyValue(n).trim() || f;
-  const explicit = document.documentElement.getAttribute('data-theme');
-  const dark = explicit ? explicit === 'dark' : true;
   return {
-    dark,
-    palette: {
-      ink: v('--c-ink', '#F2F4F5'),
-      accent: v('--c-accent', '#45C7DE'),
-      amber: v('--c-amber', '#E3A551'),
-      muted: v('--c-muted', '#7B858A'),
-      rule: v('--c-rule-strong', '#2E353B'),
-      steel: v('--c-steel-hi', '#6F7A80'),
-    },
+    ink: v('--c-ink', '#F2F4F5'),
+    accent: v('--c-accent', '#45C7DE'),
+    amber: v('--c-amber', '#E3A551'),
+    violet: v('--c-violet', '#9B8CFF'),
+    muted: v('--c-muted', '#7B858A'),
+    rule: v('--c-rule-strong', '#2E353B'),
+    steel: v('--c-steel-hi', '#6F7A80'),
   };
 }
 
+/**
+ * DOLMIR has one skin. This reads the live tokens once on mount so canvas and
+ * WebGL draw in exactly the colours the DOM uses — there is no theme to watch.
+ */
 export function usePalette() {
-  const [state, setState] = useState<{ palette: Palette | null; dark: boolean }>({
-    palette: null,
-    dark: true,
-  });
-
-  useEffect(() => {
-    setState(read());
-    const mo = new MutationObserver(() => setState(read()));
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    return () => mo.disconnect();
-  }, []);
-
-  return state;
+  const [palette, setPalette] = useState<Palette | null>(null);
+  useEffect(() => { setPalette(read()); }, []);
+  return palette;
 }
