@@ -96,3 +96,15 @@ export function useEvents() {
 export function activityDrive() {
   return ACTIVITY[activity].drive;
 }
+
+/**
+ * How strongly the fixed background machine should show through, 0..1.
+ *
+ * The backdrop normally recedes to atmosphere once the visitor scrolls past the
+ * opening. A section whose whole point is the machine itself — the intelligence
+ * core — raises this while it is on screen, and the backdrop's render loop
+ * reads it every frame without a re-render.
+ */
+let boost = 0;
+export function setBackdropBoost(v: number) { boost = Math.min(1, Math.max(0, v)); }
+export function backdropBoost() { return boost; }

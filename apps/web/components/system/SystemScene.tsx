@@ -4,7 +4,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import type { Palette } from '@/lib/palette';
-import { activityDrive } from '@/lib/system-bus';
+import { activityDrive, backdropBoost } from '@/lib/system-bus';
 import { stagePosition } from './stages';
 
 /**
@@ -412,7 +412,7 @@ function Rig({ stage, pointer }: { stage: React.RefObject<number>; pointer: Reac
     // of the origin and the machine sits in the right half of the frame. As the
     // story moves past the opening it recentres — the system takes the stage.
     const wide = state.size.width / Math.max(1, state.size.height) > 1.15;
-    const bias = wide ? -1.55 * (1 - band(s, 1.6, 7, 1.2)) : 0;
+    const bias = wide ? -1.55 * (1 - band(s, 1.6, 7, 1.2)) * (1 - backdropBoost()) : 0;
     const targetX = p.x * 0.5;
     const targetY = -p.y * 0.35 + band(s, 2, 3.2, 0.8) * 0.25;
     const cam = state.camera;

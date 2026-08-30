@@ -8,60 +8,103 @@ import { Magnetic } from '@/components/ui/Magnetic';
 import { cta, hero } from '@/content/site';
 
 /**
- * The opening.
+ * The awakening.
  *
- * The visitor does not arrive at a page with a picture on it — they arrive at a
- * machine that is starting up. Six boot lines resolve in about 1.6 seconds,
- * each naming a real stage of what DOLMIR builds, and the identity emerges out
- * of that sequence rather than being placed on top of it.
+ * The screen starts almost empty. Over ~1.6 seconds, fourteen micro-signals
+ * appear across the whole viewport — real events of a running DOLMIR system,
+ * not set dressing — hairlines draw between a subset of them, and only once
+ * the system is visibly alive does the statement land. The signals then step
+ * back to a faint constellation behind the words.
  *
- * Under reduced motion the sequence is skipped entirely and the headline is
- * present from the first frame; nothing is ever hidden behind an animation that
- * a visitor cannot see.
+ * The first message is deliberately the vision, not a vertical: which industry
+ * this is for is the job of the case section, not of the first five seconds.
+ *
+ * Under reduced motion everything is present from the first frame at its final
+ * opacity; nothing a visitor needs is ever hidden behind an animation.
  */
+
+type Phase = 'dark' | 'waking' | 'wired' | 'handed';
+
 export function Hero() {
   const [step, setStep] = useState(-1);
-  const [handed, setHanded] = useState(false);
+  const [phase, setPhase] = useState<Phase>('dark');
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setStep(hero.boot.length);
-      setHanded(true);
+      setStep(hero.signals.length);
+      setPhase('handed');
       return;
     }
     const timers: ReturnType<typeof setTimeout>[] = [];
-    hero.boot.forEach((_, i) => {
-      timers.push(setTimeout(() => setStep(i), 140 + i * 195));
+    setPhase('waking');
+    hero.signals.forEach((_, i) => {
+      timers.push(setTimeout(() => setStep(i), 90 + i * 105));
     });
-    timers.push(setTimeout(() => setHanded(true), 140 + hero.boot.length * 195 + 120));
+    const t1 = 90 + hero.signals.length * 105;
+    timers.push(setTimeout(() => setPhase('wired'), t1));
+    timers.push(setTimeout(() => setPhase('handed'), t1 + 520));
     return () => timers.forEach(clearTimeout);
   }, []);
 
+  const handed = phase === 'handed';
+  const wired = phase === 'wired' || handed;
+
+  /* The hairlines connect the signals marked `wire`, in order. */
+  const wirePts = hero.signals
+    .map((s, i) => ({ ...s, i }))
+    .filter((s) => s.wire !== undefined)
+    .sort((a, b) => (a.wire! - b.wire!));
+
   return (
     <section className="relative min-h-[100svh]">
-      <Container className="relative flex min-h-[calc(100svh-var(--nav-h))] flex-col justify-between pt-[clamp(1.5rem,4vh,3rem)] pb-7">
-        {/* -------------------------------------------------------- boot log */}
-        <ol
-          className={`hidden w-fit transition-opacity duration-[var(--duration-slow)] lg:block ${
-            handed ? 'opacity-0' : 'opacity-100'
-          }`}
-          aria-hidden={handed}
+      {/* ------------------------------------------------- the constellation */}
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 overflow-hidden transition-opacity duration-[1200ms] ${
+          handed ? 'opacity-[0.34]' : 'opacity-100'
+        }`}
+      >
+        <svg
+          className="absolute inset-0 h-full w-full"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
         >
-          {hero.boot.map((b, i) => (
-            <li
-              key={b.t}
-              className={`flex items-baseline gap-4 py-0.5 transition-opacity duration-[var(--duration-base)] ${
-                i <= step ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              <span className="telemetry w-[3.2rem] text-faint">{String(i + 1).padStart(2, '0')}</span>
-              <span className="telemetry text-muted">{b.t}</span>
-              <span aria-hidden className="block h-px w-8 bg-rule-strong" />
-              <span className="telemetry text-accent">{i <= step ? b.v : ''}</span>
-            </li>
-          ))}
-        </ol>
+          {wirePts.slice(0, -1).map((a, j) => {
+            const b = wirePts[j + 1]!;
+            return (
+              <line
+                key={j}
+                x1={a.x} y1={a.y} x2={b.x} y2={b.y}
+                stroke="var(--c-accent)"
+                strokeWidth="1"
+                vectorEffect="non-scaling-stroke"
+                opacity={wired ? 0.22 : 0}
+                style={{
+                  transition: `opacity 600ms ease ${j * 90}ms`,
+                }}
+              />
+            );
+          })}
+        </svg>
+        {hero.signals.map((sig, i) => (
+          <span
+            key={sig.t}
+            className={`telemetry absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap transition-all duration-[var(--duration-base)] ease-[var(--ease-mech-out)] ${
+              // Edge signals need the whole viewport; on a phone they would
+              // clip or crowd the headline, so only the safe middle band shows.
+              sig.x < 14 || sig.x > 86 ? 'hidden sm:inline' : ''
+            } ${
+              i <= step ? 'opacity-100 blur-0' : 'opacity-0 blur-[3px]'
+            } ${sig.wire !== undefined ? 'text-accent' : 'text-muted'}`}
+            style={{ left: `${sig.x}%`, top: `${sig.y}%` }}
+          >
+            <span className="mr-2 inline-block size-1 bg-current align-middle" />
+            {sig.t}
+          </span>
+        ))}
+      </div>
 
+      <Container className="relative flex min-h-[calc(100svh-var(--nav-h))] flex-col justify-end pb-7 pt-[clamp(1.5rem,4vh,3rem)]">
         {/* -------------------------------------------------------- headline */}
         <div
           className={`max-w-[34rem] transition-all duration-[var(--duration-scene)] ease-[var(--ease-mech-out)] lg:max-w-[46rem] ${
@@ -98,7 +141,7 @@ export function Hero() {
 
         {/* ------------------------------------------------------ telemetry */}
         <div
-          className={`transition-opacity duration-[var(--duration-scene)] ${handed ? 'opacity-100' : 'opacity-0'}`}
+          className={`mt-10 transition-opacity duration-[var(--duration-scene)] ${handed ? 'opacity-100' : 'opacity-0'}`}
         >
           <dl className="grid grid-cols-2 gap-px border-t border-rule bg-rule/60 sm:grid-cols-4">
             {hero.telemetry.map(([k, v]) => (

@@ -160,7 +160,7 @@ export function FrictionScan() {
     <section className="relative py-[var(--space-section)]" data-inspect="FrictionScan · simulazione">
       <Container>
         <Chapter
-          n="04"
+          n="07"
           label="Analisi"
           headline="Mostrateci dove perdete tempo."
           lead="Scegliete l’area che nella vostra settimana pesa di più. Il sistema esegue un’analisi simulata e propone il flusso che costruirebbe. I numeri sono di simulazione, non risultati misurati presso un cliente."

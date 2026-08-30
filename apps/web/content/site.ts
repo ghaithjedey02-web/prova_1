@@ -45,22 +45,33 @@ export const cta = {
 
 export const hero = {
   sysId: 'SYS.ID 00482',
-  eyebrow: 'Sistemi digitali · Automazione AI · Integrazioni',
-  /* The boot sequence. Six lines, ~1.6s, then the system hands over to the
-     headline. Each line is a real stage of what DOLMIR builds, not set dressing. */
-  boot: [
-    { t: 'AVVIO SISTEMA', v: 'DOLMIR CORE' },
-    { t: 'CANALI IN INGRESSO', v: 'EMAIL · PDF · ERP · API' },
-    { t: 'MOTORE DI ESTRAZIONE', v: 'ONLINE' },
-    { t: 'SOGLIE DI CONFIDENZA', v: 'ATTIVE' },
-    { t: 'CONTROLLO UMANO', v: 'RICHIESTO' },
-    { t: 'SISTEMA', v: 'PRONTO' },
-  ],
-  line1: 'Il lavoro si disperde.',
-  line2: 'Noi lo rendiamo',
-  line3: 'un sistema.',
+  eyebrow: 'AI · Software · Infrastruttura digitale',
+  /* The awakening. Micro-signals appear across the whole viewport — the kinds
+     of events a running DOLMIR system actually produces — a few wires draw
+     between them, and the statement lands once the system is visibly alive.
+     Positions are viewport percentages; `wire` marks the signals the hairlines
+     connect, in order. */
+  signals: [
+    { x: 8,  y: 16, t: 'IN.EMAIL',   wire: 1 },
+    { x: 26, y: 9,  t: 'NODE 04' },
+    { x: 47, y: 14, t: 'CTX BUILD',  wire: 2 },
+    { x: 68, y: 8,  t: 'SYNC OK' },
+    { x: 88, y: 15, t: 'ERP LINK',   wire: 3 },
+    { x: 90, y: 38, t: 'QUEUE 3' },
+    { x: 76, y: 30, t: 'EXTRACT',    wire: 4 },
+    { x: 89, y: 62, t: 'CONF 0.97',  wire: 5 },
+    { x: 66, y: 74, t: 'ROUTE' },
+    { x: 82, y: 86, t: 'HUMAN GATE', wire: 6 },
+    { x: 12, y: 78, t: 'LAT 412MS' },
+    { x: 30, y: 88, t: 'REC WRITE' },
+    { x: 9,  y: 47, t: 'IN.PDF',     wire: 0 },
+    { x: 55, y: 46, t: 'CORE',       wire: 7 },
+  ] as readonly { x: number; y: number; t: string; wire?: number }[],
+  line1: 'L’intelligenza',
+  line2: 'che fa funzionare',
+  line3: 'le aziende.',
   lead:
-    'Email, documenti, fogli, gestionali che non si parlano. Costruiamo il sistema che tiene insieme tutto questo: software su misura, automazioni che capiscono i documenti, integrazioni. Con una persona che approva.',
+    'DOLMIR costruisce infrastruttura digitale intelligente: software su misura, AI che capisce email e documenti, integrazioni fra i sistemi che avete già. Un livello di intelligenza sopra la vostra azienda — con una persona che approva.',
   telemetry: [
     ['CANALI', '7 collegati'],
     ['LATENZA', '< 900 ms'],
@@ -70,11 +81,107 @@ export const hero = {
   scroll: 'Entra nel sistema',
 } as const;
 
+/* ==================================== home === the intelligence core ========*/
+
+export const intelligence = {
+  n: '01',
+  label: 'Intelligenza',
+  headline: 'Dentro il sistema che costruiamo.',
+  body:
+    'Questa non è un’illustrazione: è la forma di ogni sistema DOLMIR. Informazioni non strutturate entrano da sinistra, il nucleo le capisce, e a destra escono azioni pronte. In mezzo, sempre, una persona che decide.',
+  /* What flows in and what comes out. Sector-agnostic on purpose: this is the
+     shape of the system, not one vertical's version of it. */
+  inputs: [
+    { k: 'EMAIL',     d: 'richieste, ordini, allegati' },
+    { k: 'DOCUMENTI', d: 'PDF, disegni, contratti' },
+    { k: 'CRM',       d: 'clienti, trattative' },
+    { k: 'ERP',       d: 'anagrafiche, commesse' },
+    { k: 'ORDINI',    d: 'conferme, righe, eccezioni' },
+    { k: 'RICHIESTE', d: 'dal sito, dal telefono' },
+  ],
+  outputs: [
+    { k: 'PREVENTIVO',  d: 'bozza con motivazione' },
+    { k: 'REPORT',      d: 'strutturato, tracciabile' },
+    { k: 'TASK',        d: 'assegnato a chi decide' },
+    { k: 'CRM',         d: 'aggiornato senza ricopiare' },
+    { k: 'NOTIFICA',    d: 'solo quando serve' },
+    { k: 'DECISIONE',   d: 'preparata per una persona' },
+  ],
+  /* The core's internal states, cycled while the section is on screen. The
+     confidence figure is an example value and is labelled as such in the UI. */
+  states: [
+    'INPUT RILEVATO',
+    'DOCUMENTO RICEVUTO',
+    'ENTITÀ IDENTIFICATE',
+    'CONTESTO COSTRUITO',
+    'DATI ESTRATTI',
+    'CONFIDENZA 97,4%',
+    'WORKFLOW GENERATO',
+    'REVISIONE UMANA RICHIESTA',
+    'AZIONE PRONTA',
+  ],
+  disclaimer: 'Flusso dimostrativo con dati di esempio.',
+} as const;
+
+/* ==================================== home === what DOLMIR builds ===========*/
+
+export const capabilities = {
+  n: '03',
+  label: 'Cosa costruiamo',
+  headline: 'Sei famiglie di sistemi. Un’architettura.',
+  body:
+    'Ogni sistema che costruiamo è una combinazione di queste sei famiglie. Il contenuto cambia da azienda ad azienda — manifattura, logistica, distribuzione, servizi — l’architettura no.',
+  items: [
+    {
+      k: 'automazione',
+      label: 'Automazione',
+      claim: 'Il lavoro ripetitivo diventa un flusso con un cancello umano.',
+      builds: ['Automazione preventivi', 'Gestione ordini in ingresso', 'Instradamento richieste', 'Flussi di approvazione'],
+      diagram: 'chain',
+    },
+    {
+      k: 'ai',
+      label: 'AI',
+      claim: 'Documenti, email e testi diventano campi con evidenza e confidenza.',
+      builds: ['Lettura documenti', 'Assistente email', 'Estrazione dati da PDF', 'Classificazione automatica'],
+      diagram: 'extract',
+    },
+    {
+      k: 'dati',
+      label: 'Dati',
+      claim: 'Informazioni che vivono in posti diversi diventano una fonte sola.',
+      builds: ['Integrazione fra gestionali', 'Riconciliazione anagrafiche', 'Archivio cercabile per contenuto', 'Sincronizzazione CRM ↔ ERP'],
+      diagram: 'merge',
+    },
+    {
+      k: 'operazioni',
+      label: 'Operazioni',
+      claim: 'I processi interni prendono stati, code e responsabili espliciti.',
+      builds: ['Cruscotti operativi', 'Code di lavorazione', 'Tracciamento pratiche', 'Indicatori di processo'],
+      diagram: 'board',
+    },
+    {
+      k: 'software',
+      label: 'Software',
+      claim: 'Applicazioni costruite sulla forma reale del vostro processo.',
+      builds: ['Interfacce su misura', 'Portali clienti', 'Strumenti interni', 'Sistemi di conoscenza aziendale'],
+      diagram: 'app',
+    },
+    {
+      k: 'intelligenza',
+      label: 'Intelligenza',
+      claim: 'Un livello che ragiona sopra gli strumenti che avete già.',
+      builds: ['Agenti con supervisione', 'Confronto con lo storico', 'Suggerimenti motivati', 'Analisi delle richieste'],
+      diagram: 'layer',
+    },
+  ],
+} as const;
+
 /* ================================================== home === the story ========*/
 
 export const chapters = {
   automation: {
-    n: '05',
+    n: '06',
     label: 'Automazione',
     headline: 'Il flusso, dall’ingresso alla firma.',
     body:
@@ -82,7 +189,7 @@ export const chapters = {
   },
 
   software: {
-    n: '06',
+    n: '08',
     label: 'Software',
     headline: 'Non solo automazioni. Interfacce.',
     body:
@@ -108,7 +215,7 @@ export const chapters = {
   },
 
   human: {
-    n: '07',
+    n: '09',
     label: 'Controllo',
     headline: 'Il sistema si ferma prima di decidere.',
     body:

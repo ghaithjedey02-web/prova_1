@@ -238,8 +238,8 @@ export function Materia() {
             {/* Narration. */}
             <div className="max-w-[44ch]">
               <p className="chapter">
-                <span className="tnum text-accent">01</span>
-                <span>Materia</span>
+                <span className="tnum text-accent">04</span>
+                <span>Caso reale · manifattura</span>
               </p>
               <h2
                 id="materia-heading"

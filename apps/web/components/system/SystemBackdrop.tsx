@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { detectTier, type Tier } from '@/lib/capability';
 import { usePalette } from '@/lib/palette';
 import { usePageProgress } from '@/lib/scroll';
+import { backdropBoost } from '@/lib/system-bus';
 import { STAGES, stagePosition } from './stages';
 import { SystemStatic } from './SystemStatic';
 
@@ -47,7 +48,9 @@ export function SystemBackdrop() {
     let raf = 0;
     const tick = () => {
       const p = progress.current ?? 0;
-      const o = p < 0.04 ? 1 : Math.max(0.42, 1 - (p - 0.04) * 6);
+      const base = p < 0.04 ? 1 : Math.max(0.42, 1 - (p - 0.04) * 6);
+      // The intelligence section asks for the machine back at full strength.
+      const o = Math.max(base, 0.94 * backdropBoost());
       if (layer.current) layer.current.style.opacity = String(o);
       raf = requestAnimationFrame(tick);
     };

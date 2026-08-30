@@ -494,3 +494,22 @@ img, svg, video, canvas { display: block; max-width: 100%; }
   filter: saturate(0.55) brightness(0.82);
   transition: filter var(--duration-base) var(--ease-mech);
 }
+
+/* The transformation scrub — an instrument fader, not a browser slider. */
+.scrub { cursor: ew-resize; }
+.scrub::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 22px;
+  background: var(--c-ground);
+  border: 1px solid var(--c-accent);
+  box-shadow: inset 0 0 0 2px var(--c-ground), inset 0 0 0 3px var(--c-accent);
+}
+.scrub::-moz-range-thumb {
+  width: 14px;
+  height: 22px;
+  border-radius: 0;
+  background: var(--c-ground);
+  border: 1px solid var(--c-accent);
+}

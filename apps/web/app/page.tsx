@@ -1,6 +1,8 @@
 import { Hero } from '@/components/home/Hero';
-import { Materia } from '@/components/live/Materia';
+import { Intelligence } from '@/components/live/Intelligence';
 import { Twin } from '@/components/live/Twin';
+import { Capabilities } from '@/components/home/Capabilities';
+import { Materia } from '@/components/live/Materia';
 import { FlowDemo } from '@/components/live/FlowDemo';
 import { FrictionScan } from '@/components/live/FrictionScan';
 import { TheLine } from '@/components/line/TheLine';
@@ -21,33 +23,35 @@ const jsonLd = {
 };
 
 /**
- * Nine experiences, not thirty sections.
+ * The narrative, in order:
  *
- * The second is the argument itself: MATERIA takes the machined part the demo
- * is built around and carries it, in one pinned scroll, from matter to a row in
- * a system — the only place on the site where 3D is the content rather than the
- * ground it sits on.
+ *   Hero          — the system wakes up; the claim is the vision, not a vertical.
+ *   Intelligence  — inside the technology: channels in, core, actions out, live.
+ *   Twin          — the transformation, in the visitor's hand: chaos → system.
+ *   Capabilities  — the six families of systems DOLMIR builds, as instruments.
+ *   Materia       — ONE real case, labelled as such: a machined part becomes a
+ *                   record (the only place 3D is the content, not the ground).
+ *   FlowDemo      — the same case running on the real RfqPipeline, refusals included.
+ *   TheLine       — the journey of one request end to end.
+ *   FrictionScan  — the visitor's own case, simulated and said to be.
+ *   Software      — the interfaces; HumanGate — why it stops; Closing.
  *
- * Three more are the product rather than a description of it: the twin is a
- * live graph the visitor inspects, the flow demo instantiates the real
- * `RfqPipeline`, and the friction scan runs an analysis on whatever the visitor
- * says hurts. Each drives the intelligence core in the background through the
- * system bus, so the machine visibly reacts to being used.
- *
- * `SystemBackdrop` in the layout renders the one fixed scene behind all of it;
- * these sections sit on translucent surfaces so the machine reads through
- * without ever competing with the words.
+ * Sections that ARE the product rather than describing it drive the fixed
+ * machine in the background through the system bus, so the core visibly reacts
+ * to being used. Manufacturing is deliberately one chapter, not the identity.
  */
 export default function HomePage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Hero />
-      <Materia />
+      <Intelligence />
       <Twin />
+      <Capabilities />
+      <Materia />
       <FlowDemo />
-      <FrictionScan />
       <TheLine />
+      <FrictionScan />
       <Software />
       <HumanGate />
       <Closing />

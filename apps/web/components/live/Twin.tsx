@@ -51,15 +51,35 @@ const NODES: Node[] = [
 const RX = 0.36;
 const RY = 0.34;
 
+/**
+ * The "before" picture: each node's scattered position, as fractions of the
+ * panel. Deterministic — the chaos is choreographed so it never parks a node
+ * under the inspector or off the edge.
+ */
+const SCATTER: readonly [number, number][] = [
+  [0.22, 0.31], [0.67, 0.14], [0.81, 0.44], [0.34, 0.62], [0.12, 0.74],
+  [0.55, 0.83], [0.75, 0.71], [0.42, 0.18], [0.88, 0.24], [0.18, 0.5],
+  [0.61, 0.51], [0.31, 0.86],
+];
+
+function easeInOut(t: number) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
 export function Twin() {
   const host = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const slider = useRef<HTMLInputElement>(null);
   const palette = usePalette();
   const [hover, setHover] = useState<Node | null>(null);
   const [touched, setTouched] = useState(false);
   const hoverRef = useRef<string | null>(null);
+  /* The transformation scalar the visitor can drag. null = the section plays
+     itself; a number = the visitor owns it. Mirrored into a ref for the draw
+     loop and into state for the slider position. */
+  const scrubRef = useRef<number | null>(null);
+  const [scrub, setScrub] = useState<number | null>(null);
 
   useEffect(() => { hoverRef.current = hover?.k ?? null; }, [hover]);
+  useEffect(() => { scrubRef.current = scrub; }, [scrub]);
 
   /**
    * A guided tour, until someone takes the wheel.
@@ -95,7 +115,7 @@ export function Twin() {
     let h = 0;
     let connect = reduce ? 1 : 0;
     const t0 = performance.now();
-    const pts = NODES.map((n) => ({ ...n, x: 0, y: 0, seed: Math.random() * 9 }));
+    const pts = NODES.map((n) => ({ ...n, x: 0, y: 0, sx: 0, sy: 0, seed: Math.random() * 9 }));
 
     function layout() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -108,27 +128,37 @@ export function Twin() {
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
       // Exactly the fractions the labels use below, so a label always sits on
       // its own node however the panel is resized.
-      pts.forEach((p) => {
+      pts.forEach((p, i) => {
         const rad = (p.a * Math.PI) / 180;
         p.x = w / 2 + Math.cos(rad) * w * RX;
         p.y = h / 2 + Math.sin(rad) * h * RY;
+        p.sx = SCATTER[i]![0] * w;
+        p.sy = SCATTER[i]![1] * h;
       });
     }
 
     function draw(now: number) {
       const time = (now - t0) / 1000;
-      if (!reduce) connect = Math.min(1, connect + 0.014);
+      // The visitor's scrub owns the scalar the moment they touch it;
+      // otherwise the section plays the transformation itself, once.
+      const scrubbed = scrubRef.current;
+      if (scrubbed !== null) connect = scrubbed;
+      else if (!reduce) connect = Math.min(1, connect + 0.008);
       ctx!.clearRect(0, 0, w, h);
       const cx = w / 2;
       const cy = h / 2;
       const active = hoverRef.current;
+      const k = easeInOut(connect);
+      // Labels live in the DOM at the ring positions; they only exist once the
+      // system has pulled its nodes there. One CSS variable, no re-render.
+      box!.style.setProperty('--connect', String(k));
 
       pts.forEach((p, i) => {
-        // Before the system comes online the nodes drift: unconnected systems
-        // do not sit still in a company either.
-        const drift = reduce ? 0 : (1 - connect) * Math.sin(time * 0.6 + p.seed) * 14;
-        const px = p.x + drift;
-        const py = p.y + drift * 0.6;
+        // Before DOLMIR the systems are wherever they happen to be, drifting;
+        // the transformation is them travelling to their place in the ring.
+        const drift = reduce ? 0 : (1 - k) * Math.sin(time * 0.6 + p.seed) * 7;
+        const px = p.sx + (p.x - p.sx) * k + drift;
+        const py = p.sy + (p.y - p.sy) * k + drift * 0.6;
         const isActive = active === p.k;
         const dimmed = active !== null && !isActive;
 
@@ -197,12 +227,18 @@ export function Twin() {
     function start() { if (!running) { running = true; raf = requestAnimationFrame(draw); } }
     function stop() { running = false; cancelAnimationFrame(raf); }
 
+    // Let the slider follow the auto-played transformation at 5Hz without
+    // re-rendering every frame.
+    const sync = setInterval(() => {
+      if (scrubRef.current === null && slider.current) slider.current.value = String(Math.round(connect * 100));
+    }, 200);
+
     layout();
     const io = new IntersectionObserver(([e]) => (e?.isIntersecting ? start() : stop()), { rootMargin: '120px' });
     io.observe(box);
     const ro = new ResizeObserver(layout);
     ro.observe(box);
-    return () => { stop(); io.disconnect(); ro.disconnect(); };
+    return () => { stop(); clearInterval(sync); io.disconnect(); ro.disconnect(); };
   }, [palette]);
 
   return (
@@ -210,9 +246,9 @@ export function Twin() {
       <Container>
         <Chapter
           n="02"
-          label="Gemello digitale"
-          headline="Una vista del sistema, prima e dopo."
-          lead="Dodici sistemi che esistono in ogni azienda. All’inizio sono scollegati e alla deriva — è la fotografia onesta della maggior parte delle imprese. Passate il cursore su uno per seguire il percorso che quel dato farebbe."
+          label="Trasformazione"
+          headline="Da strumenti sparsi a un sistema."
+          lead="Dodici sistemi che esistono in ogni azienda — manifatturiera, logistica, commerciale, di servizi. Prima di DOLMIR sono scollegati e alla deriva. Trascinate il cursore per fare la trasformazione con le vostre mani, o passate su un nodo per seguire il percorso che quel dato farebbe."
         />
 
         <Reveal delay={140}>
@@ -222,8 +258,12 @@ export function Twin() {
 
               {/* Nodes are real buttons: keyboard reachable, screen-reader
                   readable, and the canvas is only the picture of them. */}
-              {NODES.map((n) => {
+              {NODES.map((n, i) => {
                 const rad = (n.a * Math.PI) / 180;
+                const ox = 50 + Math.cos(rad) * RX * 100;
+                const oy = 50 + Math.sin(rad) * RY * 100;
+                const sx = SCATTER[i]![0] * 100;
+                const sy = SCATTER[i]![1] * 100;
                 return (
                   <button
                     key={n.k}
@@ -236,8 +276,11 @@ export function Twin() {
                       hover?.k === n.k ? 'text-accent' : hover ? 'text-faint' : 'text-muted hover:text-ink'
                     }`}
                     style={{
-                      left: `${50 + Math.cos(rad) * RX * 100}%`,
-                      top: `${50 + Math.sin(rad) * RY * 100}%`,
+                      // The same scatter→ring interpolation the canvas runs,
+                      // done in CSS off the one variable the draw loop writes:
+                      // the label IS the node's name, so it travels with it.
+                      left: `calc(${sx}% + ${ox - sx} * 1% * var(--connect, 1))`,
+                      top: `calc(${sy}% + ${oy - sy} * 1% * var(--connect, 1))`,
                       // Labels sit outside their node, on the side facing away
                       // from the core, so they never cover the edge they belong to.
                       transform: `translate(${Math.cos(rad) < -0.3 ? '-100%' : Math.cos(rad) > 0.3 ? '0%' : '-50%'}, ${
@@ -253,6 +296,23 @@ export function Twin() {
               <p className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-8 telemetry text-ink">
                 DOLMIR CORE
               </p>
+
+              {/* The transformation in the visitor's hand. Auto-plays once;
+                  the moment the slider is touched, it belongs to them. */}
+              <div className="absolute bottom-3 left-4 flex w-[min(24rem,70%)] items-center gap-3 sm:left-6">
+                <span className="telemetry text-faint">PRIMA</span>
+                <input
+                  ref={slider}
+                  type="range"
+                  min={0}
+                  max={100}
+                  defaultValue={0}
+                  aria-label="Trasformazione: da strumenti scollegati a un sistema"
+                  onInput={(e) => setScrub(Number(e.currentTarget.value) / 100)}
+                  className="scrub h-1 min-w-0 flex-1 appearance-none bg-rule-strong"
+                />
+                <span className="telemetry text-faint">DOPO</span>
+              </div>
             </div>
 
             {/* On a phone the ring becomes a list: real touch targets, and
