@@ -7,7 +7,7 @@ import { contatto as c, site } from '@/content/site';
 export const metadata: Metadata = {
   title: c.title,
   description:
-    'Una conversazione diagnostica di venticinque minuti sul vostro processo di preventivazione. Non commerciale, e se non ha senso lo diciamo.',
+    'Una conversazione diagnostica di venticinque minuti sul processo che vi costa di più. Non commerciale, e se non ha senso lo diciamo.',
   alternates: { canonical: '/contatto' },
 };
 
@@ -28,7 +28,7 @@ export default function ContattoPage() {
 
             <Reveal delay={210}>
               <div className="mt-12">
-                <p className="label">Le sei domande, in sintesi</p>
+                <p className="label">Di cosa parliamo, in sintesi</p>
                 <ul className="mt-6 flex flex-col">
                   {c.what.map((w, i) => (
                     <li key={w} className="flex gap-4 border-t border-rule py-4 first:border-t-0 first:pt-0">

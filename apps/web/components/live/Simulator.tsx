@@ -61,6 +61,23 @@ export function Simulator() {
 
   useEffect(() => () => { clear(); setActivity('idle'); }, [clear]);
 
+  /* Arriving via the nav's "Prova DOLMIR" anchor: sections above this one grow
+     after hydration (the pinned experiences replace their short static
+     variants), so the browser's anchor scroll lands where the section used to
+     be. Once the layout has settled, if the target is clearly not on screen,
+     correct the landing — and never fight a visitor who has already scrolled. */
+  useEffect(() => {
+    if (window.location.hash !== '#prova') return;
+    const id = setTimeout(() => {
+      const el = document.getElementById('prova');
+      if (!el) return;
+      if (Math.abs(el.getBoundingClientRect().top) > window.innerHeight * 0.6) {
+        el.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    }, 650);
+    return () => clearTimeout(id);
+  }, []);
+
   /* Newest telemetry stays in view without hijacking page scroll. */
   useEffect(() => {
     const el = logBox.current;
@@ -161,7 +178,8 @@ export function Simulator() {
 
   return (
     <section
-      className="relative py-[var(--space-section)]"
+      id="prova"
+      className="relative scroll-mt-[var(--nav-h)] py-[var(--space-section)]"
       aria-labelledby="simulator-heading"
       data-inspect="Simulator · sei settori, simulazione locale"
     >

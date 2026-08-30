@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { Decode } from '@/components/ui/Decode';
@@ -153,12 +153,39 @@ export function Hero() {
               </div>
             ))}
           </dl>
-          <p className="telemetry mt-4 flex items-center gap-3 text-faint">
-            <span aria-hidden className="block h-6 w-px bg-gradient-to-b from-transparent to-rule-bright" />
-            {hero.scroll}
+          <p className="telemetry mt-4 flex items-center justify-between gap-3 text-faint">
+            <span className="flex items-center gap-3">
+              <span aria-hidden className="block h-6 w-px bg-gradient-to-b from-transparent to-rule-bright" />
+              {hero.scroll}
+            </span>
+            <Uptime />
           </p>
         </div>
       </Container>
     </section>
+  );
+}
+
+
+/**
+ * A second hand for the system. One line of live telemetry — session uptime,
+ * ticking once a second — so the machine is demonstrably running rather than
+ * painted. Frozen under reduced motion, and decorative to screen readers.
+ */
+function Uptime() {
+  const [t, setT] = useState(0);
+  const frozen = useRef(false);
+  useEffect(() => {
+    frozen.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (frozen.current) return;
+    const id = setInterval(() => setT((v) => v + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const mm = String(Math.floor(t / 60)).padStart(2, '0');
+  const ss = String(t % 60).padStart(2, '0');
+  return (
+    <span aria-hidden className="tnum hidden sm:inline">
+      SESSIONE T+{mm}:{ss}
+    </span>
   );
 }

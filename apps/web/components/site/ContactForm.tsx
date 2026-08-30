@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { contatto } from '@/content/site';
 
 type State = 'idle' | 'sending' | 'sent' | 'error';
+type Area = (typeof contatto.areas)[number];
 
 /**
  * Contact form.
@@ -18,6 +19,11 @@ type State = 'idle' | 'sending' | 'sent' | 'error';
 export function ContactForm() {
   const [state, setState] = useState<State>('idle');
   const [message, setMessage] = useState('');
+  /* The intake. The form opens by asking what should work better — the way a
+     system asks for its input before its parameters — and the rest of the
+     fields appear once the visitor has answered. Real radio inputs underneath,
+     so keyboard and screen readers get a standard control. */
+  const [area, setArea] = useState<Area | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,7 +61,53 @@ export function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} className="panel p-7 md:p-10" noValidate={false}>
-      <div className="flex flex-col gap-5">
+      <fieldset>
+        <legend className="label">Cosa volete far funzionare meglio?</legend>
+        <div role="presentation" className="mt-5 grid gap-2 sm:grid-cols-2">
+          {contatto.areas.map((a) => {
+            const on = area?.k === a.k;
+            return (
+              <label
+                key={a.k}
+                className={`cursor-pointer border px-4 py-3 transition-colors duration-[var(--duration-fast)] ${
+                  on
+                    ? 'border-accent bg-accent-soft'
+                    : 'border-rule bg-void hover:border-rule-strong'
+                } has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent`}
+              >
+                <input
+                  type="radio"
+                  name="area"
+                  value={a.k}
+                  required
+                  checked={on}
+                  onChange={() => setArea(a)}
+                  className="sr-only"
+                />
+                <span className={`telemetry block ${on ? 'text-accent' : 'text-ink-2'}`}>
+                  {on ? '■ ' : ''}{a.label}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+        {area && (
+          <p key={area.k} className="settle mt-4 border-l-2 border-accent pl-4 text-[var(--text-micro)] leading-relaxed text-muted">
+            <span className="telemetry mr-2 text-accent">CANALE APERTO</span>
+            {area.d}
+          </p>
+        )}
+      </fieldset>
+
+      <div
+        className={`flex flex-col gap-5 transition-all duration-[var(--duration-slow)] ease-[var(--ease-mech)] ${
+          area
+            ? 'visible mt-8 max-h-[80rem] opacity-100'
+            : 'invisible pointer-events-none mt-0 max-h-0 overflow-hidden opacity-0'
+        }`}
+        aria-hidden={!area}
+        inert={!area}
+      >
         <Field name="azienda" label="Azienda" required autoComplete="organization" />
         <Field name="nome" label="Nome e cognome" required autoComplete="name" />
         <Field name="email" label="Email" type="email" required autoComplete="email" />

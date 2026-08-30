@@ -29,8 +29,17 @@ export const site = {
 } as const;
 
 export const nav = [
-  { href: '/soluzioni', label: 'Soluzioni' },
-  { href: '/dimostrazione', label: 'Dimostrazione' },
+  { href: '/soluzioni', label: 'Sistemi' },
+  { href: '/#prova', label: 'Prova DOLMIR' },
+  { href: '/dimostrazione', label: 'Caso reale' },
+  { href: '/metodo', label: 'Metodo' },
+  { href: '/studio', label: 'Studio' },
+] as const;
+
+/** The footer lists every page, including the ones the top bar leaves out. */
+export const footerNav = [
+  { href: '/soluzioni', label: 'Sistemi' },
+  { href: '/dimostrazione', label: 'Caso reale' },
   { href: '/affidabilita', label: 'Affidabilità' },
   { href: '/metodo', label: 'Metodo' },
   { href: '/studio', label: 'Studio' },
@@ -497,7 +506,7 @@ export const closing = {
 /* ================================================= page === soluzioni =========*/
 
 export const soluzioni = {
-  title: 'Soluzioni',
+  title: 'Sistemi',
   headline: 'Sette processi, non sette servizi.',
   lead:
     'Non vendiamo “siti”, “AI” e “automazione” come voci separate di un listino. Ogni voce qui sotto è un processo aziendale che esiste già nella vostra azienda e che oggi costa ore. Si parte da uno.',
@@ -696,17 +705,27 @@ export const studio = {
 
 export const contatto = {
   title: 'Contatto',
-  headline: 'Parliamo del vostro processo.',
+  headline: 'Cosa volete far funzionare meglio?',
   lead:
-    'La prima conversazione è diagnostica, non commerciale. Venticinque minuti, sei domande. Alla fine sapremo entrambi se ha senso continuare — e se non ha senso, lo diremo.',
+    'La prima conversazione è diagnostica, non commerciale. Venticinque minuti sul processo che vi costa di più. Alla fine sapremo entrambi se ha senso continuare — e se non ha senso, lo diremo.',
   what: [
-    'Quante richieste ricevete e attraverso quali canali',
-    'Chi prepara le offerte e quanto tempo serve',
-    'Quanto passa fra la richiesta e la risposta',
-    'Dove si ferma il processo, oggi',
+    'Cosa entra ogni giorno, e da quali canali',
+    'Chi lo lavora oggi, e quanto tempo serve',
+    'Quali sistemi dovrebbero parlarsi e non si parlano',
+    'Dove si ferma il processo, e cosa costa quando si ferma',
+  ],
+  /* The intake: the form opens by asking what should work better, the way a
+     system asks for its input before its parameters. */
+  areas: [
+    { k: 'processo',    label: 'Un processo',           d: 'Richieste, ordini, preventivi, pratiche: qualcosa che entra e va lavorato.' },
+    { k: 'documenti',   label: 'Email e documenti',      d: 'Caselle condivise, PDF, allegati che qualcuno oggi legge e ricopia.' },
+    { k: 'dati',        label: 'Dati e integrazioni',    d: 'Sistemi che non si parlano: gestionale, CRM, fogli, archivi.' },
+    { k: 'automazione', label: 'Un’automazione',         d: 'Un lavoro ripetitivo che merita un flusso con un controllo umano.' },
+    { k: 'software',    label: 'Un software su misura',  d: 'Un’interfaccia costruita sulla forma reale del vostro lavoro.' },
+    { k: 'esplorare',   label: 'Non lo so ancora',       d: 'Va benissimo: la prima conversazione serve esattamente a questo.' },
   ],
   formNote:
-    'Se preferite, descrivete una richiesta reale ricevuta di recente. È il modo più rapido per capire se possiamo esservi utili.',
+    'Se preferite, descrivete un caso reale successo di recente — una richiesta, un documento, un passaggio che si è inceppato. È il modo più rapido per capire se possiamo esservi utili.',
   privacy:
     'I dati inviati vengono usati esclusivamente per rispondervi. Nessuna newsletter, nessuna condivisione con terzi.',
 } as const;

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
-import { nav, site } from '@/content/site';
+import { footerNav, site } from '@/content/site';
 
 const legal = [
   { href: '/legale/privacy', label: 'Privacy' },
@@ -28,7 +28,7 @@ export function Footer() {
           <nav aria-label="Pagine">
             <p className="label mb-5">Pagine</p>
             <ul className="flex flex-col gap-3">
-              {nav.map((item) => (
+              {footerNav.map((item) => (
                 <li key={item.href}>
                   <Link className="text-[var(--text-small)] text-ink-2 transition-colors hover:text-accent" href={item.href}>
                     {item.label}
