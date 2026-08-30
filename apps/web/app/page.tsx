@@ -1,11 +1,14 @@
 import { Hero } from '@/components/home/Hero';
-import { Problem } from '@/components/home/Problem';
-import { Approach } from '@/components/home/Approach';
+import { Noise } from '@/components/home/Noise';
+import { Cost } from '@/components/home/Cost';
+import { Layer } from '@/components/home/Layer';
 import { TheLine } from '@/components/line/TheLine';
-import { DemoTeaser } from '@/components/home/DemoTeaser';
-import { Control } from '@/components/home/Control';
-import { Outcome } from '@/components/home/Outcome';
-import { Trust } from '@/components/home/Trust';
+import { Decision } from '@/components/home/Decision';
+import { Human } from '@/components/home/Human';
+import { Result } from '@/components/home/Result';
+import { Presence } from '@/components/home/Presence';
+import { Office } from '@/components/home/Office';
+import { Intelligence } from '@/components/home/Intelligence';
 import { Closing } from '@/components/home/Closing';
 import { site } from '@/content/site';
 
@@ -16,25 +19,25 @@ const jsonLd = {
   url: site.url,
   description: site.description,
   areaServed: { '@type': 'AdministrativeArea', name: 'Lombardia, Italia' },
-  knowsLanguage: ['it', 'en'],
-  serviceType: 'Ingegneria di processi con intelligenza artificiale',
+  knowsLanguage: ['it'],
+  serviceType: 'Infrastruttura digitale e AI per aziende manifatturiere',
 };
 
 export default function HomePage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Hero />
-      <Problem />
-      <Approach />
+      <Noise />
+      <Cost />
+      <Layer />
       <TheLine />
-      <DemoTeaser />
-      <Control />
-      <Outcome />
-      <Trust />
+      <Decision />
+      <Human />
+      <Result />
+      <Presence />
+      <Office />
+      <Intelligence />
       <Closing />
     </>
   );

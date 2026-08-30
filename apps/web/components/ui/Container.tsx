@@ -4,17 +4,13 @@ import type { ReactNode } from 'react';
 export function Container({
   children,
   className = '',
-  wide = false,
+  size = 'wide',
 }: {
   children: ReactNode;
   className?: string;
-  wide?: boolean;
+  size?: 'wide' | 'read' | 'narrow';
 }) {
-  return (
-    <div
-      className={`mx-auto w-full px-[var(--gutter)] ${wide ? 'max-w-[104rem]' : 'max-w-[78rem]'} ${className}`}
-    >
-      {children}
-    </div>
-  );
+  const max =
+    size === 'wide' ? 'max-w-[var(--max)]' : size === 'read' ? 'max-w-[var(--max-read)]' : 'max-w-[58rem]';
+  return <div className={`mx-auto w-full px-[var(--gutter)] ${max} ${className}`}>{children}</div>;
 }

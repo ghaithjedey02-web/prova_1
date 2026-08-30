@@ -10,42 +10,46 @@ const legal = [
 
 export function Footer() {
   return (
-    <footer className="mt-[var(--space-section)] border-t border-rule bg-surface">
-      <Container wide>
-        <div className="grid gap-10 py-14 md:grid-cols-[1.6fr_1fr_1fr]">
-          <div className="max-w-[36ch]">
-            <p className="font-mono text-[0.8125rem] font-medium tracking-[0.22em] text-ink">{site.name}</p>
-            <p className="mt-4 text-[var(--text-small)] leading-relaxed text-muted">
-              Ingegneria di processi con AI per aziende manifatturiere in Lombardia.
-              Misuriamo, riprogettiamo, consegniamo — con il controllo umano al centro.
-            </p>
+    <footer className="relative mt-[var(--space-section)] border-t border-rule bg-void">
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-line to-transparent" />
+      <Container>
+        <div className="grid gap-12 py-16 md:grid-cols-[1.7fr_1fr_1fr] md:py-20">
+          <div className="max-w-[38ch]">
+            <p className="font-display text-[0.95rem] font-semibold tracking-[0.3em] text-ink">{site.name}</p>
+            <p className="mt-5 text-[var(--text-small)] leading-relaxed text-muted">{site.description}</p>
+            <a
+              href={`mailto:${site.email}`}
+              className="mt-6 inline-block font-mono text-[var(--text-micro)] text-ink-2 underline decoration-rule-strong underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+            >
+              {site.email}
+            </a>
           </div>
 
           <nav aria-label="Pagine">
-            <p className="label mb-4">Pagine</p>
-            <ul className="flex flex-col gap-2.5">
-              {nav.map((i) => (
-                <li key={i.href}>
-                  <Link href={i.href} className="text-[var(--text-small)] text-ink-2 transition-colors hover:text-accent">
-                    {i.label}
+            <p className="label mb-5">Pagine</p>
+            <ul className="flex flex-col gap-3">
+              {nav.map((item) => (
+                <li key={item.href}>
+                  <Link className="text-[var(--text-small)] text-ink-2 transition-colors hover:text-accent" href={item.href}>
+                    {item.label}
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link className="text-[var(--text-small)] text-ink-2 transition-colors hover:text-accent" href="/contatto">
+                  Contatto
+                </Link>
+              </li>
             </ul>
           </nav>
 
           <nav aria-label="Informazioni">
-            <p className="label mb-4">Informazioni</p>
-            <ul className="flex flex-col gap-2.5">
-              <li>
-                <Link href="/affidabilita" className="text-[var(--text-small)] text-ink-2 transition-colors hover:text-accent">
-                  Dati e sicurezza
-                </Link>
-              </li>
-              {legal.map((i) => (
-                <li key={i.href}>
-                  <Link href={i.href} className="text-[var(--text-small)] text-ink-2 transition-colors hover:text-accent">
-                    {i.label}
+            <p className="label mb-5">Informazioni</p>
+            <ul className="flex flex-col gap-3">
+              {legal.map((item) => (
+                <li key={item.href}>
+                  <Link className="text-[var(--text-small)] text-ink-2 transition-colors hover:text-accent" href={item.href}>
+                    {item.label}
                   </Link>
                 </li>
               ))}
@@ -53,11 +57,9 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-rule py-7 text-[var(--text-micro)] text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} {site.name}</p>
-          {/* Italian law requires P.IVA / REA here. Placeholder until the entity is registered —
-              this must be filled before the site is used commercially. */}
-          <p className="font-mono">P.IVA — da inserire · {site.domain}</p>
+        <div className="flex flex-col gap-3 border-t border-rule py-8 font-mono text-[var(--text-label)] tracking-[0.12em] text-muted sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} {site.name} · {site.region}</p>
+          <p>P.IVA — da inserire · {site.domain}</p>
         </div>
       </Container>
     </footer>

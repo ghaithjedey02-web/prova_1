@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Container } from '@/components/ui/Container';
+import { LegalPage } from '@/components/site/LegalPage';
 
 export const metadata: Metadata = {
   title: 'Informativa privacy',
@@ -9,22 +9,24 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <section className="py-[clamp(3.5rem,8vw,6rem)]">
-      <Container>
-        <p className="label">Documento legale</p>
-        <h1 className="display mt-6 text-[length:var(--text-display-m)]">Informativa privacy</h1>
-        <div className="mt-8 max-w-[64ch] border-l-2 border-amber pl-5">
-          <p className="text-[var(--text-body)] leading-relaxed text-ink-2">
-            Informativa ai sensi degli articoli 13 e 14 del Regolamento (UE) 2016/679, relativa ai dati raccolti tramite il modulo di contatto e la navigazione del sito.
-          </p>
-          <p className="mt-4 text-[var(--text-small)] leading-relaxed text-muted">
-            Questo testo deve essere redatto o rivisto da un professionista prima
-            della pubblicazione commerciale del sito. Non pubblichiamo un documento
-            legale generato automaticamente: sarebbe privo di valore e potenzialmente
-            fuorviante.
-          </p>
-        </div>
-      </Container>
-    </section>
+    <LegalPage
+      title="Informativa privacy"
+      intro="Informativa ai sensi degli articoli 13 e 14 del Regolamento (UE) 2016/679, relativa ai dati raccolti tramite il modulo di contatto e la navigazione del sito."
+    >
+      <dl className="mt-12 max-w-[64ch] stack-rules border-y border-rule">
+        {[
+          ['Dati trattati', 'Azienda, nome, email, telefono facoltativo e il testo che scrivete nel modulo di contatto.'],
+          ['Finalità', 'Esclusivamente rispondere alla richiesta. Nessuna newsletter, nessuna profilazione, nessuna cessione a terzi.'],
+          ['Base giuridica', 'Consenso prestato al momento dell’invio del modulo.'],
+          ['Conservazione', 'Per il tempo necessario a gestire la conversazione e gli eventuali obblighi contrattuali che ne derivano.'],
+          ['Diritti', 'Accesso, rettifica, cancellazione, limitazione, portabilità e opposizione, scrivendo all’indirizzo indicato in fondo.'],
+        ].map(([k, v]) => (
+          <div key={k} className="grid gap-2 py-6 sm:grid-cols-[12rem_1fr] sm:gap-8">
+            <dt className="text-[var(--text-small)] font-medium text-ink">{k}</dt>
+            <dd className="text-[var(--text-small)] leading-relaxed text-muted">{v}</dd>
+          </div>
+        ))}
+      </dl>
+    </LegalPage>
   );
 }

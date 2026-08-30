@@ -1,144 +1,185 @@
 @import "tailwindcss";
 
 /* ============================================================================
-   DOLMIR DESIGN SYSTEM
-   Direction: Technical Editorial. An engineering document, not a marketing site.
+   DOLMIR — DESIGN SYSTEM
+   Direction: OFFICINA DIGITALE.
 
-   Every value a component uses comes from here. No component may hard-code a
-   colour, spacing step, radius, duration or type size — that single rule is what
-   keeps design iteration cheap instead of a find-and-replace exercise.
+   The reference is not a software company. It is a well-lit machine shop at
+   night: near-black ground, machined surfaces catching one cold light, hairline
+   rules like a drawing sheet, and a single instrument colour used only where a
+   measurement is being reported.
+
+   Rules that hold everywhere:
+   - No component hard-codes a colour, size, radius, duration or easing.
+   - Amber means uncertainty. It is never decoration. When it appears on screen,
+     the system is telling you it is not sure — that is the whole brand.
+   - Corners are square. Industrial work is square; rounded reads as SaaS.
    ========================================================================= */
 
-/* --- Colour: cool graphite and steel on a drafting-paper ground, with one
-       steel-blue accent. Oxide amber is reserved strictly for attention and
-       uncertainty — never decoration — so when it appears the eye is right
-       to go there. --- */
+/* ---------------------------------------------------------------- palette ---
+   Dark is the identity. Light exists because some people read in daylight and
+   some print, and it is built as a genuine second skin, not an inversion.
+   -------------------------------------------------------------------------*/
+
 :root {
-  --c-ground:        #F1F2F0;
-  --c-surface:       #FAFBFA;
+  color-scheme: dark;
+
+  /* ground → raised: the four depths anything can sit at */
+  --c-void:          #050607;
+  --c-ground:        #08090B;
+  --c-surface:       #0D0F12;
+  --c-raised:        #13161A;
+  --c-elevated:      #1A1E23;
+
+  /* ink */
+  --c-ink:           #F2F4F5;
+  --c-ink-2:         #AEB6BA;
+  --c-muted:         #7B858A;
+  --c-faint:         #727B80;
+
+  /* structure */
+  --c-rule:          #1E2328;
+  --c-rule-strong:   #2E353B;
+  --c-rule-bright:   #454E55;
+
+  /* instrument accent — the colour of a measurement being reported */
+  --c-accent:        #45C7DE;
+  --c-accent-hover:  #7BDCEC;
+  --c-accent-ink:    #04171C;
+  --c-accent-soft:   #0C2C34;
+  --c-accent-line:   #1D4E5B;
+
+  /* uncertainty */
+  --c-amber:         #E3A551;
+  --c-amber-soft:    #2A1F10;
+  --c-amber-line:    #543B1B;
+
+  /* verdicts */
+  --c-good:          #55C08D;
+  --c-good-soft:     #0E241B;
+  --c-bad:           #E0766A;
+  --c-bad-soft:      #2A1512;
+
+  /* machined metal — used by gradients, not by text */
+  --c-steel-hi:      #6F7A80;
+  --c-steel-mid:     #3A4247;
+  --c-steel-lo:      #171B1E;
+
+  --shadow-panel: 0 1px 0 0 rgb(255 255 255 / 0.03) inset, 0 24px 60px -30px rgb(0 0 0 / 0.9);
+  --glow-accent:  0 0 0 1px var(--c-accent-line), 0 0 32px -8px rgb(69 199 222 / 0.35);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --c-void:          #DDE0DF;
+  --c-ground:        #EFF1F0;
+  --c-surface:       #F7F8F8;
   --c-raised:        #FFFFFF;
-  --c-ink:           #0E1113;
-  --c-ink-2:         #3A4245;
-  --c-muted:         #5E6866;
-  --c-rule:          #D6DBD9;
-  --c-rule-strong:   #A9B2AF;
-  --c-accent:        #14495C;
-  --c-accent-hover:  #0E3746;
+  --c-elevated:      #FFFFFF;
+
+  --c-ink:           #0B0E10;
+  --c-ink-2:         #394246;
+  --c-muted:         #575F63;
+  --c-faint:         #6F777B;
+
+  --c-rule:          #D9DDDC;
+  --c-rule-strong:   #B0B7B6;
+  --c-rule-bright:   #8B9392;
+
+  --c-accent:        #0F5566;
+  --c-accent-hover:  #0A3D4A;
   --c-accent-ink:    #FFFFFF;
-  --c-accent-soft:   #DCE8ED;
-  --c-amber:         #94551A;
-  --c-amber-soft:    #F0E4D6;
-  --c-good:          #266044;
-  --c-good-soft:     #DCE9E2;
-  --c-bad:           #87332A;
-  --c-bad-soft:      #F1DFDC;
-}
+  --c-accent-soft:   #DCEBEF;
+  --c-accent-line:   #A8CBD4;
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --c-ground:       #0A0D0E;
-    --c-surface:      #111618;
-    --c-raised:       #171D20;
-    --c-ink:          #E9EDEB;
-    --c-ink-2:        #B4BEBB;
-    --c-muted:        #7E8A87;
-    --c-rule:         #212A2D;
-    --c-rule-strong:  #36423F;
-    --c-accent:       #6EB6D0;
-    --c-accent-hover: #8CC8DD;
-    --c-accent-ink:   #06181F;
-    --c-accent-soft:  #11303C;
-    --c-amber:        #D2924F;
-    --c-amber-soft:   #2E2113;
-    --c-good:         #5CAB85;
-    --c-good-soft:    #12281F;
-    --c-bad:          #CB7466;
-    --c-bad-soft:     #2C1815;
-  }
-}
+  --c-amber:         #8A4F16;
+  --c-amber-soft:    #F3E7D8;
+  --c-amber-line:    #D8BE9B;
 
-:root[data-theme="dark"] {
-  --c-ground:       #0A0D0E;
-  --c-surface:      #111618;
-  --c-raised:       #171D20;
-  --c-ink:          #E9EDEB;
-  --c-ink-2:        #B4BEBB;
-  --c-muted:        #7E8A87;
-  --c-rule:         #212A2D;
-  --c-rule-strong:  #36423F;
-  --c-accent:       #6EB6D0;
-  --c-accent-hover: #8CC8DD;
-  --c-accent-ink:   #06181F;
-  --c-accent-soft:  #11303C;
-  --c-amber:        #D2924F;
-  --c-amber-soft:   #2E2113;
-  --c-good:         #5CAB85;
-  --c-good-soft:    #12281F;
-  --c-bad:          #CB7466;
-  --c-bad-soft:     #2C1815;
+  --c-good:          #1F5B41;
+  --c-good-soft:     #DCEAE3;
+  --c-bad:           #8B3227;
+  --c-bad-soft:      #F2DFDC;
+
+  --c-steel-hi:      #C9CFD2;
+  --c-steel-mid:     #97A0A5;
+  --c-steel-lo:      #5E686D;
+
+  --shadow-panel: 0 1px 0 0 rgb(255 255 255 / 0.8) inset, 0 18px 40px -28px rgb(11 14 16 / 0.28);
+  --glow-accent:  0 0 0 1px var(--c-accent-line);
 }
 
 @theme inline {
+  --color-void:         var(--c-void);
   --color-ground:       var(--c-ground);
   --color-surface:      var(--c-surface);
   --color-raised:       var(--c-raised);
+  --color-elevated:     var(--c-elevated);
   --color-ink:          var(--c-ink);
   --color-ink-2:        var(--c-ink-2);
   --color-muted:        var(--c-muted);
+  --color-faint:        var(--c-faint);
   --color-rule:         var(--c-rule);
   --color-rule-strong:  var(--c-rule-strong);
+  --color-rule-bright:  var(--c-rule-bright);
   --color-accent:       var(--c-accent);
   --color-accent-hover: var(--c-accent-hover);
   --color-accent-ink:   var(--c-accent-ink);
   --color-accent-soft:  var(--c-accent-soft);
+  --color-accent-line:  var(--c-accent-line);
   --color-amber:        var(--c-amber);
   --color-amber-soft:   var(--c-amber-soft);
+  --color-amber-line:   var(--c-amber-line);
   --color-good:         var(--c-good);
   --color-good-soft:    var(--c-good-soft);
   --color-bad:          var(--c-bad);
   --color-bad-soft:     var(--c-bad-soft);
 
-  /* --- Type: display serif for voice, technical sans for reading,
-         mono for anything the machine produced. --- */
-  --font-display: var(--font-instrument-serif), "Iowan Old Style", Georgia, serif;
+  /* ------------------------------------------------------------------ type ---
+     Archivo carries the voice: a grotesque with real width, the lettering of
+     machine plates and technical catalogues. Instrument Sans reads long-form.
+     Plex Mono is reserved for anything the machine produced or measured.
+     ---------------------------------------------------------------------- */
+  --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
   --font-sans:    var(--font-instrument-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono:    var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --text-display-xl: clamp(3rem, 7.4vw, 6.75rem);
-  --text-display-l:  clamp(2.35rem, 5vw, 4.25rem);
-  --text-display-m:  clamp(1.9rem, 3.4vw, 2.85rem);
-  --text-display-s:  clamp(1.5rem, 2.4vw, 2rem);
-  --text-lead:       clamp(1.0625rem, 1.5vw, 1.3125rem);
+  --text-hero:       clamp(2.6rem, 5.6vw, 5.25rem);
+  --text-display-xl: clamp(2.25rem, 4.4vw, 4rem);
+  --text-display-l:  clamp(1.95rem, 3.4vw, 3rem);
+  --text-display-m:  clamp(1.6rem, 2.5vw, 2.3rem);
+  --text-display-s:  clamp(1.25rem, 1.7vw, 1.6rem);
+  --text-lead:       clamp(1.0625rem, 1.35vw, 1.3125rem);
   --text-body:       1.0625rem;
   --text-small:      0.9375rem;
   --text-micro:      0.8125rem;
   --text-label:      0.6875rem;
 
-  /* --- Radius: industrial work is square. Softer reads as SaaS. --- */
-  --radius-xs: 1px;
+  --radius-xs: 0px;
   --radius-sm: 2px;
   --radius-md: 3px;
   --radius-lg: 4px;
 
-  /* --- Motion: mechanical, never bouncy. These curves accelerate and settle
-         like a linear actuator — no spring, no overshoot, nothing playful. --- */
+  /* Mechanical curves: accelerate, settle, never overshoot. */
   --ease-mech:     cubic-bezier(0.16, 0.84, 0.44, 1);
   --ease-mech-in:  cubic-bezier(0.55, 0, 0.85, 0.35);
   --ease-mech-out: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --duration-fast:  160ms;
-  --duration-base:  260ms;
-  --duration-slow:  460ms;
-  --duration-scene: 760ms;
+  --duration-fast:  150ms;
+  --duration-base:  280ms;
+  --duration-slow:  520ms;
+  --duration-scene: 900ms;
 }
 
-/* --- Spacing rhythm for vertical section pacing. --- */
 :root {
-  --space-section: clamp(4.5rem, 9vw, 9.5rem);
-  --space-block:   clamp(2rem, 4vw, 3.5rem);
-  --gutter:        clamp(1.25rem, 4vw, 3.5rem);
-  --measure:       66ch;
-  --nav-h:         4.25rem;
+  --space-section: clamp(4rem, 7.5vw, 8rem);
+  --space-block:   clamp(2rem, 3.6vw, 3.5rem);
+  --gutter:        clamp(1.15rem, 4vw, 3.75rem);
+  --measure:       64ch;
+  --nav-h:         4.5rem;
+  --max:           108rem;
+  --max-read:      74rem;
 }
 
 /* ============================================================================ */
@@ -148,7 +189,6 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  color-scheme: light dark;
 }
 
 body {
@@ -157,7 +197,7 @@ body {
   color: var(--c-ink);
   font-family: var(--font-sans);
   font-size: var(--text-body);
-  line-height: 1.6;
+  line-height: 1.58;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-synthesis-weight: none;
@@ -170,50 +210,142 @@ img, svg, video, canvas { display: block; max-width: 100%; }
 
 ::selection { background: var(--c-accent); color: var(--c-accent-ink); }
 
-:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; border-radius: 1px; }
+:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; }
 :focus:not(:focus-visible) { outline: none; }
 
 .skip {
   position: absolute; left: 0.75rem; top: -100%;
   background: var(--c-accent); color: var(--c-accent-ink);
-  padding: 0.6rem 1rem; z-index: 100; font-size: var(--text-small);
+  padding: 0.65rem 1.1rem; z-index: 200; font-size: var(--text-small);
   transition: top var(--duration-fast) var(--ease-mech);
 }
 .skip:focus { top: 0.75rem; }
 
-/* ---------------------------------------------------------------- Primitives */
+/* ------------------------------------------------------------- typography ---*/
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.033em;
+  padding-bottom: 0.04em;
+}
+
+.headline {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.026em;
+  padding-bottom: 0.03em;
+}
+
+.subhead {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+}
 
 .label {
   font-family: var(--font-mono);
   font-size: var(--text-label);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--c-muted);
   font-weight: 500;
 }
 
-.display  {
-  font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 1.01;
-  letter-spacing: -0.022em;
-  padding-bottom: 0.06em;
-}
-.headline {
-  font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 1.08;
-  letter-spacing: -0.016em;
-  padding-bottom: 0.04em;
+.lead {
+  font-size: var(--text-lead);
+  line-height: 1.5;
+  color: var(--c-ink-2);
+  max-width: var(--measure);
 }
 
-.lead { font-size: var(--text-lead); line-height: 1.52; color: var(--c-ink-2); max-width: var(--measure); }
 .tnum { font-variant-numeric: tabular-nums; }
 
-/* Reveal on scroll. JS adds .is-in; with no JS everything is visible. */
+/* Chapter marker: the big index number that opens each act of the story. */
+.chapter {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: var(--c-muted);
+}
+.chapter::before {
+  content: "";
+  width: 2.25rem;
+  height: 1px;
+  background: var(--c-accent);
+  flex: none;
+}
+
+/* --------------------------------------------------------------- surfaces ---*/
+
+.panel {
+  background: var(--c-surface);
+  border: 1px solid var(--c-rule);
+  box-shadow: var(--shadow-panel);
+}
+
+/* Machined metal plate. Used behind numbers and technical readouts. */
+.plate {
+  background:
+    linear-gradient(158deg,
+      color-mix(in oklab, var(--c-raised) 92%, var(--c-steel-hi)) 0%,
+      var(--c-surface) 38%,
+      var(--c-ground) 100%);
+  border: 1px solid var(--c-rule);
+}
+
+/* Drawing sheet — hairline grid, masked so it never becomes wallpaper. */
+.sheet {
+  background-image:
+    linear-gradient(to right, var(--c-rule) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--c-rule) 1px, transparent 1px);
+  background-size: 76px 76px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 68% at 50% 0%, #000 0%, transparent 78%);
+  mask-image: radial-gradient(ellipse 80% 68% at 50% 0%, #000 0%, transparent 78%);
+  opacity: 0.75;
+}
+
+.sheet-fine {
+  background-image:
+    linear-gradient(to right, var(--c-rule) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--c-rule) 1px, transparent 1px);
+  background-size: 26px 26px;
+  opacity: 0.4;
+}
+
+/* Cold overhead light pooling on the ground. */
+.pool {
+  background: radial-gradient(
+    ellipse 62% 48% at 50% 0%,
+    color-mix(in oklab, var(--c-accent) 12%, transparent) 0%,
+    transparent 70%
+  );
+}
+
+/* Film grain. Very low amplitude — it removes banding from the dark gradients
+   and makes the ground read as photographed rather than flat #000. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.28;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------------------------------------- motion ----*/
+
 .reveal {
   opacity: 0;
-  transform: translateY(14px);
+  transform: translateY(18px);
   transition:
     opacity var(--duration-slow) var(--ease-mech-out),
     transform var(--duration-slow) var(--ease-mech-out);
@@ -221,24 +353,50 @@ img, svg, video, canvas { display: block; max-width: 100%; }
 }
 .reveal.is-in { opacity: 1; transform: none; }
 
-/* Hairline grid — the drawing-sheet motif, kept very quiet. */
-.sheet {
-  background-image:
-    linear-gradient(to right, var(--c-rule) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--c-rule) 1px, transparent 1px);
-  background-size: 72px 72px;
-  -webkit-mask-image: radial-gradient(ellipse 78% 62% at 50% 0%, #000 0%, transparent 76%);
-  mask-image: radial-gradient(ellipse 78% 62% at 50% 0%, #000 0%, transparent 76%);
-  opacity: 0.5;
+/* A rule that draws itself left-to-right when its section arrives. */
+.rule-draw {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-scene) var(--ease-mech-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.is-in .rule-draw,
+.rule-draw.is-in { transform: scaleX(1); }
+
+@keyframes dolmir-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.sweep::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--c-accent) 22%, transparent), transparent);
+  animation: dolmir-sweep 2.4s var(--ease-mech) infinite;
 }
 
+@keyframes dolmir-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+.pulse { animation: dolmir-pulse 1.6s var(--ease-mech) infinite; }
+
+/* ---------------------------------------------------------------- utility ---*/
+
+.hairline-t { border-top: 1px solid var(--c-rule); }
+.hairline-b { border-bottom: 1px solid var(--c-rule); }
+
+.stack-rules > * + * { border-top: 1px solid var(--c-rule); }
+
 @media (max-width: 480px) {
-  .label { letter-spacing: 0.09em; }
+  .label, .chapter { letter-spacing: 0.11em; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
+  .rule-draw { transform: none; transition: none; }
+  .sweep::before, .pulse { animation: none; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

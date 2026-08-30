@@ -3,56 +3,38 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useRef, useState } from 'react';
 import { Container } from '@/components/ui/Container';
-import { detectTier, type Tier } from '@/lib/capability';
+import { usePalette } from '@/lib/palette';
 import { LineStatic } from './LineStatic';
 import { stationFromProgress, stations } from './stations';
 
-const LineScene = dynamic(() => import('./LineScene'), { ssr: false });
-const LineCanvas2D = dynamic(() => import('./LineCanvas2D'), { ssr: false });
+const LineCanvas = dynamic(() => import('./LineCanvas'), { ssr: false });
 
-type Palette = { ink: string; accent: string; amber: string; muted: string; rule: string };
-
-function readPalette(): Palette {
-  const s = getComputedStyle(document.documentElement);
-  const v = (n: string, fallback: string) => s.getPropertyValue(n).trim() || fallback;
-  return {
-    ink: v('--c-ink', '#0E1113'),
-    accent: v('--c-accent', '#14495C'),
-    amber: v('--c-amber', '#94551A'),
-    muted: v('--c-muted', '#5E6866'),
-    rule: v('--c-rule-strong', '#A9B2AF'),
-  };
-}
-
+/**
+ * Scroll-driven journey of one request through the system.
+ *
+ * The section is tall; inside it a viewport-height stage is pinned. Scroll
+ * position becomes a single 0..1 scalar which drives both the canvas and the
+ * caption, so the visual and the words can never disagree.
+ */
 export function TheLine() {
-  const [tier, setTier] = useState<Tier | null>(null);
-  const [palette, setPalette] = useState<Palette | null>(null);
   const [active, setActive] = useState(0);
+  const [enabled, setEnabled] = useState<boolean | null>(null);
+  const { palette } = usePalette();
 
-  const wrapRef = useRef<HTMLDivElement>(null);
+  const wrap = useRef<HTMLDivElement>(null);
   const progress = useRef(0);
 
   useEffect(() => {
-    setTier(detectTier());
-    setPalette(readPalette());
-
-    // The scene reads its colours from the design tokens, so a theme change
-    // has to re-read them — otherwise the 3D keeps the old palette.
-    const mo = new MutationObserver(() => setPalette(readPalette()));
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const onScheme = () => setPalette(readPalette());
-    mq.addEventListener('change', onScheme);
-    return () => { mo.disconnect(); mq.removeEventListener('change', onScheme); };
+    setEnabled(!window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }, []);
 
   useEffect(() => {
-    if (!tier || tier === 'static') return;
+    if (!enabled) return;
     let ticking = false;
 
     function update() {
       ticking = false;
-      const el = wrapRef.current;
+      const el = wrap.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const total = rect.height - window.innerHeight;
@@ -77,29 +59,25 @@ export function TheLine() {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
     };
-  }, [tier]);
+  }, [enabled]);
 
   const head = (
-    <header className="max-w-[52ch]">
-      <p className="label flex items-center gap-3">
-        <span className="tnum text-accent">03</span>
-        <span>Il percorso</span>
-      </p>
-      <h2 className="headline mt-6 text-[length:var(--text-display-m)]">
+    <header className="max-w-[54ch]">
+      <p className="chapter"><span className="tnum text-accent">04</span><span>Il percorso</span></p>
+      <h2 className="headline mt-7 text-[length:var(--text-display-m)]">
         Una richiesta, dall’arrivo all’approvazione.
       </h2>
-      <p className="lead mt-9">
+      <p className="lead mt-7">
         Lo stesso percorso che un documento compie dentro i sistemi che consegniamo.
-        Al quarto passaggio si ferma, e aspetta una persona.
+        Al quinto passaggio si ferma, e aspetta una persona.
       </p>
     </header>
   );
 
-  // Reduced motion, or unknown capability before hydration: the static diagram.
-  if (tier === null || tier === 'static') {
+  if (enabled === null || enabled === false || !palette) {
     return (
-      <section className="border-b border-rule py-[var(--space-section)]">
-        <Container wide>
+      <section className="border-t border-rule py-[var(--space-section)]">
+        <Container>
           {head}
           <div className="mt-[var(--space-block)]">
             <LineStatic />
@@ -112,42 +90,40 @@ export function TheLine() {
   const station = stations[active] ?? stations[0]!;
 
   return (
-    <section className="border-b border-rule" aria-labelledby="line-heading">
-      <Container wide>
+    <section className="relative border-t border-rule" aria-labelledby="line-heading">
+      <Container>
         <div className="pt-[var(--space-section)]" id="line-heading">{head}</div>
       </Container>
 
-      <div ref={wrapRef} className="relative h-[340vh] md:h-[420vh]">
+      <div ref={wrap} className="relative h-[420vh] md:h-[520vh]">
         <div className="sticky top-0 flex h-[100svh] flex-col justify-center overflow-hidden">
-          <Container wide className="relative">
-            <div className="relative h-[46svh] md:h-[52svh]">
-              {palette && (tier === 'three'
-                ? <LineScene progress={progress} palette={palette} />
-                : <LineCanvas2D progress={progress} palette={palette} />)}
+          <div aria-hidden className="pointer-events-none absolute inset-0 sheet-fine opacity-30" />
+
+          <Container className="relative">
+            <div className="relative h-[38svh] md:h-[42svh]">
+              <LineCanvas progress={progress} palette={palette} />
             </div>
 
-            {/* Caption. aria-live so a screen-reader user following the scroll
-                still receives the narrative rather than silence. */}
-            <div className="mt-10 grid gap-8 md:grid-cols-[auto_1fr] md:items-start">
-              <ol className="flex gap-2 md:flex-col md:gap-1.5" aria-hidden>
+            <div className="mt-10 grid gap-8 md:grid-cols-[13rem_1fr] md:items-start">
+              <ol className="flex flex-wrap gap-x-4 gap-y-1.5 md:flex-col md:gap-1" aria-hidden>
                 {stations.map((s, i) => (
                   <li
                     key={s.k}
-                    className={`font-mono text-[var(--text-label)] tracking-[0.14em] transition-colors duration-[var(--duration-base)] ${
-                      i === active ? 'text-accent' : 'text-rule-strong'
+                    className={`whitespace-nowrap font-mono text-[var(--text-label)] tracking-[0.16em] transition-colors duration-[var(--duration-base)] ${
+                      i === active ? 'text-accent' : i < active ? 'text-muted' : 'text-rule-strong'
                     }`}
                   >
                     {s.k}
-                    <span className={`ml-2 hidden md:inline ${i === active ? 'text-ink' : 'text-rule-strong'}`}>
-                      {s.t}
-                    </span>
+                    <span className={`ml-2.5 hidden md:inline ${i === active ? 'text-ink' : ''}`}>{s.t}</span>
                   </li>
                 ))}
               </ol>
 
-              <div aria-live="polite" className="min-h-[6.5rem] max-w-[54ch]">
-                <p className="label tnum">{station.k} · {station.t}</p>
-                <p className="mt-3 text-[var(--text-lead)] leading-snug text-ink">{station.d}</p>
+              <div aria-live="polite" className="min-h-[7.5rem] max-w-[56ch]">
+                <p className={`label tnum ${station.kind === 'gate' ? 'text-amber' : ''}`}>
+                  {station.k} · {station.t}
+                </p>
+                <p className="mt-3.5 text-[length:var(--text-display-s)] leading-snug text-ink">{station.d}</p>
               </div>
             </div>
           </Container>

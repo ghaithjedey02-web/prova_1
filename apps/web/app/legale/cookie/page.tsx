@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Container } from '@/components/ui/Container';
+import { LegalPage } from '@/components/site/LegalPage';
 
 export const metadata: Metadata = {
   title: 'Cookie policy',
@@ -9,22 +9,22 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <section className="py-[clamp(3.5rem,8vw,6rem)]">
-      <Container>
-        <p className="label">Documento legale</p>
-        <h1 className="display mt-6 text-[length:var(--text-display-m)]">Cookie policy</h1>
-        <div className="mt-8 max-w-[64ch] border-l-2 border-amber pl-5">
-          <p className="text-[var(--text-body)] leading-relaxed text-ink-2">
-            Il sito non utilizza cookie di profilazione. L'analisi di traffico prevista è di tipo cookieless e non richiede consenso preventivo.
-          </p>
-          <p className="mt-4 text-[var(--text-small)] leading-relaxed text-muted">
-            Questo testo deve essere redatto o rivisto da un professionista prima
-            della pubblicazione commerciale del sito. Non pubblichiamo un documento
-            legale generato automaticamente: sarebbe privo di valore e potenzialmente
-            fuorviante.
-          </p>
-        </div>
-      </Container>
-    </section>
+    <LegalPage
+      title="Cookie policy"
+      intro="Questo sito non usa cookie di profilazione, non integra pixel pubblicitari e non carica strumenti di analisi di terze parti."
+    >
+      <dl className="mt-12 max-w-[64ch] stack-rules border-y border-rule">
+        {[
+          ['Cookie tecnici', 'Nessuno strettamente necessario oltre a quelli eventualmente impostati dall’infrastruttura di hosting.'],
+          ['Memoria locale', 'Una sola voce, dolmir-theme, che ricorda se avete scelto il tema chiaro. Resta nel vostro browser e non ci raggiunge mai.'],
+          ['Terze parti', 'I caratteri tipografici sono serviti insieme al sito. Nessun servizio di analisi, nessun social plugin, nessuna pubblicità.'],
+        ].map(([k, v]) => (
+          <div key={k} className="grid gap-2 py-6 sm:grid-cols-[12rem_1fr] sm:gap-8">
+            <dt className="text-[var(--text-small)] font-medium text-ink">{k}</dt>
+            <dd className="text-[var(--text-small)] leading-relaxed text-muted">{v}</dd>
+          </div>
+        ))}
+      </dl>
+    </LegalPage>
   );
 }

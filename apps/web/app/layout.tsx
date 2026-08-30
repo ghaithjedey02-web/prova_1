@@ -1,15 +1,15 @@
 import type { Metadata, Viewport } from 'next';
-import { IBM_Plex_Mono, Instrument_Sans, Instrument_Serif } from 'next/font/google';
+import { Archivo, IBM_Plex_Mono, Instrument_Sans } from 'next/font/google';
 import { Nav } from '@/components/site/Nav';
 import { Footer } from '@/components/site/Footer';
 import { site } from '@/content/site';
 import './globals.css';
 
-const display = Instrument_Serif({
+/** Archivo carries the voice: the grotesque of machine plates and catalogues. */
+const display = Archivo({
   subsets: ['latin'],
-  weight: '400',
-  style: ['normal', 'italic'],
-  variable: '--font-instrument-serif',
+  weight: ['500', '600', '700'],
+  variable: '--font-archivo',
   display: 'swap',
 });
 
@@ -35,6 +35,16 @@ export const metadata: Metadata = {
   description: site.description,
   applicationName: site.name,
   authors: [{ name: site.name }],
+  keywords: [
+    'AI per PMI industriali',
+    'automazione processi aziendali',
+    'preventivi industriali',
+    'automazione richieste di offerta',
+    'digitalizzazione PMI manifatturiere',
+    'ufficio tecnico metalmeccanica',
+    'infrastruttura AI industriale',
+    'Lombardia',
+  ],
   openGraph: {
     type: 'website',
     locale: site.locale,
@@ -54,21 +64,26 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F1F2F0' },
-    { media: '(prefers-color-scheme: dark)', color: '#0A0D0E' },
+    { media: '(prefers-color-scheme: light)', color: '#08090B' },
+    { media: '(prefers-color-scheme: dark)', color: '#08090B' },
   ],
 };
 
 /**
- * Applies the stored theme before first paint.
- * Without this the page flashes the system theme before the stored choice
- * applies — a small detail that reads as unfinished on a premium site.
+ * Applies the stored theme before first paint. The site is dark by default —
+ * that is the identity, not a system preference — so this only ever has to
+ * switch someone into the daylight skin.
  */
-const themeScript = `(function(){try{var t=localStorage.getItem('dolmir-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t)}}catch(e){}})()`;
+const themeScript = `(function(){try{var t=localStorage.getItem('dolmir-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}})()`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it" className={`${display.variable} ${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html
+      lang="it"
+      data-theme="dark"
+      className={`${display.variable} ${sans.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

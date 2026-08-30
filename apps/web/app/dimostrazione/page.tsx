@@ -1,29 +1,38 @@
 import type { Metadata } from 'next';
+import { rfqPreventivo } from '@dolmir/workflows';
+import { WorkflowPlayer } from '@/components/demo/WorkflowPlayer';
 import { Container } from '@/components/ui/Container';
 import { Reveal } from '@/components/ui/Reveal';
-import { WorkflowPlayer } from '@/components/demo/WorkflowPlayer';
-import { rfqPreventivo } from '@dolmir/workflows';
-import { demoCopy } from '@/content/site';
+import { Button } from '@/components/ui/Button';
+import { cta, demoCopy } from '@/content/site';
 
 export const metadata: Metadata = {
-  title: 'Dimostrazione',
+  title: demoCopy.title,
   description:
-    'Cinque email arrivate in una mattina, elaborate dallo stesso motore che consegniamo ai clienti. Con dati di esempio.',
+    'Lo stesso motore che consegniamo ai clienti, eseguito nel browser su cinque casi di esempio — compreso quello in cui il sistema si rifiuta di proporre un prezzo.',
   alternates: { canonical: '/dimostrazione' },
 };
 
 export default function DemoPage() {
   return (
     <>
-      <section className="border-b border-rule">
-        <Container wide className="py-[clamp(3rem,7vw,5.5rem)]">
-          <Reveal><p className="label">{demoCopy.title}</p></Reveal>
-          <Reveal delay={70}>
-            <h1 className="display mt-7 max-w-[18ch] text-[length:var(--text-display-l)]">{demoCopy.headline}</h1>
+      <section className="relative overflow-hidden border-b border-rule">
+        <div aria-hidden className="pointer-events-none absolute inset-0 sheet" />
+        <Container className="relative py-[clamp(3rem,6vw,5rem)]">
+          <Reveal>
+            <p className="chapter">{demoCopy.title}</p>
           </Reveal>
-          <Reveal delay={140}><p className="lead mt-9">{demoCopy.lead}</p></Reveal>
-          <Reveal delay={200}>
-            <p className="mt-8 inline-flex items-center gap-2.5 border border-amber/40 bg-amber-soft px-4 py-2.5 text-[var(--text-micro)] text-amber">
+          <Reveal delay={70}>
+            <h1 className="display mt-8 max-w-[20ch] text-[length:var(--text-display-xl)]">{demoCopy.headline}</h1>
+          </Reveal>
+          <Reveal delay={110}>
+            <div className="mt-9 h-px w-full max-w-[20rem] bg-gradient-to-r from-accent to-transparent" />
+          </Reveal>
+          <Reveal delay={160}>
+            <p className="lead mt-8 max-w-[62ch]">{demoCopy.lead}</p>
+          </Reveal>
+          <Reveal delay={210}>
+            <p className="mt-8 inline-flex max-w-[52ch] items-start gap-3 border border-amber-line bg-amber-soft/60 px-4 py-3 text-[var(--text-micro)] leading-snug text-amber">
               <span aria-hidden>△</span>
               {demoCopy.disclaimer}
             </p>
@@ -31,31 +40,32 @@ export default function DemoPage() {
         </Container>
       </section>
 
-      <section className="py-[clamp(2.5rem,5vw,4rem)]">
-        <Container wide>
-          <h2 className="sr-only">Esecuzione del processo su un’email di esempio</h2>
+      <section className="py-[clamp(2rem,4vw,3.5rem)]">
+        <Container>
+          <h2 className="sr-only">Esecuzione del processo su un caso di esempio</h2>
           <WorkflowPlayer workflow={rfqPreventivo} />
         </Container>
       </section>
 
       <section className="border-t border-rule py-[var(--space-section)]">
-        <Container wide>
-          <div className="max-w-[62ch]">
-            <p className="label">Nota tecnica</p>
-            <h2 className="headline mt-5 text-[length:var(--text-display-s)]">
-              Questo non è un video, ed è lo stesso codice.
-            </h2>
-            <p className="mt-5 text-[var(--text-body)] leading-relaxed text-ink-2">
-              Classificazione, estrazione, soglie di confidenza, verifica di fattibilità,
-              ricerca nello storico e generazione della bozza vengono eseguite qui nel
-              browser dallo stesso motore che installiamo presso i clienti.
-            </p>
-            <p className="mt-4 text-[var(--text-small)] leading-relaxed text-muted">
-              La cadenza dei passaggi è rallentata apposta perché sia leggibile: il
-              motore completa l’elaborazione in millisecondi. In produzione l’estrazione
-              usa un modello linguistico; qui gira una versione deterministica, così la
-              dimostrazione funziona anche senza rete e senza costi.
-            </p>
+        <Container>
+          <div className="grid gap-[var(--space-block)] lg:grid-cols-[1fr_1fr] lg:items-start">
+            <div className="max-w-[54ch]">
+              <p className="chapter">Nota tecnica</p>
+              <h2 className="headline mt-7 text-[length:var(--text-display-m)]">{demoCopy.technical.headline}</h2>
+              <p className="mt-7 text-[var(--text-body)] leading-relaxed text-ink-2">{demoCopy.technical.body}</p>
+            </div>
+
+            <div className="plate p-8">
+              <p className="label">Il passo successivo</p>
+              <p className="mt-5 text-[var(--text-body)] leading-relaxed text-ink-2">
+                Questa pagina gira su dati inventati. Il modo utile di valutarci è vederla girare su cinque
+                richieste vere ricevute da voi nelle ultime due settimane — comprese quelle su cui sbaglia.
+              </p>
+              <div className="mt-8">
+                <Button href={cta.primary.href} arrow>{cta.primary.label}</Button>
+              </div>
+            </div>
           </div>
         </Container>
       </section>

@@ -44,7 +44,7 @@ export function ContactForm() {
 
   if (state === 'sent') {
     return (
-      <div className="border border-rule bg-surface p-8" role="status">
+      <div className="panel p-10" role="status">
         <p className="label text-good">Ricevuto</p>
         <p className="mt-4 font-display text-[length:var(--text-display-s)] leading-tight text-ink">
           Grazie. Rispondiamo entro un giorno lavorativo.
@@ -54,7 +54,7 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="border border-rule bg-surface p-7 md:p-9" noValidate={false}>
+    <form onSubmit={onSubmit} className="panel p-7 md:p-10" noValidate={false}>
       <div className="flex flex-col gap-5">
         <Field name="azienda" label="Azienda" required autoComplete="organization" />
         <Field name="nome" label="Nome e cognome" required autoComplete="name" />
@@ -68,7 +68,7 @@ export function ContactForm() {
             name="processo"
             rows={5}
             required
-            className="rounded-sm border border-rule bg-ground px-3.5 py-3 text-[var(--text-small)] text-ink outline-none transition-colors focus:border-accent"
+            className="border border-rule bg-void px-4 py-3.5 text-[var(--text-small)] text-ink outline-none transition-colors duration-[var(--duration-fast)] placeholder:text-faint hover:border-rule-strong focus:border-accent"
           />
           <p className="text-[var(--text-micro)] text-muted">{contatto.formNote}</p>
         </div>
@@ -87,7 +87,7 @@ export function ContactForm() {
         </label>
 
         {state === 'error' && (
-          <p role="alert" className="border-l-2 border-bad bg-bad-soft px-4 py-3 text-[var(--text-small)] text-bad">
+          <p role="alert" className="border-l-2 border-bad bg-bad-soft px-4 py-3.5 text-[var(--text-small)] text-bad">
             {message}
           </p>
         )}
@@ -95,7 +95,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={state === 'sending'}
-          className="mt-1 rounded-sm bg-accent px-6 py-3.5 text-[var(--text-small)] font-medium text-accent-ink transition-colors duration-[var(--duration-fast)] hover:bg-accent-hover disabled:opacity-60"
+          className="mt-2 bg-accent px-7 py-4 text-[var(--text-small)] font-medium text-accent-ink transition-colors duration-[var(--duration-fast)] hover:bg-accent-hover disabled:opacity-60"
         >
           {state === 'sending' ? 'Invio…' : 'Invia'}
         </button>
@@ -128,7 +128,7 @@ function Field({
         type={type}
         required={required}
         autoComplete={autoComplete}
-        className="rounded-sm border border-rule bg-ground px-3.5 py-3 text-[var(--text-small)] text-ink outline-none transition-colors focus:border-accent"
+        className="border border-rule bg-void px-4 py-3.5 text-[var(--text-small)] text-ink outline-none transition-colors duration-[var(--duration-fast)] placeholder:text-faint hover:border-rule-strong focus:border-accent"
       />
     </div>
   );
