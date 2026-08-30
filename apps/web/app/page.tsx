@@ -4,7 +4,7 @@ import { Twin } from '@/components/live/Twin';
 import { Capabilities } from '@/components/home/Capabilities';
 import { Materia } from '@/components/live/Materia';
 import { FlowDemo } from '@/components/live/FlowDemo';
-import { FrictionScan } from '@/components/live/FrictionScan';
+import { Simulator } from '@/components/live/Simulator';
 import { TheLine } from '@/components/line/TheLine';
 import { Software } from '@/components/home/Software';
 import { HumanGate } from '@/components/home/HumanGate';
@@ -33,7 +33,8 @@ const jsonLd = {
  *                   record (the only place 3D is the content, not the ground).
  *   FlowDemo      — the same case running on the real RfqPipeline, refusals included.
  *   TheLine       — the journey of one request end to end.
- *   FrictionScan  — the visitor's own case, simulated and said to be.
+ *   Simulator     — the visitor runs it: six sectors, telemetry exposed,
+ *                   approve/reject in their hand, before/after animated.
  *   Software      — the interfaces; HumanGate — why it stops; Closing.
  *
  * Sections that ARE the product rather than describing it drive the fixed
@@ -51,7 +52,7 @@ export default function HomePage() {
       <Materia />
       <FlowDemo />
       <TheLine />
-      <FrictionScan />
+      <Simulator />
       <Software />
       <HumanGate />
       <Closing />
