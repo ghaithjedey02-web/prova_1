@@ -1,5 +1,5 @@
 import { Hero } from '@/components/home/Hero';
-import { Fragmentation } from '@/components/home/Fragmentation';
+import { Materia } from '@/components/live/Materia';
 import { Twin } from '@/components/live/Twin';
 import { FlowDemo } from '@/components/live/FlowDemo';
 import { FrictionScan } from '@/components/live/FrictionScan';
@@ -23,7 +23,12 @@ const jsonLd = {
 /**
  * Nine experiences, not thirty sections.
  *
- * Three of them are the product rather than a description of it: the twin is a
+ * The second is the argument itself: MATERIA takes the machined part the demo
+ * is built around and carries it, in one pinned scroll, from matter to a row in
+ * a system — the only place on the site where 3D is the content rather than the
+ * ground it sits on.
+ *
+ * Three more are the product rather than a description of it: the twin is a
  * live graph the visitor inspects, the flow demo instantiates the real
  * `RfqPipeline`, and the friction scan runs an analysis on whatever the visitor
  * says hurts. Each drives the intelligence core in the background through the
@@ -38,7 +43,7 @@ export default function HomePage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Hero />
-      <Fragmentation />
+      <Materia />
       <Twin />
       <FlowDemo />
       <FrictionScan />

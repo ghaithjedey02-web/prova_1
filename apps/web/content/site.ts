@@ -73,26 +73,6 @@ export const hero = {
 /* ================================================== home === the story ========*/
 
 export const chapters = {
-  fragmentation: {
-    n: '01',
-    label: 'Frammentazione',
-    headline: 'L’azienda funziona. Il sistema no.',
-    body:
-      'Il lavoro esiste già ed è ordinato nella testa delle persone. Quello che manca è il posto dove vive. Sta in undici strumenti che non si parlano, e ogni passaggio fra uno e l’altro lo fa qualcuno a mano.',
-    nodes: [
-      { k: 'Email', d: 'Richieste, ordini, allegati' },
-      { k: 'PDF', d: 'Documenti da rileggere ogni volta' },
-      { k: 'Excel', d: 'La verità parallela al gestionale' },
-      { k: 'Gestionale', d: 'Aggiornato a mano, in ritardo' },
-      { k: 'Drive', d: 'File senza un nome condiviso' },
-      { k: 'Messaggi', d: 'Decisioni prese fuori dai sistemi' },
-      { k: 'Telefonate', d: 'Che non lasciano traccia' },
-      { k: 'Persone', d: 'Che tengono insieme il resto' },
-    ],
-    kicker:
-      'Nessuno di questi strumenti è sbagliato. Il problema è che fra l’uno e l’altro c’è sempre una persona che ricopia.',
-  },
-
   automation: {
     n: '05',
     label: 'Automazione',
