@@ -182,42 +182,125 @@ export const film = {
 
 export const intelligence = {
   n: '05',
-  label: 'Intelligenza',
-  headline: 'Come funziona, visto da dentro.',
+  label: 'Il livello intelligente',
+  headline: 'Un livello intelligente, sopra i sistemi che avete già.',
   body:
-    'Questa non è un’illustrazione: è la forma di ogni sistema DOLMIR. Informazioni non strutturate entrano da sinistra, il nucleo le capisce, e a destra escono azioni pronte. In mezzo, sempre, una persona che decide.',
-  /* What flows in and what comes out. Sector-agnostic on purpose: this is the
-     shape of the system, not one vertical's version of it. */
-  inputs: [
-    { k: 'EMAIL',     d: 'richieste, ordini, allegati' },
-    { k: 'DOCUMENTI', d: 'PDF, disegni, contratti' },
-    { k: 'CRM',       d: 'clienti, trattative' },
-    { k: 'ERP',       d: 'anagrafiche, commesse' },
-    { k: 'ORDINI',    d: 'conferme, righe, eccezioni' },
-    { k: 'RICHIESTE', d: 'dal sito, dal telefono' },
+    'Ogni azienda ha già i suoi sistemi: email, gestionale, CRM, magazzino, contabilità. Il problema è che non si parlano. DOLMIR è il livello che li collega — legge, capisce, consulta la memoria aziendale, verifica — e prepara l’azione. In mezzo, sempre, una persona che decide.',
+  hint: 'Toccate un nodo per isolare il suo flusso. Scegliete un processo per vederlo attraversare il sistema.',
+  agentsLabel: 'AGENTI DOLMIR',
+  systemsLabel: 'I VOSTRI SISTEMI',
+  processesLabel: 'SEGUI UN PROCESSO',
+  core: { top: 'DOLMIR', sub: 'INTELLIGENZA' },
+  /* The idle heartbeat, cycled while nothing is selected. */
+  idle: ['IN ASCOLTO SU 6 CANALI', 'MEMORIA SINCRONIZZATA', 'CONFIDENZA MONITORATA', 'REGISTRO ATTIVO'],
+  /* The specialised intelligences DOLMIR deploys — one per family of work. */
+  agents: [
+    { id: 'ag-doc', k: 'AG · DOCUMENTI',  d: 'legge PDF, email, allegati' },
+    { id: 'ag-ven', k: 'AG · VENDITE',    d: 'preventivi e ordini' },
+    { id: 'ag-ope', k: 'AG · OPERAZIONI', d: 'commesse e consegne' },
+    { id: 'ag-fin', k: 'AG · FINANZA',    d: 'fatture e scadenze' },
+    { id: 'ag-cli', k: 'AG · CLIENTI',    d: 'richieste e supporto' },
+    { id: 'ag-acq', k: 'AG · ACQUISTI',   d: 'fornitori e riordini' },
   ],
-  outputs: [
-    { k: 'PREVENTIVO',  d: 'bozza con motivazione' },
-    { k: 'REPORT',      d: 'strutturato, tracciabile' },
-    { k: 'TASK',        d: 'assegnato a chi decide' },
-    { k: 'CRM',         d: 'aggiornato senza ricopiare' },
-    { k: 'NOTIFICA',    d: 'solo quando serve' },
-    { k: 'DECISIONE',   d: 'preparata per una persona' },
+  /* The company's existing systems. DOLMIR connects them; it replaces none. */
+  systems: [
+    { id: 'sy-email', k: 'EMAIL',       d: 'richieste, conferme, allegati' },
+    { id: 'sy-crm',   k: 'CRM',         d: 'clienti e trattative' },
+    { id: 'sy-erp',   k: 'ERP',         d: 'anagrafiche e commesse' },
+    { id: 'sy-mag',   k: 'MAGAZZINO',   d: 'giacenze e movimenti' },
+    { id: 'sy-con',   k: 'CONTABILITÀ', d: 'fatture e pagamenti' },
+    { id: 'sy-arc',   k: 'ARCHIVIO',    d: 'documenti e disegni' },
   ],
-  /* The core's internal states, cycled while the section is on screen. The
-     confidence figure is an example value and is labelled as such in the UI. */
-  states: [
-    'INPUT RILEVATO',
-    'DOCUMENTO RICEVUTO',
-    'ENTITÀ IDENTIFICATE',
-    'CONTESTO COSTRUITO',
-    'DATI ESTRATTI',
-    'CONFIDENZA 97,4%',
-    'WORKFLOW GENERATO',
-    'REVISIONE UMANA RICHIESTA',
-    'AZIONE PRONTA',
+  memory: { id: 'memory', k: 'MEMORIA AZIENDALE', d: 'documenti · eventi · conoscenza · registro delle decisioni' },
+  person: { id: 'person', k: 'PERSONA', d: 'ogni azione passa da qui' },
+  /* Six processes, each a real route through the architecture. Step nodes
+     reference the ids above; particles travel the same edges the map draws. */
+  processes: [
+    {
+      k: 'ORDINE',
+      steps: [
+        { n: 'sy-email', s: 'INPUT',            line: 'Un ordine arriva via email, con un PDF allegato.' },
+        { n: 'ag-doc',   s: 'LETTURA',          line: 'L’agente documenti estrae cliente, righe, quantità, consegna.' },
+        { n: 'core',     s: 'COMPRENSIONE',     line: 'Il nucleo costruisce il contesto e calcola la confidenza.' },
+        { n: 'memory',   s: 'MEMORIA',          line: 'Cerca ordini precedenti e condizioni già concordate.' },
+        { n: 'sy-mag',   s: 'VERIFICA',         line: 'Controlla la giacenza a magazzino.' },
+        { n: 'sy-erp',   s: 'VERIFICA',         line: 'Allinea codici e listino sul gestionale.' },
+        { n: 'person',   s: 'REVISIONE UMANA',  line: 'La conferma d’ordine aspetta un’approvazione.' },
+        { n: 'sy-erp',   s: 'AZIONE',           line: 'Approvata: ordine inserito, conferma inviata, registro scritto.' },
+      ],
+    },
+    {
+      k: 'PREVENTIVO',
+      steps: [
+        { n: 'sy-email', s: 'INPUT',            line: 'Una richiesta di preventivo entra dal sito o dall’email.' },
+        { n: 'ag-ven',   s: 'ANALISI',          line: 'L’agente vendite identifica prodotto, quantità, urgenza.' },
+        { n: 'memory',   s: 'MEMORIA',          line: 'Recupera preventivi simili e prezzi già praticati.' },
+        { n: 'core',     s: 'ELABORAZIONE',     line: 'Il nucleo prepara la bozza, con la motivazione riga per riga.' },
+        { n: 'person',   s: 'REVISIONE UMANA',  line: 'La bozza aspetta chi conosce il cliente.' },
+        { n: 'sy-crm',   s: 'AZIONE',           line: 'Inviato: il CRM è aggiornato senza ricopiare nulla.' },
+      ],
+    },
+    {
+      k: 'FATTURA',
+      steps: [
+        { n: 'sy-email', s: 'INPUT',            line: 'Una fattura fornitore arriva in PDF.' },
+        { n: 'ag-doc',   s: 'LETTURA',          line: 'L’agente documenti estrae importi, scadenze, riferimenti.' },
+        { n: 'sy-erp',   s: 'RISCONTRO',        line: 'Cerca l’ordine e la bolla corrispondenti nel gestionale.' },
+        { n: 'core',     s: 'QUADRATURA',       line: 'Le tre carte coincidono? Il nucleo decide se può proseguire.' },
+        { n: 'person',   s: 'REVISIONE UMANA',  line: 'Una differenza ferma tutto: decide una persona.' },
+        { n: 'sy-con',   s: 'AZIONE',           line: 'Registrata in contabilità, con l’evidenza allegata.' },
+      ],
+    },
+    {
+      k: 'SOLLECITO',
+      steps: [
+        { n: 'sy-con',   s: 'SEGNALE',          line: 'La contabilità segnala un pagamento scaduto.' },
+        { n: 'ag-fin',   s: 'ANALISI',          line: 'L’agente finanza ricostruisce la posizione del cliente.' },
+        { n: 'memory',   s: 'MEMORIA',          line: 'Controlla accordi, note e solleciti già inviati.' },
+        { n: 'core',     s: 'ELABORAZIONE',     line: 'Prepara un sollecito proporzionato alla storia.' },
+        { n: 'person',   s: 'REVISIONE UMANA',  line: 'Il tono lo approva una persona.' },
+        { n: 'sy-email', s: 'AZIONE',           line: 'L’email parte; l’esito torna nel registro.' },
+      ],
+    },
+    {
+      k: 'SUPPORTO',
+      steps: [
+        { n: 'sy-email', s: 'INPUT',            line: 'Un cliente scrive: qualcosa non funziona.' },
+        { n: 'ag-cli',   s: 'ANALISI',          line: 'L’agente clienti classifica urgenza e argomento.' },
+        { n: 'memory',   s: 'MEMORIA',          line: 'Recupera ordini, garanzie, casi simili.' },
+        { n: 'core',     s: 'ELABORAZIONE',     line: 'Prepara la risposta o instrada a chi può risolvere.' },
+        { n: 'person',   s: 'REVISIONE UMANA',  line: 'I casi nuovi passano sempre da una persona.' },
+        { n: 'sy-crm',   s: 'AZIONE',           line: 'Il caso è tracciato nel CRM, con tutta la storia.' },
+      ],
+    },
+    {
+      k: 'CONSEGNA',
+      steps: [
+        { n: 'sy-erp',   s: 'SEGNALE',          line: 'Una commessa si avvicina alla data promessa.' },
+        { n: 'ag-ope',   s: 'ANALISI',          line: 'L’agente operazioni incrocia avanzamento e trasporti.' },
+        { n: 'sy-mag',   s: 'VERIFICA',         line: 'Verifica che il materiale sia pronto.' },
+        { n: 'core',     s: 'PREVISIONE',       line: 'Se qualcosa slitta, lo dice prima — non dopo.' },
+        { n: 'person',   s: 'REVISIONE UMANA',  line: 'La comunicazione al cliente la firma una persona.' },
+        { n: 'sy-email', s: 'AZIONE',           line: 'Il cliente sa la verità in anticipo. Il registro anche.' },
+      ],
+    },
   ],
-  disclaimer: 'Flusso dimostrativo con dati di esempio.',
+  /* The guided run — the whole architecture, one pass, self-narrating. */
+  watch: {
+    cta: 'GUARDA DOLMIR AL LAVORO',
+    stop: 'FERMA',
+    steps: [
+      { n: 'sy-email', s: 'INPUT RICEVUTO',    line: 'Un documento entra nel sistema.' },
+      { n: 'ag-doc',   s: 'COMPRENSIONE',      line: 'Cliente, prodotto, quantità, scadenza — con la fonte attaccata.' },
+      { n: 'memory',   s: 'MEMORIA',           line: 'La conoscenza aziendale entra nella decisione.' },
+      { n: 'sy-crm',   s: 'VERIFICA',          line: 'Storia del cliente e condizioni: controllate sul CRM.' },
+      { n: 'sy-mag',   s: 'VERIFICA',          line: 'Giacenze e tempi: controllati a magazzino.' },
+      { n: 'core',     s: 'CONFIDENZA 97,4%',  line: 'Il nucleo decide se può proseguire in sicurezza.' },
+      { n: 'person',   s: 'REVISIONE UMANA',   line: 'Sotto soglia si ferma: il sistema non indovina.' },
+      { n: 'sy-erp',   s: 'AZIONE ESEGUITA',   line: 'ERP aggiornato, CRM allineato, email pronta, registro scritto.' },
+    ],
+  },
+  disclaimer: 'Sistema dimostrativo · dati di esempio.',
 } as const;
 
 /* ==================================== home === what DOLMIR builds ===========*/

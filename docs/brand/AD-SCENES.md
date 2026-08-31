@@ -13,7 +13,7 @@ edit. Palette e tipografia sono già quelle del brand.
 | «Dal caos al sistema.» | `/scene/trasformazione` | Lasciar partire l'auto-play (i nodi sparsi si ricompongono, ~4s), poi trascinare il fader PRIMA→DOPO a mano. | «Il lavoro si disperde. / DOLMIR lo ricompone.» | 16:9 · 9:16 |
 | «Dall'email all'azione.» | `/scene/demo` | Tab 01 Manifattura → AVVIA → lasciare correre fino al cancello → APPROVA. ~12s totali. | «Legge. Verifica. Prepara. / Tu approvi.» | 16:9 · 1:1 |
 | «L'AI che non indovina.» | `/scene/demo` | Tab 06 Caso difficile → AVVIA → fermarsi sul cancello rosso (IL SISTEMA NON INDOVINA). | «Quando non è sicuro, / si ferma e chiede.» | 9:16 |
-| «Dentro l'intelligenza.» | `/scene/intelligenza` | Nessuna interazione: 8–10s di flussi nel core, poi hover su EMAIL. | «Input → Intelligenza → Azione.» | 16:9 |
+| «Dentro l'intelligenza.» | `/scene/intelligenza` | 4s di flussi ambientali, poi premere GUARDA DOLMIR AL LAVORO: la sequenza completa (input→memoria→verifica→persona→azione) si narra da sola, ~18s. In alternativa: un processo singolo (ORDINE) o hover su un nodo per l'isolamento del flusso. | Le didascalie sono già nella scena. | 16:9 · 9:16 |
 | «Dal pezzo al sistema.» | `/scene/materia` | Scroll lento e costante per tutta la sequenza (fisico→punti→record), ~15s. | «La stessa cosa, / a quattro livelli.» | 16:9 |
 | «Il film.» (master 25s) | `/scene/film` | Auto-play: un unico piano sequenza WebGL. Al cancello (t≈17,5s) il mondo si ferma in ambra: premere APPROVA per il finale, o RIFIUTA per la variante «Fermato». | Le didascalie sono già nel film. | 16:9 · 9:16 · 1:1 |
 
