@@ -40,6 +40,61 @@ const STAGE_MS = 560;
 
 interface LogLine { id: number; t: string; text: string; tone?: 'amber' }
 
+/**
+ * The live system map: DOLMIR between the systems a company already has.
+ * Nodes light as the run actually consults them — INPUT while reading, the
+ * core while thinking, ERP/CRM/archive during the cross-checks, the person at
+ * the gate, the action only after approval. Nothing here is decoration: it is
+ * the run's footprint across the company, in eleven small nodes.
+ */
+function SystemMap({ stage, phase }: { stage: number; phase: Phase }) {
+  const on = (k: string, at: readonly number[]) => {
+    if (phase === 'gate') return k === 'persona';
+    if (phase === 'approved') return k === 'azione' || k === 'persona';
+    if (phase === 'rejected') return k === 'persona';
+    if (phase !== 'running') return false;
+    return at.includes(stage);
+  };
+  return (
+    <svg viewBox="0 0 300 34" className="h-[26px] w-auto max-w-full" aria-hidden>
+      {simulator.map.map((n, i) => {
+        const x = 12 + i * 46;
+        const active = on(n.k, n.at);
+        const isPerson = n.k === 'persona';
+        return (
+          <g key={n.k}>
+            {i > 0 && (
+              <line
+                x1={x - 40} y1={12} x2={x - 6} y2={12}
+                stroke={active ? 'var(--c-accent)' : 'var(--c-rule-strong)'}
+                strokeWidth="1"
+                opacity={active ? 0.9 : 0.6}
+              />
+            )}
+            <rect
+              x={x - 3.5} y={8.5} width={7} height={7}
+              fill={active ? (isPerson ? 'var(--c-amber)' : 'var(--c-accent)') : 'var(--c-ground)'}
+              stroke={active ? (isPerson ? 'var(--c-amber)' : 'var(--c-accent)') : 'var(--c-rule-strong)'}
+              strokeWidth="1"
+            >
+              {active && phase === 'running' && (
+                <animate attributeName="opacity" values="1;0.45;1" dur="1.1s" repeatCount="indefinite" />
+              )}
+            </rect>
+            <text
+              x={x} y={30} textAnchor="middle"
+              fontFamily="var(--font-mono)" fontSize="6.5" letterSpacing="0.08em"
+              fill={active ? (isPerson ? 'var(--c-amber)' : 'var(--c-accent)') : 'var(--c-faint)'}
+            >
+              {n.label}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
 export function Simulator() {
   const [scenarioIdx, setScenarioIdx] = useState(0);
   const [phase, setPhase] = useState<Phase>('idle');
@@ -48,6 +103,12 @@ export function Simulator() {
   const [fieldsShown, setFieldsShown] = useState(0);
   const [conf, setConf] = useState(0);
   const [compare, setCompare] = useState(false);
+  /* The gate can be renegotiated: MODIFICA lets the visitor change one
+     parameter and watch the decision re-run. The override replaces the
+     scenario's stock gate until the next run. */
+  const [modifying, setModifying] = useState(false);
+  const [override, setOverride] = useState<{ conf: number; note: string; tone: string } | null>(null);
+  const [genericView, setGenericView] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const seq = useRef(0);
   const logBox = useRef<HTMLDivElement>(null);
@@ -93,6 +154,8 @@ export function Simulator() {
     setFieldsShown(0);
     setConf(0);
     setCompare(false);
+    setModifying(false);
+    setOverride(null);
     setActivity('idle');
   }, [clear]);
 
@@ -120,6 +183,8 @@ export function Simulator() {
     setFieldsShown(0);
     setConf(0);
     setCompare(false);
+    setModifying(false);
+    setOverride(null);
     emit('SIM.START', `scenario: ${sc.label}`, 'accent');
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -173,8 +238,48 @@ export function Simulator() {
     emit('SIM.REJECTED', `${sc.label} · bozza tornata alla persona`, 'amber');
   }
 
-  const gateTone = sc.gateTone === 'ready' ? 'text-good' : 'text-amber';
+  /* One resolved gate object, whether stock or renegotiated. */
+  const gate = override ?? { conf: sc.confidence, note: sc.gateNote, tone: sc.gateTone as string };
+  const gateHead =
+    gate.tone === 'ready' ? 'PRONTO PER L’APPROVAZIONE'
+    : gate.tone === 'blocked' ? 'IL SISTEMA NON INDOVINA'
+    : gate.tone === 'complete' ? 'CAMPI DA COMPLETARE'
+    : 'AVVISI DA RIVEDERE';
+  const gateColor = gate.tone === 'ready' ? 'text-good' : gate.tone === 'blocked' ? 'text-bad' : 'text-amber';
+  const gateFrame = gate.tone === 'blocked' ? 'border-bad/40 bg-bad-soft' : 'border-amber/40 bg-amber-soft';
   const totalManual = simulator.manual.reduce((a, m) => a + m.m, 0);
+
+  /* The completion summary counts what actually happened to the fields —
+     including the point the visitor resolved through MODIFICA, if any. */
+  const stockVerified = sc.fields.filter((f) => !('state' in f)).length;
+  const verified = stockVerified + (override ? 1 : 0);
+  const toReview = sc.fields.length - verified;
+
+  /* One system-state word for the whole frame. */
+  const sysState =
+    phase === 'idle' ? simulator.sysStates.idle
+    : phase === 'running' ? (simulator.sysStates.running[Math.max(0, stage)] ?? 'ANALISI')
+    : phase === 'gate' ? simulator.sysStates.gate
+    : phase === 'approved' ? simulator.sysStates.approved
+    : simulator.sysStates.rejected;
+
+  /* MODIFICA: apply one parameter and watch the decision re-run. */
+  function applyOption(opt: { k: string; label: string; conf: number; note: string; tone: string }) {
+    setModifying(false);
+    pushLog(`parametro aggiornato: ${opt.label}`);
+    pushLog('rivalutazione: validazione · confronto · confidenza');
+    setOverride({ conf: opt.conf, note: opt.note, tone: opt.tone });
+    emit('SIM.MODIFY', `parametro: ${opt.label}`, 'accent');
+    const from = conf;
+    const t0 = performance.now();
+    const tick = () => {
+      const k = Math.min(1, (performance.now() - t0) / 600);
+      setConf(Math.round((from + (opt.conf - from) * (1 - Math.pow(1 - k, 3))) * 10) / 10);
+      if (k < 1) requestAnimationFrame(tick);
+    };
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setConf(opt.conf);
+    else requestAnimationFrame(tick);
+  }
 
   return (
     <section
@@ -258,21 +363,43 @@ export function Simulator() {
                 {fieldsShown > 0 && (
                   <dl className="mt-6 border-t border-rule pt-5">
                     <p className="telemetry mb-3 text-faint">CAMPI ESTRATTI · CON CONFIDENZA</p>
-                    {sc.fields.slice(0, fieldsShown).map((f) => (
-                      <div key={f.k} className="settle grid grid-cols-[7rem_minmax(0,1fr)_3rem] items-baseline gap-2 border-b border-rule/60 py-2">
-                        <dt className="telemetry text-[0.625rem] text-faint">{f.k}</dt>
-                        <dd className={`font-mono text-[0.75rem] ${f.conf < 0.5 ? 'text-amber' : 'text-ink-2'}`}>{f.v}</dd>
-                        <dd className={`text-right font-mono text-[0.6875rem] tnum ${f.conf < 0.5 ? 'text-amber' : f.conf < 0.92 ? 'text-muted' : 'text-good'}`}>
-                          {f.conf.toFixed(2)}
-                        </dd>
-                      </div>
-                    ))}
+                    {sc.fields.slice(0, fieldsShown).map((f) => {
+                      const st = ('state' in f ? f.state : 'ok') as string;
+                      const vColor =
+                        st === 'ok' ? 'text-ink-2' : st === 'warn' ? 'text-amber' : 'text-bad';
+                      return (
+                        <div key={f.k} className="settle grid grid-cols-[7rem_minmax(0,1fr)_3rem] items-baseline gap-2 border-b border-rule/60 py-2">
+                          <dt className="telemetry text-[0.625rem] text-faint">{f.k}</dt>
+                          <dd className={`font-mono text-[0.75rem] ${vColor}`}>
+                            {st === 'conflict' || st === 'missing' ? '⚠ ' : ''}{f.v}
+                          </dd>
+                          <dd className={`text-right font-mono text-[0.6875rem] tnum ${
+                            st === 'ok' ? (f.conf < 0.92 ? 'text-muted' : 'text-good') : st === 'warn' ? 'text-amber' : 'text-bad'
+                          }`}>
+                            {f.conf.toFixed(2)}
+                          </dd>
+                        </div>
+                      );
+                    })}
                   </dl>
                 )}
               </div>
 
               {/* ---------------------------------------------- the machine */}
               <div className="flex flex-col p-5 sm:p-7">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-rule pb-4">
+                  <p className="telemetry text-faint">
+                    STATO{' '}
+                    <span
+                      className={`ml-1 ${
+                        phase === 'gate' ? 'text-amber' : phase === 'approved' ? 'text-good' : phase === 'running' ? 'text-accent' : 'text-muted'
+                      }`}
+                    >
+                      {sysState}
+                    </span>
+                  </p>
+                  <SystemMap stage={stage} phase={phase} />
+                </div>
                 <ol className="grid grid-cols-2 gap-x-4 gap-y-1.5 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
                   {simulator.stages.map((st, i) => (
                     <li
@@ -324,34 +451,94 @@ export function Simulator() {
                 </div>
 
                 {phase === 'gate' && (
-                  <div className="settle mt-4 border border-amber/40 bg-amber-soft p-5">
-                    <p className={`telemetry ${gateTone}`}>
-                      {sc.gateTone === 'ready' ? 'PRONTO PER L’APPROVAZIONE' : sc.gateTone === 'attention' ? 'AVVISI DA RIVEDERE' : 'CAMPI DA COMPLETARE'}
-                    </p>
-                    <p className="mt-3 text-[0.8125rem] leading-relaxed text-ink-2">{sc.gateNote}</p>
-                    <div className="mt-5 flex flex-wrap gap-3">
-                      <button
-                        type="button"
-                        onClick={approve}
-                        className="border border-accent bg-accent px-6 py-2.5 font-mono text-[0.75rem] tracking-[0.14em] text-ground transition-opacity hover:opacity-85"
-                      >
-                        APPROVA
-                      </button>
-                      <button
-                        type="button"
-                        onClick={reject}
-                        className="border border-rule-strong px-6 py-2.5 font-mono text-[0.75rem] tracking-[0.14em] text-muted transition-colors hover:border-amber hover:text-amber"
-                      >
-                        RIFIUTA
-                      </button>
+                  <div className={`settle mt-4 border p-5 ${gateFrame}`}>
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                      <p className={`telemetry ${gateColor}`}>{gateHead}</p>
+                      <p className="telemetry text-faint">DECISIONE PRONTA · SERVE UNA PERSONA</p>
                     </div>
+                    <p className="mt-3 text-[0.8125rem] leading-relaxed text-ink-2">{gate.note}</p>
+
+                    <p className="telemetry mt-4 text-faint">AZIONE PROPOSTA</p>
+                    <ul className="mt-1.5 space-y-1">
+                      {sc.actions.slice(0, 3).map((a) => (
+                        <li key={a} className="font-mono text-[0.6875rem] text-muted">→ {a}</li>
+                      ))}
+                    </ul>
+
+                    {!modifying ? (
+                      <div className="mt-5 flex flex-wrap gap-3">
+                        <button
+                          type="button"
+                          onClick={approve}
+                          className="border border-accent bg-accent px-6 py-2.5 font-mono text-[0.75rem] tracking-[0.14em] text-ground transition-opacity hover:opacity-85"
+                        >
+                          APPROVA
+                        </button>
+                        <button
+                          type="button"
+                          onClick={reject}
+                          className="border border-rule-strong px-6 py-2.5 font-mono text-[0.75rem] tracking-[0.14em] text-muted transition-colors hover:border-amber hover:text-amber"
+                        >
+                          RIFIUTA
+                        </button>
+                        {'modify' in sc && !override && (
+                          <button
+                            type="button"
+                            onClick={() => setModifying(true)}
+                            className="border border-rule-strong px-6 py-2.5 font-mono text-[0.75rem] tracking-[0.14em] text-muted transition-colors hover:border-accent hover:text-accent"
+                          >
+                            MODIFICA
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      'modify' in sc && (
+                        <div className="settle mt-5 border-t border-rule pt-4">
+                          <p className="telemetry text-ink">{sc.modify.label}</p>
+                          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                            {sc.modify.options.map((o) => (
+                              <button
+                                key={o.k}
+                                type="button"
+                                onClick={() => applyOption(o)}
+                                className="flex-1 border border-rule bg-void/60 px-4 py-3 text-left font-mono text-[0.6875rem] text-ink-2 transition-colors hover:border-accent hover:text-accent"
+                              >
+                                {o.label}
+                              </button>
+                            ))}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setModifying(false)}
+                            className="telemetry mt-3 text-faint underline decoration-rule-strong underline-offset-4 hover:text-muted"
+                          >
+                            annulla
+                          </button>
+                        </div>
+                      )
+                    )}
                   </div>
                 )}
 
                 {phase === 'approved' && (
                   <div className="settle mt-4 border border-rule bg-surface/70 p-5">
-                    <p className="telemetry text-good">■ APPROVATO · AZIONI ESEGUITE</p>
-                    <ul className="mt-3 space-y-2">
+                    <p className="telemetry text-good">■ PROCESSO COMPLETATO</p>
+
+                    <dl className="mt-4 grid grid-cols-2 gap-px border border-rule bg-rule/60 sm:grid-cols-4">
+                      {[
+                        ['INPUT', '1'],
+                        ['CAMPI ESTRATTI', String(sc.fields.length)],
+                        ['VERIFICATI', String(verified)],
+                        ['DA REVISIONARE', String(toReview)],
+                      ].map(([k, v]) => (
+                        <div key={k} className="bg-surface/90 px-3 py-3">
+                          <dt className="telemetry text-[0.5625rem] text-faint">{k}</dt>
+                          <dd className={`mt-1 font-mono text-[1.05rem] tnum ${k === 'DA REVISIONARE' && v !== '0' ? 'text-amber' : 'text-ink'}`}>{v}</dd>
+                        </div>
+                      ))}
+                    </dl>
+
+                    <ul className="mt-4 space-y-2">
                       {sc.actions.map((a, i) => (
                         <li key={a} className="flex items-baseline gap-3 font-mono text-[0.75rem] text-ink-2">
                           <span className="telemetry text-faint">{String(i + 1).padStart(2, '0')}</span>
@@ -362,6 +549,16 @@ export function Simulator() {
                     <p className="telemetry mt-4 border-t border-rule pt-3 text-faint">
                       Ogni azione è registrata: chi ha approvato, quando, su quali dati.
                     </p>
+
+                    <div className="mt-5 flex flex-wrap items-center gap-4 border-t border-rule pt-4">
+                      <p className="text-[0.8125rem] text-ink-2">Questo è ciò che costruiamo.</p>
+                      <a
+                        href="/contatto"
+                        className="border border-accent bg-accent-soft px-5 py-2.5 font-mono text-[0.6875rem] tracking-[0.14em] text-accent transition-colors hover:bg-accent hover:text-ground"
+                      >
+                        PORTA UN PROCESSO REALE →
+                      </a>
+                    </div>
                   </div>
                 )}
 
@@ -380,7 +577,12 @@ export function Simulator() {
             {/* ------------------------------------------- the before / after */}
             <div className="border-t border-rule p-5 sm:p-7">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="telemetry text-faint">LO STESSO LAVORO, SENZA IL SISTEMA</p>
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+                  <p className="telemetry text-faint">LO STESSO LAVORO, SENZA IL SISTEMA</p>
+                  <p className="telemetry hidden text-faint sm:block" aria-label="Valori illustrativi">
+                    {simulator.bottleneck.map(([k, v]) => `${k} ${v}`).join(' · ')}
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={() => setCompare((c) => !c)}
@@ -445,8 +647,26 @@ export function Simulator() {
 
             {/* --------------------------------------------- differentiator */}
             <div className="border-t border-rule p-5 sm:p-7">
+              {/* On a phone the two architectures alternate under one switch;
+                  side by side they would both be unreadably small. */}
+              <div className="mb-4 flex gap-2 lg:hidden" role="tablist" aria-label="Confronto architetture">
+                {(['ASSISTENTE GENERICO', 'DOLMIR'] as const).map((t, i) => (
+                  <button
+                    key={t}
+                    type="button"
+                    role="tab"
+                    aria-selected={genericView === (i === 0)}
+                    onClick={() => setGenericView(i === 0)}
+                    className={`flex-1 border px-3 py-2.5 telemetry transition-colors ${
+                      genericView === (i === 0) ? 'border-accent text-accent' : 'border-rule text-muted'
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-                <div>
+                <div className={genericView ? '' : 'hidden lg:block'}>
                   <p className="telemetry text-faint">UN ASSISTENTE GENERICO</p>
                   <div className="mt-3 flex items-center gap-2">
                     {simulator.generic.map((g, i) => (
@@ -457,7 +677,7 @@ export function Simulator() {
                     ))}
                   </div>
                 </div>
-                <div>
+                <div className={genericView ? 'hidden lg:block' : ''}>
                   <p className="telemetry text-faint">DOLMIR</p>
                   <div className="mt-3 flex flex-wrap items-center gap-y-2">
                     {simulator.dolmirChain.map((g, i) => (
