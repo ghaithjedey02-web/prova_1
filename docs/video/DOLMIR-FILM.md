@@ -60,3 +60,32 @@ Decisione da prendere insieme prima di spendere.
 Sopra la piega NO. Slot naturale: dentro il capitolo 01 (Il problema),
 come momento cinematografico facoltativo «GUARDA IL FILM · 50s», caricato
 lazy, mai in autoplay con audio.
+
+---
+
+## Prompt Higgsfield per scena (strada B)
+
+Regole comuni a ogni prompt: `cinematic, near-black background #08090B,
+cold side light, precise typography-free frame, no text, no logos, no
+robots, no purple gradients, film grain subtle, 24fps look, premium
+enterprise technology film` — aspect 16:9, durata 4–8s per clip.
+
+- **S1/S5 (presentatore):** *"Italian business consultant, 40s, dark
+  simple suit no tie, seated half-bust against graphite studio wall,
+  single cold key light from left, calm direct gaze to camera, shallow
+  depth, documentary realism, no gestures"* — testare UNA scena prima di
+  impegnare crediti: se il registro scivola verso l'avatar-UGC, passare
+  alla strada A.
+- **S2 (frammenti):** niente generazione — sei screen-capture reali
+  (inbox, PDF, foglio, gestionale, CRM, scrivania) con etichette mono
+  aggiunte in edit.
+- **S3/S4/S6 (sistema):** niente generazione — capture 4K del sito:
+  trasformazione (cap. 03), simulatore con evidenza e cancello (cap. 02),
+  APPROVA premuto. Il sito È il filmato di sistema.
+- **S7 (chiusura):** card nera generata in edit, non con AI: logo DOLMIR,
+  dolmir.com, riga mono `SISTEMA · VERIFICA · PERSONA · AZIONE`.
+
+**Consegna:** master 16:9 H.264 ≤ 12 MB per il web →
+`apps/web/public/film/dolmir-intro.mp4` (+ poster
+`dolmir-intro-poster.jpg`). Il sito ha già lo slot: il video appare nel
+capitolo 01 appena il file esiste, lazy e senza autoplay.

@@ -24,6 +24,7 @@ export function ContactForm() {
      fields appear once the visitor has answered. Real radio inputs underneath,
      so keyboard and screen readers get a standard control. */
   const [area, setArea] = useState<Area | null>(null);
+  const [settore, setSettore] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -98,6 +99,54 @@ export function ContactForm() {
           </p>
         )}
       </fieldset>
+
+      {/* Step 2 — the sector, so the guided analysis speaks their language.
+          Optional: skipping it never blocks anything. */}
+      {area && (
+        <fieldset className="settle mt-7">
+          <legend className="label">In che settore lavorate? <span className="text-faint">(facoltativo)</span></legend>
+          <div role="presentation" className="mt-4 flex flex-wrap gap-2">
+            {contatto.settori.map((sc) => (
+              <label
+                key={sc}
+                className={`cursor-pointer border px-3.5 py-2 telemetry transition-colors duration-[var(--duration-fast)] ${
+                  settore === sc ? 'border-accent bg-accent-soft text-accent' : 'border-rule bg-void text-muted hover:border-rule-strong'
+                } has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent`}
+              >
+                <input
+                  type="radio"
+                  name="settore"
+                  value={sc}
+                  checked={settore === sc}
+                  onChange={() => setSettore(sc)}
+                  className="sr-only"
+                />
+                {sc}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
+
+      {/* The guided analysis: the honest version of an "AI analysis" — a
+          rule-based starting map, declared as such. The system that does not
+          guess does not pretend to analyse a company it has never seen. */}
+      {area && (
+        <div key={`an-${area.k}`} className="settle mt-6 border border-rule bg-void/60 p-5">
+          <p className="telemetry text-accent">{contatto.analisiLabel}</p>
+          <ol className="mt-3 space-y-2">
+            {(contatto.opportunita[area.k] ?? []).map((o, i) => (
+              <li key={o} className="flex items-baseline gap-3">
+                <span className="telemetry text-faint">{String(i + 1).padStart(2, '0')}</span>
+                <span className="text-[var(--text-small)] leading-snug text-ink-2">{o}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-4 border-t border-rule pt-3 text-[var(--text-micro)] leading-relaxed text-muted">
+            {contatto.analisiNote}
+          </p>
+        </div>
+      )}
 
       <div
         className={`flex flex-col gap-5 transition-all duration-[var(--duration-slow)] ease-[var(--ease-mech)] ${

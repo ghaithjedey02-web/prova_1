@@ -167,6 +167,8 @@ export const capabilities = {
   items: [
     {
       k: 'automazione',
+      problem: 'Il lavoro ripetitivo passa da una persona che ricopia.',
+      result: 'Il tempo torna sulle eccezioni e sulle decisioni.',
       label: 'Automazione',
       claim: 'Il lavoro ripetitivo diventa un flusso con un cancello umano.',
       builds: ['Automazione preventivi', 'Gestione ordini in ingresso', 'Instradamento richieste', 'Flussi di approvazione'],
@@ -174,6 +176,8 @@ export const capabilities = {
     },
     {
       k: 'ai',
+      problem: 'Documenti ed email vengono riletti a mano, ogni volta.',
+      result: 'Ogni dato arriva con la sua evidenza e la sua confidenza.',
       label: 'AI',
       claim: 'Documenti, email e testi diventano campi con evidenza e confidenza.',
       builds: ['Lettura documenti', 'Assistente email', 'Estrazione dati da PDF', 'Classificazione automatica'],
@@ -181,6 +185,8 @@ export const capabilities = {
     },
     {
       k: 'dati',
+      problem: 'La stessa informazione vive in tre posti, diversa in ognuno.',
+      result: 'Una fonte sola, e i sistemi smettono di litigare.',
       label: 'Dati',
       claim: 'Informazioni che vivono in posti diversi diventano una fonte sola.',
       builds: ['Integrazione fra gestionali', 'Riconciliazione anagrafiche', 'Archivio cercabile per contenuto', 'Sincronizzazione CRM ↔ ERP'],
@@ -188,6 +194,8 @@ export const capabilities = {
     },
     {
       k: 'operazioni',
+      problem: 'Nessuno sa a che punto è una pratica senza chiedere.',
+      result: 'Stati, code e responsabili visibili a colpo d’occhio.',
       label: 'Operazioni',
       claim: 'I processi interni prendono stati, code e responsabili espliciti.',
       builds: ['Cruscotti operativi', 'Code di lavorazione', 'Tracciamento pratiche', 'Indicatori di processo'],
@@ -195,6 +203,8 @@ export const capabilities = {
     },
     {
       k: 'software',
+      problem: 'Il gestionale generico costringe il processo ad adattarsi.',
+      result: 'Un’interfaccia con la forma esatta del vostro lavoro.',
       label: 'Software',
       claim: 'Applicazioni costruite sulla forma reale del vostro processo.',
       builds: ['Interfacce su misura', 'Portali clienti', 'Strumenti interni', 'Sistemi di conoscenza aziendale'],
@@ -202,6 +212,8 @@ export const capabilities = {
     },
     {
       k: 'intelligenza',
+      problem: 'Le decisioni si prendono senza lo storico sotto mano.',
+      result: 'Ogni proposta arriva motivata, e si ferma davanti a voi.',
       label: 'Intelligenza',
       claim: 'Un livello che ragiona sopra gli strumenti che avete già.',
       builds: ['Agenti con supervisione', 'Confronto con lo storico', 'Suggerimenti motivati', 'Analisi delle richieste'],
@@ -863,6 +875,23 @@ export const contatto = {
     { k: 'software',    label: 'Un software su misura',  d: 'Un’interfaccia costruita sulla forma reale del vostro lavoro.' },
     { k: 'esplorare',   label: 'Non lo so ancora',       d: 'Va benissimo: la prima conversazione serve esattamente a questo.' },
   ],
+  /* Step 2 of the intake: the sector, so the guided analysis speaks their
+     language. Optional — skipping it never blocks the form. */
+  settori: ['Manifattura', 'Logistica', 'Distribuzione', 'Commercio', 'Servizi', 'Altro'],
+  /* The guided analysis: per area, what DOLMIR would typically look at first.
+     Deliberately rule-based and labelled as such — the honest version of an
+     "AI analysis", coherent with a system that does not guess. */
+  analisiLabel: 'ANALISI GUIDATA · BASATA SU REGOLE, NON SU UN MODELLO',
+  analisiNote:
+    'Questa è la mappa di partenza tipica per quest’area. La valutazione vera — sui vostri numeri e sui vostri sistemi — la facciamo insieme in venticinque minuti.',
+  opportunita: {
+    processo:    ['Lettura e instradamento automatico di ciò che entra', 'Estrazione dei dati con evidenza e confidenza', 'Coda di lavorazione con stati e responsabili', 'Approvazione umana prima di ogni azione'],
+    documenti:   ['Lettura di PDF e allegati con evidenza per campo', 'Collegamento automatico alla pratica giusta', 'Archivio cercabile per contenuto', 'Verifica incrociata con il gestionale'],
+    dati:        ['Sincronizzazione fra gestionale, CRM e fogli', 'Riconciliazione delle anagrafiche doppie', 'Una fonte sola per le informazioni che contano', 'Indicatori aggiornati senza raccolte manuali'],
+    automazione: ['Mappa del flusso attuale, passaggio per passaggio', 'Automazione dei passaggi ripetitivi', 'Cancello umano sui punti che richiedono giudizio', 'Registro di ogni azione eseguita'],
+    software:    ['Interfaccia costruita sul vostro processo reale', 'Code, stati, approvazioni e ricerca', 'Integrazione con i sistemi che usate già', 'Indicatori visibili senza chiedere report'],
+    esplorare:   ['Mappa di dove entra il lavoro oggi', 'Individuazione dei passaggi ricopiati a mano', 'Stima di cosa conviene automatizzare per primo', 'Nessun impegno: se non ha senso, lo diciamo'],
+  } as Record<string, readonly string[]>,
   formNote:
     'Se preferite, descrivete un caso reale successo di recente — una richiesta, un documento, un passaggio che si è inceppato. È il modo più rapido per capire se possiamo esservi utili.',
   privacy:
