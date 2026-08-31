@@ -97,14 +97,24 @@ const DOCUMENTS = [
 /* ------------------------------------------------------------------ tools */
 
 export interface DemoToolResult {
-  /** Short human label shown in the UI evidence layer. */
+  /** Technical chip: ORDINI · 5, CLIENTE · non trovato. */
   label: string;
+  /**
+   * The same fact in words a company owner reads without decoding:
+   * "3 ordini consultati", "1 cliente trovato". This is what the console
+   * shows by default; the technical label stays available underneath.
+   */
+  summary: string;
   data: unknown;
 }
 
 type ToolFn = (input: Record<string, unknown>) => DemoToolResult;
 
 const norm = (s: unknown) => String(s ?? '').toLowerCase().trim();
+
+/** "3 ordini consultati" — the evidence line a non-technical reader gets. */
+const plural = (n: number, one: string, many: string) =>
+  n === 0 ? 'Nessun risultato trovato' : `${n} ${n === 1 ? one : many}`;
 
 export const DEMO_TOOLS: Record<string, { description: string; input_schema: Record<string, unknown>; run: ToolFn }> = {
   get_orders: {
@@ -113,7 +123,7 @@ export const DEMO_TOOLS: Record<string, { description: string; input_schema: Rec
     run: (i) => {
       const s = norm(i['status']);
       const rows = s ? ORDERS.filter((o) => o.status === s) : ORDERS;
-      return { label: `ORDINI · ${rows.length} risultati`, data: rows };
+      return { label: `ORDINI · ${rows.length}`, summary: plural(rows.length, 'ordine consultato', 'ordini consultati'), data: rows };
     },
   },
   get_order: {
@@ -122,7 +132,9 @@ export const DEMO_TOOLS: Record<string, { description: string; input_schema: Rec
     run: (i) => {
       const id = String(i['id'] ?? '').toUpperCase().replace(/\s/g, '');
       const o = ORDERS.find((x) => x.id === id || x.id.endsWith(id.replace(/^ORD-?/, '')));
-      return o ? { label: `ORDINE · ${o.id}`, data: o } : { label: 'ORDINE · non trovato', data: null };
+      return o
+        ? { label: `ORDINE · ${o.id}`, summary: `Ordine ${o.id} letto`, data: o }
+        : { label: 'ORDINE · non trovato', summary: 'Nessun ordine con questo numero', data: null };
     },
   },
   get_delayed_orders: {
@@ -130,7 +142,7 @@ export const DEMO_TOOLS: Record<string, { description: string; input_schema: Rec
     input_schema: { type: 'object', properties: {}, additionalProperties: false },
     run: () => {
       const rows = ORDERS.filter((o) => o.status === 'in_ritardo' || o.status === 'a_rischio');
-      return { label: `ORDINI CRITICI · ${rows.length}`, data: rows };
+      return { label: `ORDINI CRITICI · ${rows.length}`, summary: plural(rows.length, 'ordine critico verificato', 'ordini critici verificati'), data: rows };
     },
   },
   get_customer: {
@@ -139,7 +151,9 @@ export const DEMO_TOOLS: Record<string, { description: string; input_schema: Rec
     run: (i) => {
       const q = norm(i['name']);
       const c = CUSTOMERS.find((x) => norm(x.name).includes(q) || norm('alias' in x ? x.alias : '').includes(q) || norm(x.id) === q);
-      return c ? { label: `CLIENTE · ${c.name}`, data: c } : { label: 'CLIENTE · non trovato', data: null };
+      return c
+        ? { label: `CLIENTE · ${c.name}`, summary: '1 cliente trovato', data: c }
+        : { label: 'CLIENTE · non trovato', summary: 'Nessun cliente corrispondente in anagrafica', data: null };
     },
   },
   get_quotation: {
@@ -148,7 +162,7 @@ export const DEMO_TOOLS: Record<string, { description: string; input_schema: Rec
     run: (i) => {
       const id = String(i['id'] ?? '').toUpperCase();
       const rows = id ? QUOTATIONS.filter((q) => q.id === id) : [...QUOTATIONS];
-      return { label: `PREVENTIVI · ${rows.length}`, data: rows };
+      return { label: `PREVENTIVI · ${rows.length}`, summary: plural(rows.length, 'preventivo consultato', 'preventivi consultati'), data: rows };
     },
   },
   get_invoice: {
@@ -157,7 +171,7 @@ export const DEMO_TOOLS: Record<string, { description: string; input_schema: Rec
     run: (i) => {
       const s = norm(i['status']);
       const rows = s ? INVOICES.filter((f) => f.status === s) : [...INVOICES];
-      return { label: `FATTURE · ${rows.length}`, data: rows };
+      return { label: `FATTURE · ${rows.length}`, summary: plural(rows.length, 'fattura consultata', 'fatture consultate'), data: rows };
     },
   },
   get_conflicts: {
@@ -166,13 +180,13 @@ export const DEMO_TOOLS: Record<string, { description: string; input_schema: Rec
     run: (i) => {
       const id = String(i['order_id'] ?? '').toUpperCase();
       const rows = id ? CONFLICTS.filter((c) => c.orderId === id) : [...CONFLICTS];
-      return { label: `CONFLITTI · ${rows.length}`, data: rows };
+      return { label: `CONFLITTI · ${rows.length}`, summary: plural(rows.length, 'incongruenza rilevata', 'incongruenze rilevate'), data: rows };
     },
   },
   get_production_status: {
     description: 'Carico dei centri di lavoro e eccezioni di produzione.',
     input_schema: { type: 'object', properties: {}, additionalProperties: false },
-    run: () => ({ label: 'PRODUZIONE · 3 centri', data: PRODUCTION }),
+    run: () => ({ label: 'PRODUZIONE · 3 centri', summary: '3 centri di lavoro verificati', data: PRODUCTION }),
   },
   search_documents: {
     description: 'Cerca nel testo di email e PDF archiviati (fonte originale dei dati).',
@@ -180,7 +194,71 @@ export const DEMO_TOOLS: Record<string, { description: string; input_schema: Rec
     run: (i) => {
       const q = norm(i['query']);
       const rows = DOCUMENTS.filter((d) => norm(d.text).includes(q) || norm(d.order).includes(q) || norm(d.id).includes(q));
-      return { label: `DOCUMENTI · ${rows.length} trovati`, data: rows };
+      return { label: `DOCUMENTI · ${rows.length}`, summary: plural(rows.length, 'documento verificato', 'documenti verificati'), data: rows };
+    },
+  },
+};
+
+/* ------------------------------------------------- the system's own limits */
+
+/**
+ * Two tools that carry no data at all: they are how the model tells the
+ * interface something about ITSELF, in a form the UI can render as a state
+ * rather than as prose.
+ *
+ *   request_human_decision — the model has found a real fork it must not
+ *     resolve alone. The console turns this into the human gate: the options
+ *     it found, and APPROVA / MODIFICA / RIFIUTA in the visitor's hands.
+ *   declare_not_determined — the data does not support an answer. The console
+ *     shows NON DETERMINATO and what is missing, instead of a fluent guess.
+ *
+ * They exist because "the system stops before deciding" and "the system says
+ * when it does not know" are the two claims DOLMIR is built on. A claim that
+ * only lives in the copy is marketing; a claim the model can only express by
+ * calling a tool is architecture.
+ */
+export const SYSTEM_TOOLS: Record<string, { description: string; input_schema: Record<string, unknown> }> = {
+  request_human_decision: {
+    description:
+      'Chiama questo strumento quando hai trovato un bivio reale che NON devi risolvere da solo: dati in conflitto, più interpretazioni possibili, o un’azione che impegna l’azienda (inviare, confermare, modificare un ordine). Presenta la decisione a una persona con le opzioni che hai effettivamente trovato nei dati. Dopo la chiamata, scrivi 1-2 frasi che spiegano il bivio senza sceglierlo.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        question: { type: 'string', description: 'La decisione, in una frase chiara per un imprenditore.' },
+        options: {
+          type: 'array',
+          description: 'Le alternative trovate nei dati (2-3), ognuna con la sua evidenza.',
+          items: {
+            type: 'object',
+            properties: {
+              label: { type: 'string', description: 'L’opzione in 2-5 parole.' },
+              detail: { type: 'string', description: 'L’evidenza che la sostiene, con la fonte.' },
+            },
+            required: ['label'],
+            additionalProperties: false,
+          },
+        },
+        stake: { type: 'string', description: 'Cosa succede se si sbaglia, in una riga. Opzionale.' },
+      },
+      required: ['question', 'options'],
+      additionalProperties: false,
+    },
+  },
+  declare_not_determined: {
+    description:
+      'Chiama questo strumento quando i dati NON bastano per rispondere con certezza. Non tirare a indovinare e non riempire il vuoto con una risposta plausibile: dichiara che il valore non è determinato ed elenca esattamente cosa manca. Dopo la chiamata, scrivi una riga onesta su cosa servirebbe.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        question: { type: 'string', description: 'Cosa è stato chiesto e non si può determinare.' },
+        missing: {
+          type: 'array',
+          description: 'I dati o i documenti che mancherebbero per rispondere.',
+          items: { type: 'string' },
+        },
+      },
+      required: ['question', 'missing'],
+      additionalProperties: false,
     },
   },
 };

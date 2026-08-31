@@ -1,86 +1,52 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Container } from '@/components/ui/Container';
 import { Chapter } from '@/components/ui/Chapter';
 import { emit, setActivity } from '@/lib/system-bus';
+import { STAGES, useConsole, type Evidence, type Stage, type Turn } from '@/lib/console-client';
+import { useVoice } from '@/lib/voice';
 import { DolmirCore, type CoreState } from './DolmirCore';
 import { FilmCinema } from './FilmCinema';
 import { parla as c } from '@/content/site';
 
 /**
- * PARLA CON DOLMIR — the console of the system, live.
+ * PARLA CON DOLMIR — the product itself, not a chat box on a marketing page.
  *
- * The browser talks to /api/parla; the server runs a real model over the
- * simulated demo company and returns the answer WITH the tool calls it made,
- * which render here as the evidence layer (DATI CONSULTATI). Real AI,
- * simulated company data — and the interface says exactly that.
+ * The visitor speaks or types; a real model runs server-side over the
+ * simulated company with tool access; and every step of that work is streamed
+ * back and shown as it happens: which stage the system is in, what it
+ * consulted ("3 ordini consultati"), the answer as it is written, and — the
+ * two moments that are the whole argument — the human gate and NON
+ * DETERMINATO, both of which the model can only reach by calling a tool.
  *
- * Voice input is Web Speech (it-IT) where the browser offers it; replies are
- * spoken with speechSynthesis behind a VOCE toggle. Every failure mode has
- * words: mic denied, silence, rate limit, model unavailable. If the server
- * has no model configured (503), the console degrades to its deterministic
- * answer set and labels itself accordingly — it never fakes the live mode.
+ * Layout: one instrument. On a wide screen the conversation is on the left and
+ * the system's own state on the right, because seeing the machine work beside
+ * its answer is the difference between a chatbot and a system. On a phone the
+ * same information stacks, with the stage trail collapsing to one line.
+ *
+ * Nothing here is simulated. If the server has no model configured the console
+ * says MODALITÀ RIDOTTA, answers from a small declared set, and never claims
+ * otherwise.
  */
 
-type Intent = (typeof c.intents)[number];
-interface Evidence { tool: string; label: string; data: unknown }
-interface Line { id?: number; who: 'you' | 'dolmir'; text: string; tone?: string; fx?: string; link?: { t: string; href: string }; evidence?: Evidence[] }
-type MicState = 'idle' | 'listening' | 'unsupported';
-type Mode = 'unknown' | 'live' | 'degraded';
+type Mode = 'live' | 'degraded';
 
-function normalize(s: string) {
-  return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
-}
-
-/**
- * The reply arrives as one block from the server; it RENDERS as a system
- * writing — a steady character reveal, ~2s regardless of length. Purely
- * presentational (the text is already complete), skipped under reduced
- * motion, and any newer line snaps the previous one to its full text.
- */
-function Typed({ text, animate, onGrow }: { text: string; animate: boolean; onGrow?: () => void }) {
-  const [n, setN] = useState(animate ? 0 : text.length);
-  useEffect(() => {
-    if (!animate) { setN(text.length); return; }
-    setN(0);
-    // Wall-time, not per-tick: a busy main thread must never stretch the
-    // reveal — throttled timers simply catch up to where the clock says.
-    const t0 = performance.now();
-    const dur = Math.min(2400, 600 + text.length * 14);
-    const id = setInterval(() => {
-      const k = Math.min(1, (performance.now() - t0) / dur);
-      setN(Math.ceil(k * text.length));
-      if (k >= 1) clearInterval(id);
-    }, 32);
-    return () => clearInterval(id);
-  }, [text, animate]);
-  useEffect(() => { if (animate && n > 0) onGrow?.(); }, [n, animate, onGrow]);
-  const doneTyping = n >= text.length;
-  return (
-    <>
-      {text.slice(0, n)}
-      {animate && !doneTyping && <span aria-hidden className="text-accent">▌</span>}
-    </>
-  );
-}
-
-function matchIntent(text: string): Intent | null {
-  const t = normalize(text);
-  let best: Intent | null = null;
-  let bestScore = 0;
+/* Deterministic answers, used only when the server has no model. */
+function matchIntent(text: string) {
+  const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  const t = norm(text);
+  let best: (typeof c.intents)[number] | null = null;
+  let score = 0;
   for (const it of c.intents) {
-    let score = 0;
-    for (const m of it.match) {
-      const mm = normalize(m);
-      if (t.includes(mm)) score += mm.length;
-    }
-    if (score > bestScore) { bestScore = score; best = it; }
+    let s = 0;
+    for (const m of it.match) { const mm = norm(m); if (t.includes(mm)) s += mm.length; }
+    if (s > score) { score = s; best = it; }
   }
-  return bestScore >= 4 ? best : null;
+  return score >= 4 ? best : null;
 }
 
-/** Compact, readable preview of one tool result for the evidence layer. */
+/** Up to four scalar fields of a record, for the evidence detail line. */
 function preview(data: unknown): string[] {
   const row = Array.isArray(data) ? data[0] : data;
   if (!row || typeof row !== 'object') return [];
@@ -88,252 +54,110 @@ function preview(data: unknown): string[] {
   for (const [k, v] of Object.entries(row as Record<string, unknown>)) {
     if (out.length >= 4) break;
     if (v == null || typeof v === 'object') continue;
-    out.push(`${k}: ${String(v).slice(0, 60)}`);
+    out.push(`${k}: ${String(v).slice(0, 48)}`);
   }
   return out;
 }
 
 export function Parla() {
-  const [lines, setLines] = useState<Line[]>([]);
-  const [stage, setStage] = useState<number | null>(null);
-  const [stageTone, setStageTone] = useState<'accent' | 'amber' | 'good'>('accent');
-  const [busy, setBusy] = useState(false);
-  const [mic, setMic] = useState<MicState>('idle');
-  const [voiceOn, setVoiceOn] = useState(true);
-  const [note, setNote] = useState<string | null>(null);
+  const [mode, setMode] = useState<Mode>('live');
   const [input, setInput] = useState('');
+  const [note, setNote] = useState<string | null>(null);
   const [reduce, setReduce] = useState(false);
-  const [mode, setMode] = useState<Mode>('unknown');
-  const [speaking, setSpeaking] = useState(false);
-  const [typedId, setTypedId] = useState(-1);
-
-  const lineSeq = useRef(0);
-  const recRef = useRef<{ stop: () => void } | null>(null);
-  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const spinRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [voiceOn, setVoiceOn] = useState(true);
+  const [started, setStarted] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
-  const linesRef = useRef<Line[]>([]);
-  linesRef.current = lines;
 
-  useEffect(() => {
-    setReduce(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-    const SR = window as unknown as { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown };
-    if (!(SR.SpeechRecognition ?? SR.webkitSpeechRecognition)) setMic('unsupported');
-    // Voice lists load lazily in most browsers; asking early means the good
-    // Italian voice is ready by the first reply.
-    try { window.speechSynthesis?.getVoices(); } catch { /* no synth */ }
-  }, []);
+  useEffect(() => { setReduce(window.matchMedia('(prefers-reduced-motion: reduce)').matches); }, []);
 
-  useEffect(() => () => {
-    timers.current.forEach(clearTimeout);
-    if (spinRef.current) clearInterval(spinRef.current);
-    try { window.speechSynthesis?.cancel(); } catch { /* no synth */ }
-    setActivity('idle');
-  }, []);
+  const console_ = useConsole({ onReply: (t) => voice.speak(t) });
+  const { turns, stage, passed, busy, degraded, failure } = console_;
 
-  useEffect(() => {
-    logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: reduce ? 'auto' : 'smooth' });
-  }, [lines, reduce]);
+  const voice = useVoice({
+    enabled: voiceOn,
+    onFinal: (text) => { setInput(''); void submit(text); },
+    onError: (kind) => setNote(c.errors[kind]),
+  });
 
-  /* Keeps the transcript pinned to the bottom while a reply is typing out. */
-  const scrollLog = useCallback(() => {
-    const el = logRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, []);
+  /* ------------------------------------------- the scripted fallback path */
+  const degradedTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const [degradedTurns, setDegradedTurns] = useState<Turn[]>([]);
+  const dseq = useRef(10_000);
 
-  const speak = useCallback((text: string) => {
-    if (!voiceOn) return;
-    try {
-      const synth = window.speechSynthesis;
-      if (!synth) return;
-      synth.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'it-IT';
-      // Not every it-IT voice sounds like a system worth trusting: prefer the
-      // neural/cloud voices, then the named local Italians, then any Italian.
-      const it = synth.getVoices().filter((v) => v.lang?.toLowerCase().startsWith('it'));
-      const best =
-        it.find((v) => /neural|natural|online|premium/i.test(v.name)) ??
-        it.find((v) => /google/i.test(v.name)) ??
-        it.find((v) => /alice|elsa|luca|federica|paola/i.test(v.name)) ??
-        it[0];
-      if (best) u.voice = best;
-      u.rate = 1.04;
-      u.pitch = 0.96;
-      u.onstart = () => setSpeaking(true);
-      u.onend = () => setSpeaking(false);
-      u.onerror = () => setSpeaking(false);
-      synth.speak(u);
-    } catch { /* voice output is a bonus, never a requirement */ }
-  }, [voiceOn]);
+  const answerDegraded = useCallback((q: string, echo = false) => {
+    const intent = matchIntent(q);
+    if (echo) {
+      const id = ++dseq.current;
+      setDegradedTurns((l) => [...l, { id, who: 'you', text: q }]);
+    }
+    degradedTimers.current.push(setTimeout(() => {
+      const rid = ++dseq.current;
+      const text = intent?.reply ?? c.fallback;
+      setDegradedTurns((l) => [...l, { id: rid, who: 'dolmir', text, tone: intent?.tone === 'amber' ? 'amber' : 'accent' }]);
+      voice.speak(text);
+      setActivity('idle');
+    }, reduce ? 0 : 700));
+    setActivity('analyzing');
+  }, [reduce, voice]);
 
-  /* Pipeline choreography while the model works. */
-  const startSpin = useCallback(() => {
-    setStageTone('accent');
-    if (reduce) { setStage(2); return; }
-    let i = 0;
-    setStage(0);
-    spinRef.current = setInterval(() => {
-      i = (i + 1) % 4; // cycle INPUT→ANALISI→DATI→VERIFICA while waiting
-      setStage(i);
-      setActivity(i >= 2 ? 'verifying' : 'analyzing');
-    }, 700);
-  }, [reduce]);
+  const { onDegraded } = console_;
+  useEffect(() => { onDegraded(answerDegraded); }, [onDegraded, answerDegraded]);
+  useEffect(() => { if (degraded) setMode('degraded'); }, [degraded]);
+  useEffect(() => () => degradedTimers.current.forEach(clearTimeout), []);
 
-  const stopSpin = useCallback((finalStage: number | null, tone: 'accent' | 'amber' | 'good') => {
-    if (spinRef.current) { clearInterval(spinRef.current); spinRef.current = null; }
-    setStageTone(tone);
-    setStage(finalStage);
-    timers.current.push(setTimeout(() => { setStage(null); setActivity('idle'); }, 2600));
-  }, []);
-
-  /* ----------------------------------------------- degraded (no live model) */
-  const answerDegraded = useCallback((clean: string) => {
-    const intent = matchIntent(clean);
-    const seq: readonly number[] = intent?.seq ?? [0];
-    const tone = (intent?.tone ?? 'accent') as 'accent' | 'amber' | 'good';
-    setStageTone(tone);
-    const stepMs = reduce ? 0 : 520;
-    seq.forEach((s, i) => {
-      timers.current.push(setTimeout(() => {
-        setStage(s);
-        setActivity(s >= 6 ? 'ready' : s >= 4 ? (tone === 'amber' ? 'holding' : 'verifying') : s >= 3 ? 'verifying' : 'analyzing');
-      }, i * stepMs));
-    });
-    timers.current.push(setTimeout(() => {
-      const id = ++lineSeq.current;
-      const reply: Line = intent
-        ? { id, who: 'dolmir', text: intent.reply, tone, fx: 'fx' in intent ? (intent as { fx?: string }).fx : undefined, link: 'link' in intent ? (intent as { link?: { t: string; href: string } }).link : undefined }
-        : { id, who: 'dolmir', text: c.fallback, tone: 'accent' };
-      setLines((l) => [...l, reply]);
-      setTypedId(id);
-      speak(reply.text);
-      setBusy(false);
-      timers.current.push(setTimeout(() => { setStage(null); setActivity('idle'); }, 2600));
-    }, seq.length * stepMs + (reduce ? 0 : 240)));
-  }, [reduce, speak]);
-
-  /* ------------------------------------------------------------- live mode */
-  const answer = useCallback(async (text: string) => {
-    if (busy) return;
+  const submit = useCallback(async (text: string) => {
     const clean = text.trim();
     if (!clean) return;
     setNote(null);
-    setBusy(true);
-    setLines((l) => [...l, { who: 'you', text: clean }]);
-    setActivity('listening');
+    setStarted(true);
+    if (mode === 'degraded') { answerDegraded(clean, true); return; }
+    await console_.ask(clean);
+  }, [mode, answerDegraded, console_]);
 
-    if (mode === 'degraded') { answerDegraded(clean); return; }
+  /* The background machine follows the console's real state. */
+  useEffect(() => {
+    if (voice.mic === 'listening') setActivity('listening');
+    else if (stage === 'DECISIONE') setActivity('holding');
+    else if (stage === 'VERIFICA') setActivity('verifying');
+    else if (stage === 'DATI' || stage === 'ANALISI') setActivity('analyzing');
+    else if (stage === 'RISPOSTA') setActivity('processing');
+    else setActivity('idle');
+  }, [stage, voice.mic]);
 
-    startSpin();
-    const history = [...linesRef.current, { who: 'you', text: clean } as Line]
-      .filter((l) => l.text)
-      .slice(-10)
-      .map((l) => ({ role: l.who === 'you' ? 'user' : 'assistant', content: l.text }));
+  useEffect(() => {
+    if (failure) setNote(failure === 'rate' ? c.busyNote : c.offlineNote);
+  }, [failure]);
 
-    try {
-      const res = await fetch('/api/parla', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ messages: history }),
-      });
+  useEffect(() => {
+    if (mode === 'degraded') emit('CONSOLE.MODE', 'modello live non configurato · modalità ridotta', 'amber');
+  }, [mode]);
 
-      if (res.status === 503) {
-        setMode('degraded');
-        setNote(c.degradedNote);
-        emit('CONSOLE.MODE', 'modello live non configurato · modalità ridotta', 'amber');
-        answerDegraded(clean);
-        return;
-      }
-      if (res.status === 429) {
-        stopSpin(null, 'amber');
-        setLines((l) => [...l, { who: 'dolmir', text: c.busyNote, tone: 'amber' }]);
-        setBusy(false);
-        return;
-      }
-      if (!res.ok) throw new Error(String(res.status));
+  /* Keep the newest line in view while an answer streams in. */
+  const all = mode === 'degraded' ? [...turns, ...degradedTurns] : turns;
+  const lastText = all[all.length - 1]?.text ?? '';
+  useEffect(() => {
+    const el = logRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [all.length, lastText, voice.interim]);
 
-      const data = (await res.json()) as { text: string; evidence?: Evidence[] };
-      const evidence = Array.isArray(data.evidence) ? data.evidence : [];
-      const amber = /approvazion|persona|umana|fermo|cancello/i.test(data.text);
-      setMode('live');
-      stopSpin(6, amber ? 'amber' : 'good');
-      const id = ++lineSeq.current;
-      setLines((l) => [...l, { id, who: 'dolmir', text: data.text, tone: amber ? 'amber' : 'accent', evidence }]);
-      setTypedId(id);
-      speak(data.text);
-      emit('CONSOLE.REPLY', `AI live · ${evidence.length} strumenti consultati`, 'accent');
-      setBusy(false);
-    } catch {
-      stopSpin(null, 'amber');
-      setLines((l) => [...l, { who: 'dolmir', text: c.offlineNote, tone: 'amber' }]);
-      setBusy(false);
-    }
-  }, [busy, mode, answerDegraded, startSpin, stopSpin, speak]);
-
-  /* --------------------------------------------------------------- voice */
-  const listen = useCallback(() => {
-    if (mic === 'listening') { recRef.current?.stop(); return; }
-    interface SpeechRecognitionLike {
-      lang: string; interimResults: boolean; maxAlternatives: number;
-      onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal?: boolean }> }) => void) | null;
-      onerror: ((e: { error: string }) => void) | null;
-      onend: (() => void) | null;
-      start: () => void; stop: () => void;
-    }
-    const W = window as unknown as { SpeechRecognition?: new () => SpeechRecognitionLike; webkitSpeechRecognition?: new () => SpeechRecognitionLike };
-    const Ctor = W.SpeechRecognition ?? W.webkitSpeechRecognition;
-    if (!Ctor) { setMic('unsupported'); setNote(c.errors.unsupported); return; }
-    try {
-      const rec = new Ctor();
-      rec.lang = 'it-IT';
-      // Interim results stream into the input while the visitor is still
-      // talking — the system is visibly hearing them, word by word.
-      rec.interimResults = true;
-      rec.maxAlternatives = 1;
-      rec.onresult = (e) => {
-        let final = '';
-        let interim = '';
-        for (let i = 0; i < e.results.length; i++) {
-          const r = e.results[i];
-          const t = r?.[0]?.transcript ?? '';
-          if (r?.isFinal) final += t;
-          else interim += t;
-        }
-        if (final.trim()) {
-          setInput('');
-          void answer(final.trim());
-        } else if (interim.trim()) {
-          setInput(interim.trim());
-        }
-      };
-      rec.onerror = (e) => {
-        setMic('idle');
-        if (e.error === 'not-allowed' || e.error === 'service-not-allowed') setNote(c.errors.denied);
-        else if (e.error === 'no-speech') setNote(c.errors.noSpeech);
-        else setNote(c.errors.network);
-      };
-      rec.onend = () => setMic('idle');
-      recRef.current = rec;
-      setNote(null);
-      setMic('listening');
-      setActivity('listening');
-      rec.start();
-    } catch {
-      setMic('unsupported');
-      setNote(c.errors.unsupported);
-    }
-  }, [mic, answer]);
-
-  /* ------------------------------------------------------------- render */
-  const toneText = (t?: string) => (t === 'amber' ? 'text-amber' : t === 'good' ? 'text-good' : 'text-accent');
   const coreState: CoreState =
-    mic === 'listening' ? 'listening'
-    : speaking ? 'speaking'
+    voice.mic === 'listening' ? 'listening'
+    : voice.speaking ? 'speaking'
+    : stage === 'DECISIONE' ? 'amber'
     : busy ? 'thinking'
-    : stage !== null && stageTone === 'amber' ? 'amber'
     : 'idle';
-  const suggestions: readonly string[] = mode === 'degraded' ? c.intents.map((i) => i.ask) : c.starters;
+
+  const evidenceCount = useMemo(
+    () => all.reduce((n, t) => n + (t.evidence?.length ?? 0), 0),
+    [all],
+  );
+
+  const statusLine =
+    voice.mic === 'listening' ? c.micListening
+    : voice.speaking ? 'STO PARLANDO'
+    : stage ? c.stageHint[stage]
+    : mode === 'degraded' ? 'MODALITÀ RIDOTTA'
+    : c.online;
 
   return (
     <section
@@ -346,190 +170,381 @@ export function Parla() {
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
 
-        <div className="mt-[var(--space-block)] max-w-[56rem]">
-          {/* One system: the film plays around the Core; the Core is the mic. */}
-          <div className="mb-3">
-            <FilmCinema endStyle="bar">
+        <div className="mt-[var(--space-block)]">
+          {/* The Core is the microphone, and the film plays around it. */}
+          <div className="mx-auto max-w-[52rem]">
+            <FilmCinema endStyle="bar" frame="short">
               <DolmirCore
                 state={coreState}
-                onActivate={mic !== 'unsupported' ? listen : undefined}
-                label={mic === 'listening' ? 'Interrompi ascolto' : 'Parla con DOLMIR'}
+                level={voice.level}
+                onActivate={voice.supported ? voice.listen : undefined}
+                label={voice.mic === 'listening' ? c.micStop : c.micLabel}
               />
             </FilmCinema>
+            <p className="mt-3 text-center text-[0.9375rem] text-ink-2">
+              {voice.supported ? (
+                <>
+                  Toccate il nucleo e <span className="text-accent">parlate</span>. Oppure scrivete qui sotto.
+                </>
+              ) : (
+                <>Scrivete la vostra domanda qui sotto.</>
+              )}
+            </p>
           </div>
-          <p className="telemetry mb-6 text-center text-faint">
-            {mic === 'listening' ? c.micListening : mic !== 'unsupported' ? 'TOCCATE IL NUCLEO PER PARLARE' : 'SCRIVETE QUI SOTTO'}
-          </p>
-          <div className="glass-solid relative border-rule">
-            {/* console header */}
-            <div className="flex items-center justify-between gap-3 border-b border-rule/70 px-4 py-3 sm:px-6">
+
+          {/* ------------------------------------------------ the instrument */}
+          <div data-quiet-readout className="mt-6 border border-rule bg-void/70 backdrop-blur-sm">
+            {/* header: identity + what the system is doing, right now */}
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 border-b border-rule px-4 py-3 sm:px-6">
               <p className="telemetry text-ink">DOLMIR INTELLIGENCE</p>
-              <p className={`telemetry flex items-center gap-2 ${mode === 'degraded' ? 'text-amber' : 'text-good'}`}>
-                <span aria-hidden className={`block size-1.5 rounded-full ${mode === 'degraded' ? 'bg-amber' : 'bg-good'} ${reduce ? '' : 'animate-pulse'}`} />
-                {mode === 'degraded' ? 'MODALITÀ RIDOTTA' : c.online}
+              <p className={`telemetry flex items-center gap-2 ${mode === 'degraded' ? 'text-amber' : stage === 'DECISIONE' ? 'text-amber' : busy || voice.mic === 'listening' ? 'text-accent' : 'text-good'}`}>
+                <span
+                  aria-hidden
+                  className={`block size-1.5 rounded-full ${
+                    mode === 'degraded' || stage === 'DECISIONE' ? 'bg-amber' : busy || voice.mic === 'listening' ? 'bg-accent' : 'bg-good'
+                  } ${reduce ? '' : 'animate-pulse'}`}
+                />
+                {statusLine}
               </p>
             </div>
 
-            {/* transcript */}
-            <div ref={logRef} className="max-h-[26rem] min-h-[10rem] overflow-y-auto px-4 py-5 sm:px-6" aria-live="polite">
-              {lines.length === 0 && <p className="text-[1.05rem] text-ink">{c.prompt}</p>}
-              <ol className="space-y-5">
-                {lines.map((l, i) => (
-                  <li key={i} className={reduce ? '' : 'settle'}>
-                    {l.who === 'you' ? (
-                      <div>
-                        <p className="telemetry text-faint">VOI</p>
-                        <p className="mt-1 text-[0.9375rem] text-ink-2">{l.text}</p>
-                      </div>
-                    ) : (
-                      <div>
-                        <p className={`telemetry ${toneText(l.tone)}`}>DOLMIR</p>
-                        <p className="mt-1 max-w-[58ch] whitespace-pre-line text-[0.9375rem] leading-relaxed text-ink">
-                          <Typed text={l.text} animate={!reduce && l.id === typedId} onGrow={scrollLog} />
-                        </p>
-                        {l.evidence && l.evidence.length > 0 && (
-                          <div className="mt-3 border border-rule/70 bg-void/50">
-                            <p className="telemetry border-b border-rule/60 px-3 py-1.5 text-faint">{c.evidenceLabel}</p>
-                            <ul className="divide-y divide-rule/50">
-                              {l.evidence.map((e, k) => (
-                                <li key={k} className="px-3 py-2">
-                                  <p className="font-mono text-[0.6875rem] tracking-[0.1em] text-accent">{e.label}</p>
-                                  {preview(e.data).length > 0 && (
-                                    <p className="mt-0.5 font-mono text-[0.65rem] leading-relaxed text-muted">
-                                      {preview(e.data).join(' · ')}
-                                    </p>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
+            <div className="grid lg:grid-cols-[1fr_20rem] xl:grid-cols-[1fr_22rem]">
+              {/* ------------------------------------------- the conversation */}
+              <div className="min-w-0 lg:border-r lg:border-rule">
+                <div
+                  ref={logRef}
+                  className="max-h-[24rem] min-h-[13rem] overflow-y-auto px-4 py-5 sm:px-6 lg:max-h-[30rem]"
+                  aria-live="polite"
+                >
+                  {all.length === 0 && !voice.interim && (
+                    <div className="py-2">
+                      <p className="max-w-[42ch] text-[1.0625rem] leading-relaxed text-ink sm:text-[1.125rem]">{c.prompt}</p>
+                      <p className="telemetry mt-3 text-faint">{c.promptSub}</p>
+                    </div>
+                  )}
+
+                  <ol className="space-y-6">
+                    {all.map((t) => (
+                      <li key={t.id} className={reduce ? '' : 'settle'}>
+                        {t.who === 'you' ? (
+                          <div>
+                            <p className="telemetry text-faint">VOI</p>
+                            <p className="mt-1 text-[0.9375rem] text-ink-2">{t.text}</p>
                           </div>
+                        ) : (
+                          <Answer turn={t} reduce={reduce} onDecide={console_.decide} />
                         )}
-                        {l.fx === 'conflicts' && (
-                          <ul className="mt-3 flex flex-wrap gap-1.5">
-                            {c.conflicts.map((k) => (
-                              <li key={k} className="border border-amber/40 bg-amber-soft/60 px-2.5 py-1 font-mono text-[0.6875rem] tracking-[0.08em] text-amber">
-                                {k}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                        {l.link && (
-                          <a href={l.link.href} className="mt-3 inline-block border border-accent/60 px-3 py-1.5 font-mono text-[0.6875rem] tracking-[0.16em] text-accent transition-colors hover:bg-accent hover:text-ground">
-                            {l.link.t}
-                          </a>
-                        )}
-                      </div>
-                    )}
-                  </li>
-                ))}
-                {busy && mode !== 'degraded' && (
-                  <li>
-                    <p className="telemetry text-accent">DOLMIR</p>
-                    <p className={`mt-1 font-mono text-[0.75rem] tracking-[0.14em] text-muted ${reduce ? '' : 'animate-pulse'}`}>
+                      </li>
+                    ))}
+                  </ol>
+
+                  {/* what the microphone is hearing, as it hears it */}
+                  {voice.interim && (
+                    <p className="mt-5 max-w-[46ch] border-l-2 border-accent/60 pl-3 text-[0.9375rem] italic text-muted">
+                      {voice.interim}
+                      <span aria-hidden className="ml-0.5 not-italic text-accent">▌</span>
+                    </p>
+                  )}
+
+                  {busy && !all.some((t) => t.live && t.text) && (
+                    <p className={`mt-5 font-mono text-[0.75rem] tracking-[0.14em] text-muted ${reduce ? '' : 'animate-pulse'}`}>
                       {c.thinking}
                     </p>
-                  </li>
-                )}
-              </ol>
-            </div>
+                  )}
+                </div>
 
-            {/* pipeline stages — the system visibly working */}
-            <div className="flex items-center gap-1 overflow-x-auto border-t border-rule/70 px-4 py-2.5 sm:px-6" aria-hidden>
-              {c.stages.map((s, i) => (
-                <span key={s} className="flex items-center gap-1">
-                  {i > 0 && <span className="mx-1 block h-px w-3 bg-rule-strong sm:w-5" />}
-                  <span
-                    className={`whitespace-nowrap font-mono text-[0.625rem] tracking-[0.14em] transition-colors duration-300 ${
-                      stage === i
-                        ? stageTone === 'amber' && i >= 4 ? 'text-amber' : stageTone === 'good' && i === 6 ? 'text-good' : 'text-accent'
-                        : stage !== null && i < stage ? 'text-muted' : 'text-faint'
-                    }`}
+                {/* ------------------------------------------------- input row */}
+                <form
+                  className="flex items-stretch gap-2 border-t border-rule p-3 sm:p-4"
+                  onSubmit={(e) => { e.preventDefault(); const v = input; setInput(''); void submit(v); }}
+                >
+                  {voice.supported && (
+                    <button
+                      type="button"
+                      onClick={voice.listen}
+                      aria-label={voice.mic === 'listening' ? c.micStop : c.micLabel}
+                      className={`flex min-w-[3.25rem] items-center justify-center gap-2 border px-3 font-mono text-[0.6875rem] tracking-[0.14em] transition-colors sm:px-4 ${
+                        voice.mic === 'listening'
+                          ? 'border-accent bg-accent text-ground'
+                          : 'border-accent/70 text-accent hover:bg-accent/10'
+                      }`}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden className={voice.mic === 'listening' && !reduce ? 'animate-pulse' : ''}>
+                        <rect x="5" y="1" width="4" height="7" rx="2" fill="currentColor" />
+                        <path d="M3 6v1a4 4 0 0 0 8 0V6M7 11v2" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+                      </svg>
+                      <span className="hidden sm:inline">{voice.mic === 'listening' ? c.micStop : c.micLabel}</span>
+                    </button>
+                  )}
+                  <input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder={c.inputPlaceholder}
+                    aria-label="Scrivi a DOLMIR"
+                    className="min-w-0 flex-1 border border-rule bg-void/60 px-3.5 py-2.5 text-[0.9375rem] text-ink placeholder:text-faint focus:border-accent/60 focus:outline-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={busy || !input.trim()}
+                    className="border border-rule-strong px-3.5 font-mono text-[0.6875rem] tracking-[0.16em] text-ink-2 transition-colors enabled:hover:border-accent enabled:hover:text-accent disabled:opacity-40 sm:px-4"
                   >
-                    {s}
-                  </span>
-                </span>
-              ))}
+                    {c.send}
+                  </button>
+                </form>
+              </div>
+
+              {/* --------------------------------------------- the system side */}
+              <SystemPanel
+                stage={stage}
+                passed={passed}
+                evidence={all.flatMap((t) => t.evidence ?? [])}
+                count={evidenceCount}
+                reduce={reduce}
+                degraded={mode === 'degraded'}
+              />
             </div>
 
-            {/* input row */}
-            <form
-              className="flex items-stretch gap-2 border-t border-rule/70 p-3 sm:p-4"
-              onSubmit={(e) => { e.preventDefault(); void answer(input); setInput(''); }}
-            >
-              {mic !== 'unsupported' && (
+            {/* voice controls + honesty line */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-rule px-4 py-2.5 sm:px-6">
+              <p className="telemetry text-faint">{mode === 'degraded' ? c.disclaimerDegraded : c.disclaimer}</p>
+              <div className="flex items-center gap-2">
+                {voice.speaking && (
+                  <button
+                    type="button"
+                    onClick={voice.shutUp}
+                    className="border border-amber/60 px-2.5 py-1 font-mono text-[0.625rem] tracking-[0.14em] text-amber transition-colors hover:bg-amber/10"
+                  >
+                    {c.interrupt}
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={listen}
-                  aria-label={mic === 'listening' ? 'Interrompi ascolto' : c.micLabel}
-                  className={`flex min-w-[3.25rem] items-center justify-center gap-2 border px-3 font-mono text-[0.6875rem] tracking-[0.14em] transition-colors sm:min-w-0 sm:px-4 ${
-                    mic === 'listening'
-                      ? 'border-accent bg-accent text-ground'
-                      : 'border-accent/70 text-accent hover:bg-accent/10'
+                  onClick={() => { setVoiceOn((v) => { if (v) voice.shutUp(); return !v; }); }}
+                  aria-pressed={voiceOn}
+                  className={`border px-2.5 py-1 font-mono text-[0.625rem] tracking-[0.14em] transition-colors ${
+                    voiceOn ? 'border-rule-strong text-ink-2' : 'border-rule text-faint'
                   }`}
                 >
-                  <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden className={mic === 'listening' && !reduce ? 'animate-pulse' : ''}>
-                    <rect x="5" y="1" width="4" height="7" rx="2" fill="currentColor" />
-                    <path d="M3 6v1a4 4 0 0 0 8 0V6M7 11v2" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
-                  </svg>
-                  <span className="hidden sm:inline">{mic === 'listening' ? c.micListening : c.micLabel}</span>
+                  {voiceOn ? c.voiceOn : c.voiceOff}
                 </button>
-              )}
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={c.inputPlaceholder}
-                aria-label="Scrivi a DOLMIR"
-                className="min-w-0 flex-1 border border-rule bg-void/60 px-3.5 py-2.5 text-[0.9375rem] text-ink placeholder:text-faint focus:border-accent/60 focus:outline-none"
-              />
-              <button
-                type="submit"
-                disabled={busy || !input.trim()}
-                className="border border-rule-strong px-3.5 font-mono text-[0.6875rem] tracking-[0.16em] text-ink-2 transition-colors enabled:hover:border-accent enabled:hover:text-accent disabled:opacity-40 sm:px-4"
-              >
-                {c.send}
-              </button>
-              <button
-                type="button"
-                onClick={() => { setVoiceOn((v) => { if (v) { try { window.speechSynthesis?.cancel(); } catch { /* off */ } } return !v; }); }}
-                aria-pressed={voiceOn}
-                className={`hidden border px-3 font-mono text-[0.625rem] tracking-[0.14em] transition-colors sm:block ${
-                  voiceOn ? 'border-rule-strong text-ink-2' : 'border-rule text-faint'
-                }`}
-              >
-                {voiceOn ? c.voiceOn : c.voiceOff}
-              </button>
-            </form>
+              </div>
+            </div>
           </div>
 
           {note && <p className="mt-3 text-[0.8125rem] text-amber">{note}</p>}
-          {mic === 'unsupported' && !note && (
-            <p className="mt-3 text-[0.8125rem] text-muted">{c.errors.unsupported}</p>
-          )}
+          {mode === 'degraded' && !note && <p className="mt-3 text-[0.8125rem] text-amber">{c.degradedNote}</p>}
 
-          {/* starter questions — the visitor should never wonder what to say */}
-          <div className="mt-5">
+          {/* ------------------------------------------------- the invitations */}
+          <div className={`mt-5 transition-opacity duration-500 ${started ? 'opacity-70' : 'opacity-100'}`}>
             <p className="telemetry text-faint">{c.suggestLabel}</p>
-            <ul className="mt-2.5 flex flex-wrap gap-2">
-              {suggestions.map((q) => (
-                <li key={q}>
+            <ul className="mt-2.5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {c.starters.map((s) => (
+                <li key={s.t}>
                   <button
                     type="button"
                     disabled={busy}
-                    onClick={() => void answer(q)}
-                    className="border border-rule bg-surface/70 px-3 py-1.5 text-[0.8125rem] text-ink-2 transition-colors enabled:hover:border-accent/60 enabled:hover:text-ink disabled:opacity-50"
+                    onClick={() => void submit(s.t)}
+                    className="group h-full w-full border border-rule bg-surface/60 px-3.5 py-3 text-left transition-colors enabled:hover:border-accent/60 enabled:hover:bg-surface disabled:opacity-50"
                   >
-                    {q}
+                    <span className="block text-[0.875rem] leading-snug text-ink-2 group-hover:text-ink">{s.t}</span>
+                    <span className="telemetry mt-1.5 block text-faint">{s.k}</span>
                   </button>
                 </li>
               ))}
             </ul>
+            <p className="telemetry mt-3 text-faint">{c.contextNote}</p>
           </div>
-
-          <p className="telemetry mt-4 text-faint">
-            {mode === 'degraded' ? c.disclaimerDegraded : c.disclaimer}
-          </p>
         </div>
       </Container>
     </section>
+  );
+}
+
+/* ========================================================== one answer === */
+
+function Answer({ turn, reduce, onDecide }: { turn: Turn; reduce: boolean; onDecide: (id: number, choice: string) => void }) {
+  const amber = turn.tone === 'amber';
+  return (
+    <div>
+      <p className={`telemetry ${amber ? 'text-amber' : 'text-accent'}`}>DOLMIR</p>
+
+      {turn.text && (
+        <p className="mt-1 max-w-[58ch] whitespace-pre-line text-[0.9375rem] leading-relaxed text-ink">
+          {turn.text}
+          {turn.live && <span aria-hidden className="ml-0.5 text-accent">▌</span>}
+        </p>
+      )}
+
+      {/* NON DETERMINATO — the system saying it does not know, on purpose. */}
+      {turn.unknown && (
+        <div className="mt-3 border border-amber/50 bg-amber-soft/40">
+          <p className="flex items-center gap-2 border-b border-amber/30 px-3 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-amber">
+            <span aria-hidden className="block size-1.5 bg-amber" />
+            {c.unknownTitle}
+          </p>
+          <div className="px-3 py-2.5">
+            <p className="text-[0.875rem] leading-relaxed text-ink-2">{turn.unknown.question || c.unknownLead}</p>
+            {turn.unknown.missing.length > 0 && (
+              <>
+                <p className="telemetry mt-2.5 text-faint">{c.unknownMissing}</p>
+                <ul className="mt-1.5 space-y-1">
+                  {turn.unknown.missing.map((m) => (
+                    <li key={m} className="flex gap-2 text-[0.8125rem] leading-snug text-muted">
+                      <span aria-hidden className="mt-[0.45em] block h-px w-2.5 flex-none bg-amber/70" />
+                      {m}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* THE HUMAN GATE — the strongest moment in the experience. */}
+      {turn.gate && (
+        <div className={`mt-3 border-2 border-amber/70 bg-amber-soft/40 ${reduce ? '' : 'settle'}`}>
+          <p className="flex items-center gap-2 border-b border-amber/40 bg-amber/10 px-3 py-2 font-mono text-[0.6875rem] tracking-[0.2em] text-amber">
+            <span aria-hidden className={`block size-1.5 bg-amber ${reduce ? '' : 'animate-pulse'}`} />
+            {c.gateTitle}
+          </p>
+          <div className="px-3 py-3 sm:px-4">
+            <p className="max-w-[46ch] text-[0.9375rem] font-medium leading-snug text-ink">{turn.gate.question}</p>
+            <p className="mt-1 text-[0.8125rem] text-muted">{c.gateLead}</p>
+
+            <ul className="mt-3 grid gap-px bg-amber/20 sm:grid-cols-2">
+              {turn.gate.options.map((o, i) => (
+                <li key={o.label} className="bg-void/60 p-3">
+                  <p className="flex items-baseline gap-2 text-[0.875rem] font-medium text-ink">
+                    <span className="tnum font-mono text-[0.625rem] text-amber">{String(i + 1).padStart(2, '0')}</span>
+                    {o.label}
+                  </p>
+                  {o.detail && <p className="mt-1 text-[0.8125rem] leading-snug text-muted">{o.detail}</p>}
+                </li>
+              ))}
+            </ul>
+
+            {turn.gate.stake && (
+              <p className="mt-3 text-[0.8125rem] text-muted">
+                <span className="telemetry mr-2 text-faint">{c.gateStake}</span>
+                {turn.gate.stake}
+              </p>
+            )}
+
+            {turn.decided ? (
+              <p className="mt-3 flex items-center gap-2 font-mono text-[0.6875rem] tracking-[0.16em] text-good">
+                <span aria-hidden>✓</span> {c.gateDecided} · {turn.decided}
+              </p>
+            ) : (
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => onDecide(turn.id, c.gateApprove)}
+                  className="border border-accent bg-accent px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-ground transition-opacity hover:opacity-90"
+                >
+                  {c.gateApprove}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDecide(turn.id, c.gateModify)}
+                  className="border border-amber/70 px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-amber transition-colors hover:bg-amber/10"
+                >
+                  {c.gateModify}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDecide(turn.id, c.gateReject)}
+                  className="border border-rule-strong px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-muted transition-colors hover:border-muted hover:text-ink-2"
+                >
+                  {c.gateReject}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Evidence stays with its answer on phones, where there is no side panel. */}
+      {turn.evidence && turn.evidence.length > 0 && (
+        <ul className="mt-3 flex flex-wrap gap-1.5 lg:hidden">
+          {turn.evidence.map((e, i) => (
+            <li key={`${e.tool}-${i}`} className="border border-rule bg-void/60 px-2.5 py-1 font-mono text-[0.625rem] tracking-[0.08em] text-muted">
+              {e.summary}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/* ================================================== the system, watching === */
+
+function SystemPanel({
+  stage, passed, evidence, count, reduce, degraded,
+}: {
+  stage: Stage | null;
+  passed: Stage[];
+  evidence: Evidence[];
+  count: number;
+  reduce: boolean;
+  degraded: boolean;
+}) {
+  const recent = evidence.slice(-6);
+  return (
+    <aside className="hidden min-w-0 flex-col lg:flex" aria-label={c.systemPanel}>
+      <p className="telemetry border-b border-rule px-4 py-2.5 text-faint">{c.systemPanel}</p>
+
+      {/* the pipeline, driven by real events from the server */}
+      <ol className="space-y-0 border-b border-rule px-4 py-3">
+        {STAGES.map((s) => {
+          const active = stage === s;
+          const done = !active && passed.includes(s);
+          const amber = s === 'DECISIONE';
+          return (
+            <li key={s} className="flex items-center gap-2.5 py-1">
+              <span
+                aria-hidden
+                className={`block size-1.5 flex-none transition-colors duration-300 ${
+                  active ? (amber ? 'bg-amber' : 'bg-accent') : done ? 'bg-muted' : 'bg-rule-strong'
+                } ${active && !reduce ? 'animate-pulse' : ''}`}
+              />
+              <span
+                className={`font-mono text-[0.6875rem] tracking-[0.14em] transition-colors duration-300 ${
+                  active ? (amber ? 'text-amber' : 'text-accent') : done ? 'text-muted' : 'text-faint'
+                }`}
+              >
+                {s}
+              </span>
+              {active && <span className="truncate text-[0.75rem] text-muted">{c.stageHint[s]}</span>}
+            </li>
+          );
+        })}
+      </ol>
+
+      {/* what it has actually read, in plain words */}
+      <div className="min-h-0 flex-1 px-4 py-3">
+        <p className="telemetry text-faint">
+          {c.consultedLabel}
+          {count > 0 && <span className="ml-2 text-accent">{count}</span>}
+        </p>
+        {recent.length === 0 ? (
+          <p className="mt-2 text-[0.8125rem] leading-snug text-faint">
+            {degraded ? c.panelDegraded : c.nothingYet}
+          </p>
+        ) : (
+          <ul className="mt-2 space-y-2">
+            {recent.map((e, i) => (
+              <li key={`${e.tool}-${i}`} className={reduce ? '' : 'settle'}>
+                <p className="text-[0.8125rem] leading-snug text-ink-2">{e.summary}</p>
+                {preview(e.data).length > 0 && (
+                  <p className="mt-0.5 truncate font-mono text-[0.625rem] text-faint">{preview(e.data).join(' · ')}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </aside>
   );
 }

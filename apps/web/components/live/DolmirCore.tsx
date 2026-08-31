@@ -18,6 +18,12 @@ import { usePalette } from '@/lib/palette';
  *   speaking   radial ticks modulate around the ring like a voice
  *   amber      everything slows and warms — a decision point
  *
+ * While listening, the ring is driven by the REAL microphone amplitude
+ * (`level`, a ref written by the voice layer's analyser): the ripples and the
+ * radial ticks answer the visitor's actual voice, so the feedback is a
+ * measurement rather than an animation that would run just the same in a
+ * silent room.
+ *
  * Canvas 2D, one rAF, ~1KB of state; reduced motion renders a still ring.
  */
 
@@ -27,14 +33,19 @@ export function DolmirCore({
   state,
   onActivate,
   label,
+  level,
 }: {
   state: CoreState;
   onActivate?: () => void;
   label: string;
+  /** Live microphone amplitude 0..1 while listening. */
+  level?: React.RefObject<number>;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<CoreState>(state);
   stateRef.current = state;
+  const levelRef = useRef(0);
+  const liveLevel = level ?? levelRef;
   const palette = usePalette();
 
   useEffect(() => {
@@ -50,6 +61,7 @@ export function DolmirCore({
     let energy = 0;      // 0 calm → 1 listening/speaking
     let warmth = 0;      // 0 cyan → 1 amber
     let spin = 0;
+    let amp = 0;         // smoothed real microphone amplitude
 
     const size = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -79,6 +91,9 @@ export function DolmirCore({
       const targetWarmth = s === 'amber' ? 1 : 0;
       energy += (targetEnergy - energy) * Math.min(1, dt * 4);
       warmth += (targetWarmth - warmth) * Math.min(1, dt * 4);
+      // Fast attack, slow release: speech reads as impulses, not as a wobble.
+      const target = s === 'listening' ? Math.min(1, liveLevel.current) : 0;
+      amp += (target - amp) * Math.min(1, dt * (target > amp ? 18 : 6));
       spin += dt * (s === 'thinking' ? 1.6 : s === 'amber' ? 0.08 : 0.35);
 
       const cx = w / 2;
@@ -132,7 +147,8 @@ export function DolmirCore({
         const mod = s === 'speaking'
           ? 0.5 + 0.5 * Math.abs(Math.sin(t * 7 + i * 1.7))
           : s === 'listening'
-            ? 0.4 + 0.6 * Math.abs(Math.sin(t * 5 + i * 0.9))
+            // The visitor's own voice, measured: a quiet room keeps the ring quiet.
+            ? 0.18 + (0.25 + 0.75 * Math.abs(Math.sin(t * 5 + i * 0.9))) * amp * 1.5
             : 0.25;
         const l = 3 + mod * energy * 10;
         const r0 = r * 0.82;
@@ -148,7 +164,7 @@ export function DolmirCore({
       if (s === 'listening') {
         for (let k = 0; k < 2; k++) {
           const ph = ((t * 0.7 + k * 0.5) % 1);
-          ctx!.globalAlpha = (1 - ph) * 0.35;
+          ctx!.globalAlpha = (1 - ph) * (0.12 + amp * 0.45);
           ctx!.lineWidth = 1;
           ctx!.beginPath();
           ctx!.arc(cx, cy, r * (1.25 + ph * 0.55), 0, Math.PI * 2);

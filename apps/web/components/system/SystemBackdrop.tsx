@@ -114,6 +114,9 @@ export function SystemReadout() {
   // Hidden at the very top: the hero already says SYS.INIT, and a chip that
   // repeats it competes with the opening frame. It comes online as you enter.
   const [visible, setVisible] = useState(false);
+  // …and stands down over the console, which reports its own live state and
+  // would otherwise be overlapped by this chip in the same corner.
+  const [suppressed, setSuppressed] = useState(false);
 
   useEffect(() => {
     let ticking = false;
@@ -131,7 +134,14 @@ export function SystemReadout() {
     }
     update();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+
+    const console_ = document.querySelector('[data-quiet-readout]');
+    let io: IntersectionObserver | undefined;
+    if (console_) {
+      io = new IntersectionObserver(([e]) => setSuppressed(Boolean(e?.isIntersecting)), { threshold: 0.12 });
+      io.observe(console_);
+    }
+    return () => { window.removeEventListener('scroll', onScroll); io?.disconnect(); };
   }, []);
 
   const stage = STAGES[i]!;
@@ -141,7 +151,7 @@ export function SystemReadout() {
     <aside
       data-readout
       className={`pointer-events-none fixed bottom-5 right-[var(--gutter)] z-30 hidden transition-opacity duration-[var(--duration-base)] lg:block ${
-        visible ? 'opacity-100' : 'opacity-0'
+        visible && !suppressed ? 'opacity-100' : 'opacity-0'
       }`}
       aria-live="polite"
       aria-label="Stato del sistema"

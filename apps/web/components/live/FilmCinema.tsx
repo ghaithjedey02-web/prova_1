@@ -63,10 +63,17 @@ type Mode = 'poster' | 'playing' | 'done' | 'fallback';
 export function FilmCinema({
   children,
   endStyle = 'center',
+  frame = 'wide',
 }: {
   /** Rendered centred over the stage — the interactive DOLMIR Core. */
   children?: React.ReactNode;
   endStyle?: 'center' | 'bar';
+  /**
+   * 'short' crops to 21:9. In the console the film shares the viewport with
+   * the instrument below it, and a visitor who cannot see the console while
+   * looking at the Core does not know there is anything to talk to.
+   */
+  frame?: 'wide' | 'short';
 } = {}) {
   const video = useRef<HTMLVideoElement>(null);
   const [mode, setMode] = useState<Mode>('poster');
@@ -151,7 +158,7 @@ export function FilmCinema({
     /* No playable film (reduced motion, blocked network): the Core alone on
        a quiet stage — never a dead player, never two competing posters. */
     return children ? (
-      <div className="relative flex aspect-video items-center justify-center overflow-hidden border border-rule bg-void">
+      <div className={`relative flex items-center justify-center overflow-hidden border border-rule bg-void ${frame === 'short' ? 'aspect-[21/9]' : 'aspect-video'}`}>
         <div className="pool absolute inset-0 opacity-40" aria-hidden />
         <div className="sheet-fine absolute inset-0 opacity-30" aria-hidden />
         {children}
@@ -164,7 +171,7 @@ export function FilmCinema({
   return (
     <div ref={host} data-inspect="FilmCinema · il film prodotto">
       <div className="relative overflow-hidden border border-rule bg-void">
-        <div className="relative aspect-video w-full">
+        <div className={`relative w-full ${frame === 'short' ? 'aspect-[21/9]' : 'aspect-video'}`}>
           <video
             ref={video}
             src={SOURCES[srcIdx]}
