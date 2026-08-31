@@ -181,7 +181,7 @@ export const film = {
 /* ==================================== home === the intelligence core ========*/
 
 export const intelligence = {
-  n: '05',
+  n: '06',
   label: 'Il livello intelligente',
   headline: 'Un livello intelligente, sopra i sistemi che avete già.',
   body:
@@ -303,10 +303,125 @@ export const intelligence = {
   disclaimer: 'Sistema dimostrativo · dati di esempio.',
 } as const;
 
+/* ==================================== home === parla con DOLMIR =============*/
+
+export const parla = {
+  n: '03',
+  label: 'Parla con DOLMIR',
+  headline: 'Fategli una domanda. Il sistema risponde.',
+  body:
+    'Questa è la console di DOLMIR Intelligence, in versione dimostrativa: capisce un set di domande sul demo che avete appena visto e risponde mostrando come ragiona — a voce o per iscritto. Il sistema vero fa la stessa cosa sui dati della vostra azienda.',
+  online: 'SYSTEM ONLINE',
+  prompt: 'Come posso aiutarti?',
+  micLabel: 'PARLA CON DOLMIR',
+  micListening: 'TI ASCOLTO…',
+  inputPlaceholder: 'oppure scrivi qui…',
+  send: 'INVIA',
+  voiceOn: 'VOCE ON',
+  voiceOff: 'VOCE OFF',
+  stages: ['INPUT', 'ANALISI', 'DATI', 'VERIFICA', 'DECISIONE', 'AZIONE'],
+  suggestLabel: 'PROVATE A CHIEDERE',
+  /* What the console can answer. Deterministic on purpose: the public demo
+     never fakes an AI it is not running — and says so if asked. */
+  intents: [
+    {
+      id: 'come-funziona',
+      ask: 'Fammi vedere come funziona.',
+      match: ['come funziona', 'come lavori', 'cosa fai', 'spiegami', 'funzioni', 'fammi vedere come'],
+      seq: [0, 1, 2, 3, 4, 5],
+      tone: 'accent',
+      reply:
+        'Leggo quello che arriva — email, PDF, gestionali — e lo trasformo in dati, ognuno con la sua fonte attaccata. Poi verifico sui sistemi che avete già: anagrafiche, giacenze, listini. Se tutto torna preparo l’azione; se qualcosa non torna, mi fermo. E prima di eseguire, la decisione passa sempre da una persona.',
+    },
+    {
+      id: 'perche-fermato',
+      ask: 'Perché ti sei fermato?',
+      match: ['fermato', 'non hai approvato', 'bloccato', 'perche ti fermi', 'perché ti fermi', 'rifiutato'],
+      seq: [1, 3, 4],
+      tone: 'amber',
+      reply:
+        'Nel caso difficile del demo ho trovato quattro punti che non tornano, e con una confidenza del 58,4% non indovino: elenco i punti con l’evidenza e chiedo a una persona — oppure preparo le domande da fare al cliente.',
+      fx: 'conflicts',
+    },
+    {
+      id: 'trova-problema',
+      ask: 'Trova il problema.',
+      match: ['trova il problema', 'cosa hai trovato', 'quali problemi', 'incongruenze', 'che problema'],
+      seq: [1, 2, 3],
+      tone: 'amber',
+      reply:
+        'Quattro incongruenze, ognuna con la sua fonte: il cliente scritto in un modo ed esistente in anagrafica in un altro, un codice con due candidati, una quantità che email e allegato dichiarano diversa, e una consegna richiesta prima della capacità disponibile.',
+      fx: 'conflicts',
+    },
+    {
+      id: 'dopo-approvazione',
+      ask: 'Cosa succede dopo?',
+      match: ['cosa succede dopo', 'dopo l’approvazione', 'dopo lapprovazione', 'e poi', 'succede dopo', 'quando approvi'],
+      seq: [4, 5],
+      tone: 'good',
+      reply:
+        'Dopo il sì della persona eseguo: ordine inserito nel gestionale, conferma preparata per il cliente, CRM allineato. E ogni azione resta scritta nel registro — cosa ho letto, cosa ho verificato, chi ha deciso.',
+    },
+    {
+      id: 'caso-difficile',
+      ask: 'Fammi vedere un caso difficile.',
+      match: ['caso difficile', 'caso complesso', 'caso ambiguo'],
+      seq: [0, 1, 4],
+      tone: 'amber',
+      reply:
+        'Nel simulatore qui sopra c’è un ordine con un cliente ambiguo, un codice con due candidati, una quantità contraddittoria e una consegna impossibile. Apritelo e guardate dove mi fermo: la scheda si chiama proprio «Caso difficile».',
+      link: { t: 'APRI IL SIMULATORE →', href: '/#prova' },
+    },
+    {
+      id: 'chi-decide',
+      ask: 'Chi decide alla fine?',
+      match: ['chi decide', 'decisione umana', 'sostituite le persone', 'sostituisci', 'umano', 'persona decide'],
+      seq: [4],
+      tone: 'amber',
+      reply:
+        'Una persona. Sempre. Io capisco, verifico e preparo — ma ogni azione che richiede giudizio passa da un cancello umano: chi conosce il cliente approva, modifica o rifiuta. Anche il rifiuto è un esito corretto.',
+    },
+    {
+      id: 'cosa-non-fai',
+      ask: 'Cosa non fai?',
+      match: ['cosa non fai', 'limiti', 'non sai fare', 'cosa non sai'],
+      seq: [3, 4],
+      tone: 'accent',
+      reply:
+        'Non indovino quando i dati non bastano. Non eseguo azioni senza un’approvazione dove serve giudizio. Non sostituisco il vostro gestionale né le vostre persone. E non invento mai numeri: se un valore è di esempio, lo dichiaro.',
+    },
+    {
+      id: 'sei-vero',
+      ask: 'Sei un’AI vera?',
+      match: ['sei vero', 'sei un ai', 'sei un’ai', 'sei una ai', 'intelligenza artificiale vera', 'chatgpt', 'sei reale', 'demo'],
+      seq: [0],
+      tone: 'accent',
+      reply:
+        'Questa console pubblica è una demo: risposte predefinite, dati di esempio, nessun collegamento a sistemi reali — non fingo di essere quello che qui non sto eseguendo. Il sistema che installiamo è la versione vera: collegato ai vostri dati, con le stesse regole di prudenza.',
+    },
+  ],
+  fallback:
+    'Nel demo pubblico rispondo a un set di domande predefinite sul funzionamento di DOLMIR — non è ancora il sistema completo. Provate una delle domande qui sotto, oppure portateci un processo vero: su quello rispondiamo di persona.',
+  conflicts: [
+    'CLIENTE · «Meccanica Rossi» ≈ Officine Rossi S.r.l.',
+    'CODICE · SL-441 → 2 candidati',
+    'QUANTITÀ · PF-2205: 40 ↔ 60',
+    'CONSEGNA · 12/09 · capacità dal 19/09',
+    'CONFIDENZA · 58,4% · sotto soglia',
+  ],
+  errors: {
+    denied: 'Microfono non autorizzato — nessun problema: potete scrivere qui sotto.',
+    noSpeech: 'Non ho sentito nulla. Riprovate, oppure scrivete.',
+    network: 'Il riconoscimento vocale non risponde. La tastiera funziona sempre.',
+    unsupported: 'Questo browser non supporta la voce — scrivete pure.',
+  },
+  disclaimer: 'Demo interattiva · risposte predefinite · dati di esempio · nessun dato reale.',
+} as const;
+
 /* ==================================== home === what DOLMIR builds ===========*/
 
 export const capabilities = {
-  n: '04',
+  n: '05',
   label: 'Cosa costruiamo',
   headline: 'Sei famiglie di sistemi. Un’architettura.',
   body:
@@ -727,7 +842,7 @@ export const simulator = {
 
 export const chapters = {
   automation: {
-    n: '08',
+    n: '09',
     label: 'Automazione',
     headline: 'Il flusso, dall’ingresso alla firma.',
     body:
@@ -735,7 +850,7 @@ export const chapters = {
   },
 
   software: {
-    n: '09',
+    n: '10',
     label: 'Software',
     headline: 'Non solo automazioni. Interfacce.',
     body:
@@ -766,7 +881,7 @@ export const chapters = {
   },
 
   human: {
-    n: '10',
+    n: '11',
     label: 'Controllo',
     headline: 'Il sistema si ferma prima di decidere.',
     body:

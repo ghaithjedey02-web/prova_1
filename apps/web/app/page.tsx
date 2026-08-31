@@ -6,6 +6,7 @@ import { Capabilities } from '@/components/home/Capabilities';
 import { Materia } from '@/components/live/Materia';
 import { FlowDemo } from '@/components/live/FlowDemo';
 import { Simulator } from '@/components/live/Simulator';
+import { Parla } from '@/components/live/Parla';
 import { TheLine } from '@/components/line/TheLine';
 import { Software } from '@/components/home/Software';
 import { HumanGate } from '@/components/home/HumanGate';
@@ -52,6 +53,7 @@ export default function HomePage() {
       <Hero />
       <Problema />
       <Simulator />
+      <Parla />
       <Twin />
       <Capabilities />
       <Intelligence />

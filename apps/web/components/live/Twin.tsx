@@ -245,7 +245,7 @@ export function Twin() {
     <section className="relative py-[var(--space-section)]" data-inspect="Twin · grafo dei sistemi">
       <Container>
         <Chapter
-          n="03"
+          n="04"
           label="Trasformazione"
           headline="Da strumenti sparsi a un sistema."
           lead="Dodici sistemi che esistono in ogni azienda — manifatturiera, logistica, commerciale, di servizi. Prima di DOLMIR sono scollegati e alla deriva. Trascinate il cursore per fare la trasformazione con le vostre mani, o passate su un nodo per seguire il percorso che quel dato farebbe."
