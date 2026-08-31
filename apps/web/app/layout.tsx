@@ -78,6 +78,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${display.variable} ${sans.variable} ${mono.variable}`}
     >
       <body>
+        {/* Who we are, for machines: no reviews, no invented facts. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: site.name,
+              url: site.url,
+              logo: `${site.url}/apple-icon.png`,
+              email: site.email,
+              description: site.description,
+            }),
+          }}
+        />
         <a href="#main" className="skip">Vai al contenuto</a>
         {/* The machine the whole site sits on. Fixed, behind everything, driven
             by one scroll scalar. */}
