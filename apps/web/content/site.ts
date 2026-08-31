@@ -181,7 +181,7 @@ export const film = {
 /* ==================================== home === the intelligence core ========*/
 
 export const intelligence = {
-  n: '06',
+  n: '04',
   label: 'Il livello intelligente',
   headline: 'Un livello intelligente, sopra i sistemi che avete già.',
   body:
@@ -310,7 +310,7 @@ export const parla = {
   label: 'Parla con DOLMIR',
   headline: 'Fategli una domanda. Il sistema risponde.',
   body:
-    'Questa è la console di DOLMIR Intelligence, in versione dimostrativa: capisce un set di domande sul demo che avete appena visto e risponde mostrando come ragiona — a voce o per iscritto. Il sistema vero fa la stessa cosa sui dati della vostra azienda.',
+    'La console è collegata a un modello AI reale, con accesso a un’azienda dimostrativa: ordini, clienti, preventivi, fatture, produzione — dati simulati. Fategli domande vere, a voce o per iscritto: risponde con i dati, mostra le fonti che ha consultato e si ferma dove serve una persona.',
   online: 'SYSTEM ONLINE',
   prompt: 'Come posso aiutarti?',
   micLabel: 'PARLA CON DOLMIR',
@@ -415,7 +415,22 @@ export const parla = {
     network: 'Il riconoscimento vocale non risponde. La tastiera funziona sempre.',
     unsupported: 'Questo browser non supporta la voce — scrivete pure.',
   },
-  disclaimer: 'Demo interattiva · risposte predefinite · dati di esempio · nessun dato reale.',
+  starters: [
+    'Quali ordini sono in ritardo?',
+    'Perché l’ordine 10482 è in ritardo?',
+    'Quali informazioni sono in conflitto?',
+    'Che cosa faresti in questo caso?',
+    'Come funziona DOLMIR?',
+    'Sei un’AI vera?',
+  ],
+  evidenceLabel: 'DATI CONSULTATI',
+  thinking: 'INTERROGO I SISTEMI…',
+  degradedNote:
+    'Il modello live non è attivo su questo ambiente: la console risponde in modalità dimostrativa ridotta, con risposte predefinite.',
+  busyNote: 'Troppe richieste ravvicinate — riprovate fra qualche secondo.',
+  offlineNote: 'Il sistema non risponde in questo momento. Riprovate, oppure scrivete a info@dolmir.com.',
+  disclaimer: 'Demo live · AI reale · dati aziendali simulati · nessun dato di clienti veri.',
+  disclaimerDegraded: 'Demo dimostrativa · risposte predefinite · dati di esempio.',
 } as const;
 
 /* ==================================== home === what DOLMIR builds ===========*/
@@ -881,7 +896,7 @@ export const chapters = {
   },
 
   human: {
-    n: '11',
+    n: '07',
     label: 'Controllo',
     headline: 'Il sistema si ferma prima di decidere.',
     body:

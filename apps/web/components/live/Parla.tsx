@@ -7,29 +7,25 @@ import { emit, setActivity } from '@/lib/system-bus';
 import { parla as c } from '@/content/site';
 
 /**
- * PARLA CON DOLMIR — the console of the system, not a chatbot widget.
+ * PARLA CON DOLMIR — the console of the system, live.
  *
- * The visitor asks — by voice (Web Speech API, where the browser offers it)
- * or by keyboard — and DOLMIR answers in its own register while the pipeline
- * stages light up under the words: INPUT → ANALISI → DATI → VERIFICA →
- * DECISIONE → AZIONE. Questions about the difficult case answer with the
- * demo's real numbers and surface the actual conflict list.
+ * The browser talks to /api/parla; the server runs a real model over the
+ * simulated demo company and returns the answer WITH the tool calls it made,
+ * which render here as the evidence layer (DATI CONSULTATI). Real AI,
+ * simulated company data — and the interface says exactly that.
  *
- * The honesty rule is structural: this public console runs a deterministic
- * set of answers — no model, no API keys in the page, no pretending. Asked
- * whether it is "real AI", it says exactly what it is. The full labelling
- * lives in the copy, not in a footnote.
- *
- * Voice degrades gracefully: no SpeechRecognition → the mic hides and the
- * keyboard carries everything; denied mic, silence, or network errors get
- * plain-language messages, never a broken UI. Replies are spoken with
- * speechSynthesis when the visitor keeps VOICE ON.
+ * Voice input is Web Speech (it-IT) where the browser offers it; replies are
+ * spoken with speechSynthesis behind a VOCE toggle. Every failure mode has
+ * words: mic denied, silence, rate limit, model unavailable. If the server
+ * has no model configured (503), the console degrades to its deterministic
+ * answer set and labels itself accordingly — it never fakes the live mode.
  */
 
 type Intent = (typeof c.intents)[number];
-interface Line { who: 'you' | 'dolmir'; text: string; tone?: string; fx?: string; link?: { t: string; href: string } }
-
-type MicState = 'idle' | 'listening' | 'unsupported' | 'hidden';
+interface Evidence { tool: string; label: string; data: unknown }
+interface Line { who: 'you' | 'dolmir'; text: string; tone?: string; fx?: string; link?: { t: string; href: string }; evidence?: Evidence[] }
+type MicState = 'idle' | 'listening' | 'unsupported';
+type Mode = 'unknown' | 'live' | 'degraded';
 
 function normalize(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -50,6 +46,19 @@ function matchIntent(text: string): Intent | null {
   return bestScore >= 4 ? best : null;
 }
 
+/** Compact, readable preview of one tool result for the evidence layer. */
+function preview(data: unknown): string[] {
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row || typeof row !== 'object') return [];
+  const out: string[] = [];
+  for (const [k, v] of Object.entries(row as Record<string, unknown>)) {
+    if (out.length >= 4) break;
+    if (v == null || typeof v === 'object') continue;
+    out.push(`${k}: ${String(v).slice(0, 60)}`);
+  }
+  return out;
+}
+
 export function Parla() {
   const [lines, setLines] = useState<Line[]>([]);
   const [stage, setStage] = useState<number | null>(null);
@@ -60,21 +69,24 @@ export function Parla() {
   const [note, setNote] = useState<string | null>(null);
   const [input, setInput] = useState('');
   const [reduce, setReduce] = useState(false);
+  const [mode, setMode] = useState<Mode>('unknown');
 
   const recRef = useRef<{ stop: () => void } | null>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const spinRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
-  const hasSR = useRef(false);
+  const linesRef = useRef<Line[]>([]);
+  linesRef.current = lines;
 
   useEffect(() => {
     setReduce(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-    const SR = (window as unknown as { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown });
-    hasSR.current = Boolean(SR.SpeechRecognition ?? SR.webkitSpeechRecognition);
-    if (!hasSR.current) setMic('unsupported');
+    const SR = window as unknown as { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown };
+    if (!(SR.SpeechRecognition ?? SR.webkitSpeechRecognition)) setMic('unsupported');
   }, []);
 
   useEffect(() => () => {
     timers.current.forEach(clearTimeout);
+    if (spinRef.current) clearInterval(spinRef.current);
     try { window.speechSynthesis?.cancel(); } catch { /* no synth */ }
     setActivity('idle');
   }, []);
@@ -96,23 +108,32 @@ export function Parla() {
     } catch { /* voice output is a bonus, never a requirement */ }
   }, [voiceOn]);
 
-  /* ------------------------------------------------------ answer pipeline */
-  const answer = useCallback((text: string) => {
-    if (busy) return;
-    const clean = text.trim();
-    if (!clean) return;
-    setNote(null);
-    setBusy(true);
-    setLines((l) => [...l, { who: 'you', text: clean }]);
-    setActivity('listening');
+  /* Pipeline choreography while the model works. */
+  const startSpin = useCallback(() => {
+    setStageTone('accent');
+    if (reduce) { setStage(2); return; }
+    let i = 0;
+    setStage(0);
+    spinRef.current = setInterval(() => {
+      i = (i + 1) % 4; // cycle INPUT→ANALISI→DATI→VERIFICA while waiting
+      setStage(i);
+      setActivity(i >= 2 ? 'verifying' : 'analyzing');
+    }, 700);
+  }, [reduce]);
 
+  const stopSpin = useCallback((finalStage: number | null, tone: 'accent' | 'amber' | 'good') => {
+    if (spinRef.current) { clearInterval(spinRef.current); spinRef.current = null; }
+    setStageTone(tone);
+    setStage(finalStage);
+    timers.current.push(setTimeout(() => { setStage(null); setActivity('idle'); }, 2600));
+  }, []);
+
+  /* ----------------------------------------------- degraded (no live model) */
+  const answerDegraded = useCallback((clean: string) => {
     const intent = matchIntent(clean);
     const seq: readonly number[] = intent?.seq ?? [0];
     const tone = (intent?.tone ?? 'accent') as 'accent' | 'amber' | 'good';
     setStageTone(tone);
-
-    // The stages light in order, then the reply lands; reduced motion skips
-    // the choreography and answers immediately.
     const stepMs = reduce ? 0 : 520;
     seq.forEach((s, i) => {
       timers.current.push(setTimeout(() => {
@@ -126,17 +147,70 @@ export function Parla() {
         : { who: 'dolmir', text: c.fallback, tone: 'accent' };
       setLines((l) => [...l, reply]);
       speak(reply.text);
-      if (intent?.tone === 'amber') emit('GATE.HOLD', 'console · punto che richiede giudizio', 'amber');
-      else emit('CONSOLE.REPLY', intent ? `intent: ${intent.id}` : 'fuori set · risposta onesta', 'accent');
       setBusy(false);
       timers.current.push(setTimeout(() => { setStage(null); setActivity('idle'); }, 2600));
     }, seq.length * stepMs + (reduce ? 0 : 240)));
-  }, [busy, reduce, speak]);
+  }, [reduce, speak]);
+
+  /* ------------------------------------------------------------- live mode */
+  const answer = useCallback(async (text: string) => {
+    if (busy) return;
+    const clean = text.trim();
+    if (!clean) return;
+    setNote(null);
+    setBusy(true);
+    setLines((l) => [...l, { who: 'you', text: clean }]);
+    setActivity('listening');
+
+    if (mode === 'degraded') { answerDegraded(clean); return; }
+
+    startSpin();
+    const history = [...linesRef.current, { who: 'you', text: clean } as Line]
+      .filter((l) => l.text)
+      .slice(-10)
+      .map((l) => ({ role: l.who === 'you' ? 'user' : 'assistant', content: l.text }));
+
+    try {
+      const res = await fetch('/api/parla', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      });
+
+      if (res.status === 503) {
+        setMode('degraded');
+        setNote(c.degradedNote);
+        emit('CONSOLE.MODE', 'modello live non configurato · modalità ridotta', 'amber');
+        answerDegraded(clean);
+        return;
+      }
+      if (res.status === 429) {
+        stopSpin(null, 'amber');
+        setLines((l) => [...l, { who: 'dolmir', text: c.busyNote, tone: 'amber' }]);
+        setBusy(false);
+        return;
+      }
+      if (!res.ok) throw new Error(String(res.status));
+
+      const data = (await res.json()) as { text: string; evidence?: Evidence[] };
+      const evidence = Array.isArray(data.evidence) ? data.evidence : [];
+      const amber = /approvazion|persona|umana|fermo|cancello/i.test(data.text);
+      setMode('live');
+      stopSpin(5, amber ? 'amber' : 'good');
+      setLines((l) => [...l, { who: 'dolmir', text: data.text, tone: amber ? 'amber' : 'accent', evidence }]);
+      speak(data.text);
+      emit('CONSOLE.REPLY', `AI live · ${evidence.length} strumenti consultati`, 'accent');
+      setBusy(false);
+    } catch {
+      stopSpin(null, 'amber');
+      setLines((l) => [...l, { who: 'dolmir', text: c.offlineNote, tone: 'amber' }]);
+      setBusy(false);
+    }
+  }, [busy, mode, answerDegraded, startSpin, stopSpin, speak]);
 
   /* --------------------------------------------------------------- voice */
   const listen = useCallback(() => {
     if (mic === 'listening') { recRef.current?.stop(); return; }
-    const W = window as unknown as { SpeechRecognition?: new () => SpeechRecognitionLike; webkitSpeechRecognition?: new () => SpeechRecognitionLike };
     interface SpeechRecognitionLike {
       lang: string; interimResults: boolean; maxAlternatives: number;
       onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
@@ -144,6 +218,7 @@ export function Parla() {
       onend: (() => void) | null;
       start: () => void; stop: () => void;
     }
+    const W = window as unknown as { SpeechRecognition?: new () => SpeechRecognitionLike; webkitSpeechRecognition?: new () => SpeechRecognitionLike };
     const Ctor = W.SpeechRecognition ?? W.webkitSpeechRecognition;
     if (!Ctor) { setMic('unsupported'); setNote(c.errors.unsupported); return; }
     try {
@@ -153,7 +228,7 @@ export function Parla() {
       rec.maxAlternatives = 1;
       rec.onresult = (e) => {
         const t = e.results[0]?.[0]?.transcript ?? '';
-        if (t) answer(t);
+        if (t) void answer(t);
         else setNote(c.errors.noSpeech);
       };
       rec.onerror = (e) => {
@@ -176,6 +251,7 @@ export function Parla() {
 
   /* ------------------------------------------------------------- render */
   const toneText = (t?: string) => (t === 'amber' ? 'text-amber' : t === 'good' ? 'text-good' : 'text-accent');
+  const suggestions: readonly string[] = mode === 'degraded' ? c.intents.map((i) => i.ask) : c.starters;
 
   return (
     <section
@@ -192,17 +268,15 @@ export function Parla() {
             {/* console header */}
             <div className="flex items-center justify-between gap-3 border-b border-rule/70 px-4 py-3 sm:px-6">
               <p className="telemetry text-ink">DOLMIR INTELLIGENCE</p>
-              <p className="telemetry flex items-center gap-2 text-good">
-                <span aria-hidden className={`block size-1.5 rounded-full bg-good ${reduce ? '' : 'animate-pulse'}`} />
-                {c.online}
+              <p className={`telemetry flex items-center gap-2 ${mode === 'degraded' ? 'text-amber' : 'text-good'}`}>
+                <span aria-hidden className={`block size-1.5 rounded-full ${mode === 'degraded' ? 'bg-amber' : 'bg-good'} ${reduce ? '' : 'animate-pulse'}`} />
+                {mode === 'degraded' ? 'MODALITÀ RIDOTTA' : c.online}
               </p>
             </div>
 
             {/* transcript */}
-            <div ref={logRef} className="max-h-[24rem] min-h-[10rem] overflow-y-auto px-4 py-5 sm:px-6" aria-live="polite">
-              {lines.length === 0 && (
-                <p className="text-[1.05rem] text-ink">{c.prompt}</p>
-              )}
+            <div ref={logRef} className="max-h-[26rem] min-h-[10rem] overflow-y-auto px-4 py-5 sm:px-6" aria-live="polite">
+              {lines.length === 0 && <p className="text-[1.05rem] text-ink">{c.prompt}</p>}
               <ol className="space-y-5">
                 {lines.map((l, i) => (
                   <li key={i} className={reduce ? '' : 'settle'}>
@@ -214,7 +288,24 @@ export function Parla() {
                     ) : (
                       <div>
                         <p className={`telemetry ${toneText(l.tone)}`}>DOLMIR</p>
-                        <p className="mt-1 max-w-[58ch] text-[0.9375rem] leading-relaxed text-ink">{l.text}</p>
+                        <p className="mt-1 max-w-[58ch] whitespace-pre-line text-[0.9375rem] leading-relaxed text-ink">{l.text}</p>
+                        {l.evidence && l.evidence.length > 0 && (
+                          <div className="mt-3 border border-rule/70 bg-void/50">
+                            <p className="telemetry border-b border-rule/60 px-3 py-1.5 text-faint">{c.evidenceLabel}</p>
+                            <ul className="divide-y divide-rule/50">
+                              {l.evidence.map((e, k) => (
+                                <li key={k} className="px-3 py-2">
+                                  <p className="font-mono text-[0.6875rem] tracking-[0.1em] text-accent">{e.label}</p>
+                                  {preview(e.data).length > 0 && (
+                                    <p className="mt-0.5 font-mono text-[0.65rem] leading-relaxed text-muted">
+                                      {preview(e.data).join(' · ')}
+                                    </p>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                         {l.fx === 'conflicts' && (
                           <ul className="mt-3 flex flex-wrap gap-1.5">
                             {c.conflicts.map((k) => (
@@ -233,6 +324,14 @@ export function Parla() {
                     )}
                   </li>
                 ))}
+                {busy && mode !== 'degraded' && (
+                  <li>
+                    <p className="telemetry text-accent">DOLMIR</p>
+                    <p className={`mt-1 font-mono text-[0.75rem] tracking-[0.14em] text-muted ${reduce ? '' : 'animate-pulse'}`}>
+                      {c.thinking}
+                    </p>
+                  </li>
+                )}
               </ol>
             </div>
 
@@ -244,7 +343,7 @@ export function Parla() {
                   <span
                     className={`whitespace-nowrap font-mono text-[0.625rem] tracking-[0.14em] transition-colors duration-300 ${
                       stage === i
-                        ? stageTone === 'amber' && i === 4 ? 'text-amber' : stageTone === 'good' && i === 5 ? 'text-good' : 'text-accent'
+                        ? stageTone === 'amber' && i >= 4 ? 'text-amber' : stageTone === 'good' && i === 5 ? 'text-good' : 'text-accent'
                         : stage !== null && i < stage ? 'text-muted' : 'text-faint'
                     }`}
                   >
@@ -257,7 +356,7 @@ export function Parla() {
             {/* input row */}
             <form
               className="flex items-stretch gap-2 border-t border-rule/70 p-3 sm:p-4"
-              onSubmit={(e) => { e.preventDefault(); answer(input); setInput(''); }}
+              onSubmit={(e) => { e.preventDefault(); void answer(input); setInput(''); }}
             >
               {mic !== 'unsupported' && (
                 <button
@@ -309,26 +408,28 @@ export function Parla() {
             <p className="mt-3 text-[0.8125rem] text-muted">{c.errors.unsupported}</p>
           )}
 
-          {/* suggested questions — the visitor should never wonder what to say */}
+          {/* starter questions — the visitor should never wonder what to say */}
           <div className="mt-5">
             <p className="telemetry text-faint">{c.suggestLabel}</p>
             <ul className="mt-2.5 flex flex-wrap gap-2">
-              {c.intents.map((it) => (
-                <li key={it.id}>
+              {suggestions.map((q) => (
+                <li key={q}>
                   <button
                     type="button"
                     disabled={busy}
-                    onClick={() => answer(it.ask)}
+                    onClick={() => void answer(q)}
                     className="border border-rule bg-surface/70 px-3 py-1.5 text-[0.8125rem] text-ink-2 transition-colors enabled:hover:border-accent/60 enabled:hover:text-ink disabled:opacity-50"
                   >
-                    {it.ask}
+                    {q}
                   </button>
                 </li>
               ))}
             </ul>
           </div>
 
-          <p className="telemetry mt-4 text-faint">{c.disclaimer}</p>
+          <p className="telemetry mt-4 text-faint">
+            {mode === 'degraded' ? c.disclaimerDegraded : c.disclaimer}
+          </p>
         </div>
       </Container>
     </section>

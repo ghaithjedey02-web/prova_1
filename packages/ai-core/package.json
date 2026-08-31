@@ -22,6 +22,10 @@
       "types": "./dist/providers/anthropic.d.ts",
       "default": "./dist/providers/anthropic.js"
     },
+    "./console": {
+      "types": "./dist/providers/anthropic-console.d.ts",
+      "default": "./dist/providers/anthropic-console.js"
+    },
     "./providers/openai-compatible": {
       "types": "./dist/providers/openai-compatible.d.ts",
       "default": "./dist/providers/openai-compatible.js"

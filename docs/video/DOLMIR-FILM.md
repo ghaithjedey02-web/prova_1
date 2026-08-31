@@ -85,6 +85,28 @@ enterprise technology film` — aspect 16:9, durata 4–8s per clip.
 - **S7 (chiusura):** card nera generata in edit, non con AI: logo DOLMIR,
   dolmir.com, riga mono `SISTEMA · VERIFICA · PERSONA · AZIONE`.
 
+## Film prodotto — 31/08/2026
+
+Il film di punta è ora GIRATO: cinque inquadrature generate con
+Higgsfield Cinema Studio 3.0 (25 crediti l'una, 125 totali) e montate in
+un unico piano sequenza di 22,6s con dissolvenze incrociate (ffmpeg,
+1280×720 H.264, 1,6 MB, senza audio):
+
+1. IL CAOS — documenti tecnici alla deriva su acciaio scuro
+2. COMPRENSIONE — la pagina si dissolve in linee di luce ciano ordinate
+3. VERIFICA — impulsi ciano lungo canali fresati in alluminio nero
+4. DECISIONE — il pulsante ambra, il dito umano, il passaggio al ciano
+5. AZIONE — tutti i flussi convergono in una sola linea calma
+
+Master: https://d2ol7oe51mr4n9.cloudfront.net/user_3IWNhA6wnS80L9kj7n6EaO07HtE/9ca3cb5a-aec5-4344-afc4-6ea5b86553eb.mp4
+
+Integrazione: `components/live/FilmCinema.tsx` — didascalie italiane e
+rail capitoli in DOM (tipografia nostra, mai generata), finale identità
+DOLMIR con CTA. Ordine sorgenti: `/film/dolmir-film.mp4` (repo) → master
+remoto → fallback automatico al film WebGL procedurale. PER RENDERLO
+PERMANENTE: scaricare il master e salvarlo come
+`apps/web/public/film/dolmir-film.mp4` (istruzioni anche in quel folder).
+
 **Consegna:** master 16:9 H.264 ≤ 12 MB per il web. NOTA: il capitolo 01
 oggi contiene il film cinematico costruito in codice — un unico piano
 sequenza WebGL di 25s con pausa reale al cancello umano
