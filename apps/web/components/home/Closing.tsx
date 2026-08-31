@@ -22,7 +22,7 @@ export function Closing() {
             </Reveal>
             <Reveal delay={210}>
               <div className="mt-11 flex flex-wrap gap-3">
-                <Magnetic><Button href={cta.primary.href} size="lg" arrow>{cta.primary.label}</Button></Magnetic>
+                <Magnetic><Button href={cta.primary.href} size="lg" arrow>Portateci un processo</Button></Magnetic>
                 <Magnetic><Button href={cta.secondary.href} variant="secondary" size="lg">{cta.secondary.label}</Button></Magnetic>
               </div>
             </Reveal>

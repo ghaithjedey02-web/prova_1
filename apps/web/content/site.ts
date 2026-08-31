@@ -76,11 +76,11 @@ export const hero = {
     { x: 9,  y: 47, t: 'IN.PDF',     wire: 0 },
     { x: 55, y: 46, t: 'CORE',       wire: 7 },
   ] as readonly { x: number; y: number; t: string; wire?: number }[],
-  line1: 'L’intelligenza',
-  line2: 'che fa funzionare',
-  line3: 'le aziende.',
+  line1: 'Email, PDF, gestionali:',
+  line2: 'il lavoro si disperde.',
+  line3: 'DOLMIR lo ricompone.',
   lead:
-    'DOLMIR costruisce infrastruttura digitale intelligente: software su misura, AI che capisce email e documenti, integrazioni fra i sistemi che avete già. Un livello di intelligenza sopra la vostra azienda — con una persona che approva.',
+    'Costruiamo sistemi software intelligenti: leggono email e documenti, verificano i dati sui sistemi che avete già, preparano le azioni — e si fermano davanti a una persona per ogni decisione che richiede giudizio.',
   telemetry: [
     ['CANALI', '7 collegati'],
     ['LATENZA', '< 900 ms'],
@@ -90,10 +90,34 @@ export const hero = {
   scroll: 'Entra nel sistema',
 } as const;
 
+/* ============================================ home === the problem ==========*/
+
+export const problema = {
+  n: '01',
+  label: 'Il problema',
+  headline: 'Il lavoro non è nel gestionale.',
+  body:
+    'È nella casella email, negli allegati, nei fogli Excel, nelle telefonate. L’informazione esiste già — è solo frammentata. E a tenerla insieme, oggi, sono le persone: a mano, ricopiandola da un posto all’altro.',
+  fragments: ['Email', 'PDF', 'Excel', 'WhatsApp', 'Telefono', 'Gestionale', 'Documenti', 'Persone'],
+  turn: 'Qui entra DOLMIR.',
+  what:
+    'Costruiamo il sistema che manca: fra il lavoro delle persone e il software che avete già.',
+  nots: [
+    {
+      t: 'Non sostituiamo il gestionale.',
+      d: 'Ci innestiamo sopra: leggiamo e scriviamo nei sistemi che usate già, senza migrazioni.',
+    },
+    {
+      t: 'Non sostituiamo le persone.',
+      d: 'Togliamo il ricopiare. Le decisioni che richiedono giudizio restano umane, per costruzione.',
+    },
+  ],
+} as const;
+
 /* ==================================== home === the intelligence core ========*/
 
 export const intelligence = {
-  n: '01',
+  n: '02',
   label: 'Intelligenza',
   headline: 'Dentro il sistema che costruiamo.',
   body:
@@ -135,7 +159,7 @@ export const intelligence = {
 /* ==================================== home === what DOLMIR builds ===========*/
 
 export const capabilities = {
-  n: '03',
+  n: '04',
   label: 'Cosa costruiamo',
   headline: 'Sei famiglie di sistemi. Un’architettura.',
   body:
@@ -189,11 +213,11 @@ export const capabilities = {
 /* ======================================== home === the simulator ============*/
 
 export const simulator = {
-  n: '07',
+  n: '08',
   label: 'Prova DOLMIR',
   headline: 'Consegnate un problema. Guardate cosa succede.',
   body:
-    'Accesso temporaneo alla stessa architettura che installiamo: scegliete una situazione reale, avviatela e decidete voi, al cancello. Tutto gira nel vostro browser — nessuna chiamata esterna, nessun dato reale. Il motore vero è nel capitolo 05; qui vedete la stessa forma su sette casi.',
+    'Accesso temporaneo alla stessa architettura che installiamo: scegliete una situazione reale, avviatela e decidete voi, al cancello. Tutto gira nel vostro browser — nessuna chiamata esterna, nessun dato reale. Il motore vero è nel capitolo 06; qui vedete la stessa forma su sette casi.',
   /* The one word the whole frame keys on, per phase. */
   sysStates: {
     idle: 'IN ATTESA',
@@ -219,6 +243,24 @@ export const simulator = {
     ['SISTEMI', '4'],
     ['PUNTI DI ERRORE', '3'],
   ],
+  /* LAYER 1 — plain language. One sentence a company owner reads while the
+     technical telemetry runs underneath for whoever wants to inspect it. */
+  plain: {
+    idle: 'Premete AVVIA: consegnate il problema a DOLMIR.',
+    running: [
+      'Abbiamo ricevuto una richiesta.',
+      'DOLMIR sta leggendo il documento.',
+      'Sta capendo di cosa si tratta.',
+      'Sta estraendo i dati, uno per uno.',
+      'Sta controllando che i dati abbiano senso.',
+      'Sta verificando sui vostri sistemi.',
+      'Sta misurando quanto è sicuro.',
+      'Ha preparato una decisione.',
+    ],
+    gate: 'Si è fermato. Serve una decisione umana.',
+    approved: 'Azione eseguita. Tutto registrato.',
+    rejected: 'Fermato. Nessuna azione eseguita.',
+  },
   stages: [
     'INPUT RICEVUTO',
     'LETTURA',
@@ -508,7 +550,7 @@ export const simulator = {
 
 export const chapters = {
   automation: {
-    n: '06',
+    n: '07',
     label: 'Automazione',
     headline: 'Il flusso, dall’ingresso alla firma.',
     body:
@@ -516,7 +558,7 @@ export const chapters = {
   },
 
   software: {
-    n: '08',
+    n: '09',
     label: 'Software',
     headline: 'Non solo automazioni. Interfacce.',
     body:
@@ -542,7 +584,7 @@ export const chapters = {
   },
 
   human: {
-    n: '09',
+    n: '10',
     label: 'Controllo',
     headline: 'Il sistema si ferma prima di decidere.',
     body:

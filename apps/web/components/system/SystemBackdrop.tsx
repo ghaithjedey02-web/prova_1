@@ -44,11 +44,19 @@ export function SystemBackdrop() {
   // atmosphere. Content always wins over the background: a beautiful scene that
   // makes a paragraph hard to read is a failed scene.
   const layer = useRef<HTMLDivElement>(null);
+  const railStage = useRef<HTMLParagraphElement>(null);
+  const railPct = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     let raf = 0;
     const tick = () => {
       const p = progress.current ?? 0;
-      const base = p < 0.04 ? 1 : Math.max(0.42, 1 - (p - 0.04) * 6);
+      if (railPct.current) railPct.current.textContent = `POSIZIONE ${String(Math.round(p * 100)).padStart(3, '0')} / 100`;
+      if (railStage.current) {
+        let st = STAGES[0]!;
+        for (const g of STAGES) if (p >= g.at) st = g;
+        railStage.current.textContent = `${st.code} · ${st.label.toUpperCase()}`;
+      }
+      const base = p < 0.04 ? 1 : Math.max(0.5, 1 - (p - 0.04) * 6);
       // The intelligence section asks for the machine back at full strength.
       const o = Math.max(base, 0.94 * backdropBoost());
       if (layer.current) layer.current.style.opacity = String(o);
@@ -80,6 +88,22 @@ export function SystemBackdrop() {
       {/* Vignette. Keeps the type legible over the brightest part of the core
           without dimming the whole scene. */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_58%_46%_at_50%_50%,transparent_0%,var(--c-ground)_82%)] opacity-70" />
+
+      {/* Ultrawide rails. On displays wider than the content measure, the
+          outer margins carry live instrumentation instead of dead space:
+          identity on the left, page position and current system stage on the
+          right, both written by the same rAF loop that drives the opacity. */}
+      <div className="absolute inset-y-0 left-0 hidden w-14 items-center justify-center border-r border-rule/50 min-[1900px]:flex">
+        <p className="telemetry rotate-180 whitespace-nowrap text-faint [writing-mode:vertical-rl]">
+          DOLMIR · SYS.ID 00482 · INFRASTRUTTURA DIGITALE INTELLIGENTE
+        </p>
+      </div>
+      <div className="absolute inset-y-0 right-0 hidden w-14 flex-col items-center justify-between py-24 min-[1900px]:flex">
+        <p ref={railStage} className="telemetry rotate-180 whitespace-nowrap text-muted [writing-mode:vertical-rl]" />
+        <p className="telemetry text-faint [writing-mode:vertical-rl] rotate-180">
+          <span ref={railPct} className="tnum" />
+        </p>
+      </div>
     </div>
   );
 }

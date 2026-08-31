@@ -127,7 +127,7 @@ export function FlowDemo() {
     <section className="relative py-[var(--space-section)]" data-inspect="FlowDemo · rfq-engine + MockProvider">
       <Container>
         <Chapter
-          n="05"
+          n="06"
           label="Il flusso, dal vivo"
           headline="Premete avvia. Il motore è quello vero."
           lead="Questa non è un’animazione registrata: qui sotto gira lo stesso codice che installiamo presso i clienti, su un’email di esempio. Osservate cosa succede — e soprattutto dove si ferma."

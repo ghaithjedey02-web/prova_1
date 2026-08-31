@@ -1,4 +1,5 @@
 import { Hero } from '@/components/home/Hero';
+import { Problema } from '@/components/home/Problema';
 import { Intelligence } from '@/components/live/Intelligence';
 import { Twin } from '@/components/live/Twin';
 import { Capabilities } from '@/components/home/Capabilities';
@@ -25,7 +26,10 @@ const jsonLd = {
 /**
  * The narrative, in order:
  *
- *   Hero          — the system wakes up; the claim is the vision, not a vertical.
+ *   Hero          — the system wakes up; the claim is concrete: email, PDF,
+ *                   gestionali → un sistema.
+ *   Problema      — the quiet editorial chapter: where work actually lives,
+ *                   what DOLMIR is in one sentence, what we do NOT replace.
  *   Intelligence  — inside the technology: channels in, core, actions out, live.
  *   Twin          — the transformation, in the visitor's hand: chaos → system.
  *   Capabilities  — the six families of systems DOLMIR builds, as instruments.
@@ -46,6 +50,7 @@ export default function HomePage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Hero />
+      <Problema />
       <Intelligence />
       <Twin />
       <Capabilities />

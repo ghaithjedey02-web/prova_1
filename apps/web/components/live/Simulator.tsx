@@ -320,6 +320,14 @@ export function Simulator() {
   const verified = stockVerified + (override ? 1 : 0);
   const toReview = sc.fields.length - verified;
 
+  /* LAYER 1: one plain sentence for whoever does not read telemetry. */
+  const plainLine =
+    phase === 'idle' ? simulator.plain.idle
+    : phase === 'running' ? (simulator.plain.running[Math.max(0, stage)] ?? simulator.plain.running[2]!)
+    : phase === 'gate' ? simulator.plain.gate
+    : phase === 'approved' ? simulator.plain.approved
+    : simulator.plain.rejected;
+
   /* One system-state word for the whole frame. */
   const sysState =
     phase === 'idle' ? simulator.sysStates.idle
@@ -484,6 +492,17 @@ export function Simulator() {
 
               {/* ---------------------------------------------- the machine */}
               <div className="flex flex-col p-5 sm:p-7">
+                {/* Layer 1 — the sentence anyone can read. The telemetry below
+                    is layer 2, for whoever wants to look inside. */}
+                <p
+                  key={plainLine}
+                  className={`settle mb-4 min-h-[2.6em] font-display text-[1.05rem] font-medium leading-snug sm:text-[1.2rem] ${
+                    phase === 'gate' ? 'text-amber' : phase === 'approved' ? 'text-good' : 'text-ink'
+                  }`}
+                  aria-live="polite"
+                >
+                  {plainLine}
+                </p>
                 <div className="mb-4 flex flex-col gap-3 border-b border-rule pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                   <p className="telemetry text-faint">
                     STATO{' '}
