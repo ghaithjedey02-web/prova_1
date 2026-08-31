@@ -92,13 +92,22 @@ Higgsfield Cinema Studio 3.0 (25 crediti l'una, 125 totali) e montate in
 un unico piano sequenza di 22,6s con dissolvenze incrociate (ffmpeg,
 1280×720 H.264, 1,6 MB, senza audio):
 
-1. IL CAOS — documenti tecnici alla deriva su acciaio scuro
-2. COMPRENSIONE — la pagina si dissolve in linee di luce ciano ordinate
-3. VERIFICA — impulsi ciano lungo canali fresati in alluminio nero
-4. DECISIONE — il pulsante ambra, il dito umano, il passaggio al ciano
-5. AZIONE — tutti i flussi convergono in una sola linea calma
+1. IL CAOS — ufficio tecnico italiano reale: telefono, disegni, monitor,
+   colleghi con altre carte, CNC oltre la vetrata
+2. COMPRENSIONE — il disegno tecnico sulla scrivania, una sola linea di
+   scansione ciano che sottolinea le quote
+3. VERIFICA — due monitor, documento e gestionale, una linea ciano
+   collega i due punti in disaccordo
+4. DECISIONE UMANA — la responsabile alla scrivania, il viso in luce
+   ambra, la pressione del tasto, la luce torna fredda
+5. AZIONE — il centro di lavoro parte, il magazzino ordinato
 
-Master: https://d2ol7oe51mr4n9.cloudfront.net/user_3IWNhA6wnS80L9kj7n6EaO07HtE/9ca3cb5a-aec5-4344-afc4-6ea5b86553eb.mp4
+(v1 astratta scartata su indicazione: troppo atmosferica. La v2 racconta
+il prodotto in ambienti reali; la grafica di sistema — campi estratti,
+CONFLITTO RILEVATO, APPROVA/RIFIUTA, registro — è DOM del sito, mai
+generata, quindi leggibile e in tipografia brand.)
+
+Master: https://d2ol7oe51mr4n9.cloudfront.net/user_3IWNhA6wnS80L9kj7n6EaO07HtE/83400e39-a690-4bf8-838a-f6cb070ad34b.mp4
 
 Integrazione: `components/live/FilmCinema.tsx` — didascalie italiane e
 rail capitoli in DOM (tipografia nostra, mai generata), finale identità

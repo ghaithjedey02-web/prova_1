@@ -5,35 +5,52 @@ import { film as t } from '@/content/site';
 import { Film } from './Film';
 
 /**
- * The flagship film — produced footage, DOLMIR words.
+ * The flagship film — real industrial footage, DOLMIR's system layer on top.
  *
- * Five cinematic shots (generated with Higgsfield Cinema Studio and cut with
- * crossfades into one 22.6-second take) carry the story: paper chaos on
- * steel → the page dissolving into structured light → checks travelling
- * machined channels → the amber button and the human hand → every stream
- * settling into one calm line. The typography stays ours: Italian captions
- * and the chapter rail are DOM, in brand fonts, on top of the footage —
- * generated material for atmosphere, real UI for words.
+ * Five realistic scenes (generated with Higgsfield Cinema Studio: the Italian
+ * machine-shop office under paper and phone calls, the technical drawing
+ * being read, two sources disagreeing across two screens, the manager and
+ * the amber light of a decision, the shop running clean) tell one concrete
+ * story: CAOS → COMPRENSIONE → VERIFICA → DECISIONE UMANA → AZIONE.
  *
- * Sources resolve in order: the repo's own /film/dolmir-film.mp4 when the
- * asset has been committed, then the Higgsfield-hosted master. If neither
- * plays (offline, asset gone, reduced-data), the component hands over to
- * the procedural WebGL film — the site never shows a dead player. Reduced
+ * The system graphics are deliberately NOT generated: extracted fields,
+ * CONFLITTO RILEVATO with its evidence, the human gate and the action log
+ * render as DOM overlays in brand typography — crisp, Italian, and telling
+ * the product story even with the sound off (there is no sound). Amber
+ * appears exactly once: at the human decision.
+ *
+ * Sources: the repo's /film/dolmir-film.mp4 when committed, then the hosted
+ * master; if neither plays, the procedural WebGL film takes over. Reduced
  * motion never autoplays and falls back to the WebGL film's storyboard.
  */
 
 const SOURCES = [
   '/film/dolmir-film.mp4',
-  'https://d2ol7oe51mr4n9.cloudfront.net/user_3IWNhA6wnS80L9kj7n6EaO07HtE/9ca3cb5a-aec5-4344-afc4-6ea5b86553eb.mp4',
+  'https://d2ol7oe51mr4n9.cloudfront.net/user_3IWNhA6wnS80L9kj7n6EaO07HtE/83400e39-a690-4bf8-838a-f6cb070ad34b.mp4',
 ] as const;
 
+interface Cap {
+  at: number;
+  code: string;
+  line: string;
+  amber?: boolean;
+  overlay?: 'fields' | 'conflict' | 'gate' | 'action';
+}
+
 /** Caption timing on the produced cut (crossfades at 4.4s intervals). */
-const CAPS = [
-  { at: 0,    code: 'IL CAOS',         line: 'Il lavoro di un’azienda non vive in un solo software.' },
-  { at: 4.4,  code: 'COMPRENSIONE',    line: 'DOLMIR lo legge. Le parole diventano dati.' },
-  { at: 8.8,  code: 'VERIFICA',        line: 'E li controlla sui sistemi che avete già.' },
-  { at: 13.2, code: 'REVISIONE UMANA', line: 'Poi si ferma. Perché la decisione è vostra.', amber: true },
-  { at: 17.6, code: 'AZIONE',          line: 'Approvato: il sistema agisce, e lo scrive nel registro.' },
+const CAPS: readonly Cap[] = [
+  { at: 0,    code: 'IL CAOS',         line: 'Email, PDF, Excel, telefono: il lavoro arriva da tutte le parti.' },
+  { at: 4.4,  code: 'COMPRENSIONE',    line: 'DOLMIR legge la richiesta e la trasforma in dati.', overlay: 'fields' },
+  { at: 8.8,  code: 'VERIFICA',        line: 'Poi confronta le fonti, una per una.', overlay: 'conflict', amber: true },
+  { at: 13.2, code: 'DECISIONE UMANA', line: 'E si ferma. Perché qui decide una persona.', overlay: 'gate', amber: true },
+  { at: 17.6, code: 'AZIONE',          line: 'Approvato: l’ordine parte, il registro è scritto.', overlay: 'action' },
+];
+
+const FIELDS = [
+  ['CLIENTE', 'Officine Rossi S.r.l.'],
+  ['CODICE', 'PF-2205'],
+  ['QUANTITÀ', '40 pz'],
+  ['CONSEGNA', '12/09'],
 ] as const;
 
 type Mode = 'poster' | 'playing' | 'done' | 'fallback';
@@ -43,11 +60,19 @@ export function FilmCinema() {
   const [mode, setMode] = useState<Mode>('poster');
   const [srcIdx, setSrcIdx] = useState(0);
   const [cap, setCap] = useState(0);
+  const [approved, setApproved] = useState(false);
   const [reduce, setReduce] = useState<boolean | null>(null);
 
   useEffect(() => {
     setReduce(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }, []);
+
+  /* The gate "presses" APPROVA midway through the decision scene. */
+  useEffect(() => {
+    if (mode !== 'playing' || CAPS[cap]!.overlay !== 'gate') { setApproved(false); return; }
+    const id = setTimeout(() => setApproved(true), 2300);
+    return () => clearTimeout(id);
+  }, [cap, mode]);
 
   const onError = useCallback(() => {
     if (srcIdx < SOURCES.length - 1) setSrcIdx((i) => i + 1);
@@ -79,7 +104,6 @@ export function FilmCinema() {
     if (mode !== 'playing') { setMode('playing'); void v.play().catch(() => setMode('fallback')); }
   }, [mode]);
 
-  /* Reduced motion, or a player that cannot play: the procedural film. */
   if (reduce !== false || mode === 'fallback') return <Film />;
 
   const c = CAPS[cap]!;
@@ -104,17 +128,72 @@ export function FilmCinema() {
           {/* chapter rail */}
           {mode !== 'poster' && (
             <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-3 bg-gradient-to-b from-void/80 to-transparent px-4 py-2.5 sm:px-6">
-              <p key={`${cap}-${mode}`} className={`settle telemetry ${mode === 'done' ? 'text-accent' : 'amber' in c && c.amber ? 'text-amber' : 'text-accent'}`}>
+              <p key={`${cap}-${mode}`} className={`settle telemetry ${mode === 'done' ? 'text-accent' : c.amber ? 'text-amber' : 'text-accent'}`}>
                 {mode === 'done' ? 'FINE' : c.code}
               </p>
               <div className="flex items-center gap-1">
                 {CAPS.map((s, i) => (
                   <button key={s.code} type="button" aria-label={`Capitolo: ${s.code}`} onClick={() => seek(i)} className="group/seg -my-1.5 py-1.5">
                     <span className={`block h-0.5 w-4 transition-colors sm:w-6 ${
-                      mode === 'done' || i < cap ? 'bg-accent' : i === cap ? ('amber' in s && s.amber ? 'bg-amber' : 'bg-accent/50') : 'bg-rule-strong group-hover/seg:bg-muted'
+                      mode === 'done' || i < cap ? 'bg-accent' : i === cap ? (s.amber ? 'bg-amber' : 'bg-accent/50') : 'bg-rule-strong group-hover/seg:bg-muted'
                     }`} />
                   </button>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* ------------------------------------ the system layer, our type */}
+          {mode === 'playing' && c.overlay === 'fields' && (
+            <div key="fields" className="absolute left-4 top-14 z-10 flex flex-col gap-1.5 sm:left-6" aria-hidden>
+              {FIELDS.map(([k, v], i) => (
+                <div
+                  key={k}
+                  className="settle flex items-baseline gap-2 border border-accent/40 bg-void/75 px-2.5 py-1 backdrop-blur-sm"
+                  style={{ animationDelay: `${300 + i * 550}ms`, animationFillMode: 'backwards' }}
+                >
+                  <span className="font-mono text-[0.625rem] tracking-[0.14em] text-muted">{k}</span>
+                  <span className="font-mono text-[0.6875rem] tracking-[0.06em] text-ink">{v}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {mode === 'playing' && c.overlay === 'conflict' && (
+            <div key="conflict" className="absolute left-4 top-14 z-10 max-w-[80%] sm:left-6" aria-hidden>
+              <div className="settle border border-amber/60 bg-void/80 px-3 py-2 backdrop-blur-sm" style={{ animationDelay: '700ms', animationFillMode: 'backwards' }}>
+                <p className="font-mono text-[0.6875rem] tracking-[0.16em] text-amber">◆ CONFLITTO RILEVATO</p>
+                <p className="mt-1 font-mono text-[0.625rem] leading-relaxed tracking-[0.06em] text-ink-2">
+                  QUANTITÀ · email: 40 pz ↔ allegato PDF: 60 pz
+                </p>
+                <p className="mt-0.5 font-mono text-[0.625rem] tracking-[0.1em] text-muted">IL SISTEMA NON INDOVINA</p>
+              </div>
+            </div>
+          )}
+
+          {mode === 'playing' && c.overlay === 'gate' && (
+            <div key="gate" className="absolute left-4 top-14 z-10 sm:left-6" aria-hidden>
+              <div className="settle border border-amber/60 bg-void/80 px-3 py-2 backdrop-blur-sm" style={{ animationDelay: '400ms', animationFillMode: 'backwards' }}>
+                <p className="font-mono text-[0.6875rem] tracking-[0.16em] text-amber">DECISIONE UMANA RICHIESTA</p>
+                <div className="mt-2 flex gap-1.5">
+                  <span className={`border px-2.5 py-1 font-mono text-[0.625rem] tracking-[0.16em] transition-all duration-300 ${
+                    approved ? 'border-accent bg-accent text-ground' : 'border-accent/60 text-accent'
+                  }`}>
+                    APPROVA
+                  </span>
+                  <span className={`border border-rule-strong px-2.5 py-1 font-mono text-[0.625rem] tracking-[0.16em] text-muted transition-opacity duration-300 ${approved ? 'opacity-40' : ''}`}>
+                    RIFIUTA
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {mode === 'playing' && c.overlay === 'action' && (
+            <div key="action" className="absolute left-4 top-14 z-10 sm:left-6" aria-hidden>
+              <div className="settle border border-good/50 bg-void/80 px-3 py-2 backdrop-blur-sm" style={{ animationDelay: '600ms', animationFillMode: 'backwards' }}>
+                <p className="font-mono text-[0.6875rem] tracking-[0.16em] text-good">✓ AZIONE ESEGUITA</p>
+                <p className="mt-1 font-mono text-[0.625rem] tracking-[0.1em] text-muted">ORDINE INSERITO · REGISTRO AGGIORNATO</p>
               </div>
             </div>
           )}
@@ -130,16 +209,18 @@ export function FilmCinema() {
                 <span aria-hidden className="ml-1 block border-y-[9px] border-l-[14px] border-y-transparent border-l-current" />
               </span>
               <span className="font-mono text-[0.8125rem] tracking-[0.22em] text-ink">{t.poster}</span>
-              <span className="telemetry text-faint">23 secondi · senza audio · girato + sistema</span>
+              <span className="telemetry text-faint">23 secondi · senza audio · una richiesta vera, dall’arrivo all’azione</span>
             </button>
           )}
 
           {/* ending: the identity moment is ours, not generated */}
           {mode === 'done' && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-void/85 p-4 backdrop-blur-[2px]">
-              <div className="settle w-full max-w-[26rem] text-center">
+              <div className="settle w-full max-w-[28rem] text-center">
                 <p className="font-display text-2xl font-semibold tracking-[0.28em] text-ink">DOLMIR</p>
-                <p className="mt-3 text-[0.9375rem] leading-snug text-ink-2">{t.closing}</p>
+                <p className="mt-3 text-[0.9375rem] leading-snug text-ink-2">
+                  Sistemi software intelligenti per aziende industriali.
+                </p>
                 <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
                   <a href="/#prova" className="border border-accent bg-accent/10 px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground">
                     PROVA DOLMIR
@@ -165,7 +246,7 @@ export function FilmCinema() {
           )}
         </div>
       </div>
-      <p className="telemetry mt-2.5 text-faint">Film DOLMIR · girato generativo (Higgsfield Cinema Studio) + sistema reale · senza audio.</p>
+      <p className="telemetry mt-2.5 text-faint">Film DOLMIR · ambienti girati (Higgsfield Cinema Studio) + grafica di sistema reale · dati di esempio · senza audio.</p>
     </div>
   );
 }
