@@ -5,6 +5,7 @@ import { Container } from '@/components/ui/Container';
 import { Chapter } from '@/components/ui/Chapter';
 import { emit, setActivity } from '@/lib/system-bus';
 import { DolmirCore, type CoreState } from './DolmirCore';
+import { FilmCinema } from './FilmCinema';
 import { parla as c } from '@/content/site';
 
 /**
@@ -274,18 +275,20 @@ export function Parla() {
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
 
-        <div className="mt-[var(--space-block)] max-w-[52rem]">
-          {/* The Core: the system's presence — and the microphone. */}
-          <div className="mb-6 text-center">
-            <DolmirCore
-              state={coreState}
-              onActivate={mic !== 'unsupported' ? listen : undefined}
-              label={mic === 'listening' ? 'Interrompi ascolto' : 'Parla con DOLMIR'}
-            />
-            <p className="telemetry mt-1 text-faint">
-              {mic === 'listening' ? c.micListening : mic !== 'unsupported' ? 'TOCCATE IL NUCLEO PER PARLARE' : 'SCRIVETE QUI SOTTO'}
-            </p>
+        <div className="mt-[var(--space-block)] max-w-[56rem]">
+          {/* One system: the film plays around the Core; the Core is the mic. */}
+          <div className="mb-3">
+            <FilmCinema endStyle="bar">
+              <DolmirCore
+                state={coreState}
+                onActivate={mic !== 'unsupported' ? listen : undefined}
+                label={mic === 'listening' ? 'Interrompi ascolto' : 'Parla con DOLMIR'}
+              />
+            </FilmCinema>
           </div>
+          <p className="telemetry mb-6 text-center text-faint">
+            {mic === 'listening' ? c.micListening : mic !== 'unsupported' ? 'TOCCATE IL NUCLEO PER PARLARE' : 'SCRIVETE QUI SOTTO'}
+          </p>
           <div className="glass-solid relative border-rule">
             {/* console header */}
             <div className="flex items-center justify-between gap-3 border-b border-rule/70 px-4 py-3 sm:px-6">

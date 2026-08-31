@@ -1,7 +1,6 @@
 import { Chapter } from '@/components/ui/Chapter';
 import { Container } from '@/components/ui/Container';
 import { Reveal } from '@/components/ui/Reveal';
-import { FilmCinema } from '@/components/live/FilmCinema';
 import { problema as c } from '@/content/site';
 
 /**
@@ -54,13 +53,6 @@ export function Problema() {
           <p className="mt-7 max-w-[26ch] font-display text-[length:var(--text-display-m)] font-semibold leading-[1.12] text-ink">
             {c.what}
           </p>
-        </Reveal>
-
-        {/* The film: one continuous take, sound off, the finale is yours. */}
-        <Reveal delay={200}>
-          <div className="mt-[var(--space-block)] max-w-[56rem]">
-            <FilmCinema />
-          </div>
         </Reveal>
 
         {/* The two objections, closed before they are raised. */}

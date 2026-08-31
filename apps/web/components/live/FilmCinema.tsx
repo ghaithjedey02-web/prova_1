@@ -39,11 +39,11 @@ interface Cap {
 
 /** Caption timing on the produced cut: 8 shots, 2.6s per chapter step. */
 const CAPS: readonly Cap[] = [
-  { at: 0,    code: 'IL CAOS',         line: 'Email, ordini, fatture, segnali: ognuno per conto suo.' },
-  { at: 2.6,  code: 'INGESTIONE',      line: 'DOLMIR li raccoglie in un solo flusso.' },
-  { at: 5.2,  code: 'COMPRENSIONE',    line: 'E li trasforma in dati, con la fonte attaccata.', overlay: 'fields' },
+  { at: 0,    code: 'INPUT',           line: 'Email, ordini, fatture, segnali: ognuno per conto suo.' },
+  { at: 2.6,  code: 'ANALISI',         line: 'DOLMIR li raccoglie in un solo flusso.' },
+  { at: 5.2,  code: 'DATI',            line: 'E li trasforma in dati, con la fonte attaccata.', overlay: 'fields' },
   { at: 7.8,  code: 'VERIFICA',        line: 'Ogni dato viene confrontato con le altre fonti.' },
-  { at: 10.4, code: 'CONFLITTO',       line: 'Quando qualcosa non torna, non tira a indovinare.', overlay: 'conflict', amber: true },
+  { at: 10.4, code: 'CONFLITTI',       line: 'Quando qualcosa non torna, non tira a indovinare.', overlay: 'conflict', amber: true },
   { at: 13.0, code: 'DECISIONE UMANA', line: 'Il sistema si ferma: la decisione è vostra.', overlay: 'gate', amber: true },
   { at: 15.6, code: 'AZIONE',          line: 'Approvato: il flusso riparte, ordinato e scritto nel registro.', overlay: 'action' },
   { at: 18.2, code: 'DOLMIR',          line: 'Il caos è diventato un sistema.' },
@@ -58,7 +58,14 @@ const FIELDS = [
 
 type Mode = 'poster' | 'playing' | 'done' | 'fallback';
 
-export function FilmCinema() {
+export function FilmCinema({
+  children,
+  endStyle = 'center',
+}: {
+  /** Rendered centred over the stage — the interactive DOLMIR Core. */
+  children?: React.ReactNode;
+  endStyle?: 'center' | 'bar';
+} = {}) {
   const video = useRef<HTMLVideoElement>(null);
   const [mode, setMode] = useState<Mode>('poster');
   const [srcIdx, setSrcIdx] = useState(0);
@@ -138,7 +145,17 @@ export function FilmCinema() {
     if (mode !== 'playing') { setMode('playing'); void v.play().catch(() => setMode('fallback')); }
   }, [mode]);
 
-  if (reduce !== false || mode === 'fallback') return <Film />;
+  if (reduce !== false || mode === 'fallback') {
+    /* No playable film (reduced motion, blocked network): the Core alone on
+       a quiet stage — never a dead player, never two competing posters. */
+    return children ? (
+      <div className="relative flex aspect-video items-center justify-center overflow-hidden border border-rule bg-void">
+        <div className="pool absolute inset-0 opacity-40" aria-hidden />
+        <div className="sheet-fine absolute inset-0 opacity-30" aria-hidden />
+        {children}
+      </div>
+    ) : <Film />;
+  }
 
   const c = CAPS[cap]!;
 
@@ -248,7 +265,14 @@ export function FilmCinema() {
           )}
 
           {/* ending: the identity moment is ours, not generated */}
-          {mode === 'done' && (
+          {mode === 'done' && endStyle === 'bar' && (
+            <div className="absolute inset-x-0 bottom-0 z-10 flex flex-wrap items-center justify-center gap-2.5 bg-gradient-to-t from-void/90 to-transparent px-4 pb-4 pt-10">
+              <p className="w-full text-center text-[0.875rem] text-ink-2">Sistemi software intelligenti per aziende industriali.</p>
+              <a href="/#prova" className="border border-accent bg-accent/10 px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground">PROVA DOLMIR</a>
+              <button type="button" onClick={play} className="px-3 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-muted transition-colors hover:text-ink">{t.replay}</button>
+            </div>
+          )}
+          {mode === 'done' && endStyle === 'center' && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-void/85 p-4 backdrop-blur-[2px]">
               <div className="settle w-full max-w-[28rem] text-center">
                 <p className="font-display text-2xl font-semibold tracking-[0.28em] text-ink">DOLMIR</p>
@@ -267,6 +291,13 @@ export function FilmCinema() {
                   </button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* the Core — the film's protagonist, and the microphone */}
+          {children && (
+            <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center [&>*]:pointer-events-auto">
+              {children}
             </div>
           )}
 
