@@ -114,6 +114,44 @@ export const problema = {
   ],
 } as const;
 
+/* ============================================ home === the system film ======*/
+
+/**
+ * The thirty-second film, built as code: eight scenes that explain DOLMIR
+ * with the sound off. The captions are the voice-over.
+ */
+export const film = {
+  poster: 'GUARDA DOLMIR LAVORARE',
+  posterSub: '30 secondi · senza audio · senza paroloni',
+  replay: 'RIVEDI',
+  scenes: [
+    { code: '01 · IL CAOS',        caption: 'Il lavoro di un’azienda non vive in un solo software.', ms: 4200 },
+    { code: '02 · INPUT',          caption: 'Qualcosa entra. Un’email, con una richiesta vera.', ms: 3400 },
+    { code: '03 · COMPRENSIONE',   caption: 'DOLMIR la legge. E la capisce, campo per campo.', ms: 4200 },
+    { code: '04 · CONNESSIONE',    caption: 'Verifica sui sistemi che avete già.', ms: 3800 },
+    { code: '05 · INTELLIGENZA',   caption: 'Misura quanto è sicuro. Davvero.', ms: 3400 },
+    { code: '06 · REVISIONE UMANA', caption: 'E quando serve giudizio, si ferma.', ms: 4200 },
+    { code: '07 · AZIONE',         caption: 'Approvato da una persona: il sistema agisce.', ms: 3600 },
+    { code: '08 · RISULTATO',      caption: 'Un flusso solo. Controllato. Tracciato.', ms: 4600 },
+  ],
+  chaos: ['Email', 'PDF', 'Excel', 'Ordini', 'Fatture', 'CRM', 'ERP', 'Messaggi', 'Cartelle', 'Persone'],
+  emailFrom: 'cliente@azienda.example',
+  emailSubject: 'Richiesta di offerta — 120 pezzi',
+  fields: [
+    ['CLIENTE', 'Azienda X', '0.98'],
+    ['ARTICOLO', 'SL-4410', '0.96'],
+    ['QUANTITÀ', '120', '0.99'],
+    ['CONSEGNA', '18/09', '0.93'],
+  ],
+  systems: ['EMAIL', 'DOLMIR', 'ERP', 'CRM', 'DATI'],
+  intel: ['CONTESTO', 'REGOLE', 'VALIDAZIONE'],
+  confidence: '94,7%',
+  gateLine: 'Il sistema non indovina. Chiede.',
+  actions: ['Offerta preparata', 'ERP aggiornato', 'Risposta pronta per il cliente', 'Registro scritto'],
+  closing: 'L’intelligenza che fa funzionare le aziende.',
+  disclaimer: 'Sequenza dimostrativa con dati di esempio.',
+} as const;
+
 /* ==================================== home === the intelligence core ========*/
 
 export const intelligence = {

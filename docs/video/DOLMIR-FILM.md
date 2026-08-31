@@ -85,7 +85,8 @@ enterprise technology film` — aspect 16:9, durata 4–8s per clip.
 - **S7 (chiusura):** card nera generata in edit, non con AI: logo DOLMIR,
   dolmir.com, riga mono `SISTEMA · VERIFICA · PERSONA · AZIONE`.
 
-**Consegna:** master 16:9 H.264 ≤ 12 MB per il web →
-`apps/web/public/film/dolmir-intro.mp4` (+ poster
-`dolmir-intro-poster.jpg`). Il sito ha già lo slot: il video appare nel
-capitolo 01 appena il file esiste, lazy e senza autoplay.
+**Consegna:** master 16:9 H.264 ≤ 12 MB per il web. NOTA: il capitolo 01
+oggi contiene il film di sistema costruito in codice
+(`components/live/SystemFilm.tsx`, anche su `/scene/film`). Quando l'MP4
+prodotto esiste, sostituisce o affianca quel componente nello stesso
+punto — decisione da prendere guardando entrambi.

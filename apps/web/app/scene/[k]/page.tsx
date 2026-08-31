@@ -12,7 +12,7 @@ import { SceneShell } from './SceneShell';
  * indexed. The recipes live in docs/brand/AD-SCENES.md.
  */
 
-const SCENES = ['intelligenza', 'trasformazione', 'demo', 'materia'] as const;
+const SCENES = ['intelligenza', 'trasformazione', 'demo', 'materia', 'film'] as const;
 type SceneKey = (typeof SCENES)[number];
 
 export function generateStaticParams() {
