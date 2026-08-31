@@ -107,7 +107,17 @@ il prodotto in ambienti reali; la grafica di sistema — campi estratti,
 CONFLITTO RILEVATO, APPROVA/RIFIUTA, registro — è DOM del sito, mai
 generata, quindi leggibile e in tipografia brand.)
 
-Master: https://d2ol7oe51mr4n9.cloudfront.net/user_3IWNhA6wnS80L9kj7n6EaO07HtE/83400e39-a690-4bf8-838a-f6cb070ad34b.mp4
+Master v3 (attivo): https://d2ol7oe51mr4n9.cloudfront.net/user_3IWNhA6wnS80L9kj7n6EaO07HtE/d49b9409-3acd-412c-a6ec-7d926331c831.mp4
+
+v3 — «dentro il sistema» (31/08, 8 inquadrature Cinema Studio, 21,5s,
+2,7 MB): documenti alla deriva nel vuoto → corsie ordinate ciano →
+l'apertura meccanica che ingerisce i documenti e li trasforma in fasci
+di luce → i piani di verifica simmetrici → la scintilla AMBRA del
+conflitto fra due strutture dati → l'anello-iride fermo in luce ambra
+(la soglia che non si supera da sola) → il rilascio ciano → dentro
+l'anello → l'anello finale, una sola linea calma. L'anello del film è
+lo stesso oggetto del Nucleo cliccabile nella console Parla: un sistema
+solo. Le versioni v1 (astratta) e v2 (uffici reali) sono scartate.
 
 Integrazione: `components/live/FilmCinema.tsx` — didascalie italiane e
 rail capitoli in DOM (tipografia nostra, mai generata), finale identità

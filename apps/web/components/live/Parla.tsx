@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Container } from '@/components/ui/Container';
 import { Chapter } from '@/components/ui/Chapter';
 import { emit, setActivity } from '@/lib/system-bus';
+import { DolmirCore, type CoreState } from './DolmirCore';
 import { parla as c } from '@/content/site';
 
 /**
@@ -70,6 +71,7 @@ export function Parla() {
   const [input, setInput] = useState('');
   const [reduce, setReduce] = useState(false);
   const [mode, setMode] = useState<Mode>('unknown');
+  const [speaking, setSpeaking] = useState(false);
 
   const recRef = useRef<{ stop: () => void } | null>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -104,6 +106,9 @@ export function Parla() {
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'it-IT';
       u.rate = 1.02;
+      u.onstart = () => setSpeaking(true);
+      u.onend = () => setSpeaking(false);
+      u.onerror = () => setSpeaking(false);
       synth.speak(u);
     } catch { /* voice output is a bonus, never a requirement */ }
   }, [voiceOn]);
@@ -138,7 +143,7 @@ export function Parla() {
     seq.forEach((s, i) => {
       timers.current.push(setTimeout(() => {
         setStage(s);
-        setActivity(s === 4 ? (tone === 'amber' ? 'holding' : 'verifying') : s === 5 ? 'ready' : s >= 3 ? 'verifying' : 'analyzing');
+        setActivity(s >= 6 ? 'ready' : s >= 4 ? (tone === 'amber' ? 'holding' : 'verifying') : s >= 3 ? 'verifying' : 'analyzing');
       }, i * stepMs));
     });
     timers.current.push(setTimeout(() => {
@@ -196,7 +201,7 @@ export function Parla() {
       const evidence = Array.isArray(data.evidence) ? data.evidence : [];
       const amber = /approvazion|persona|umana|fermo|cancello/i.test(data.text);
       setMode('live');
-      stopSpin(5, amber ? 'amber' : 'good');
+      stopSpin(6, amber ? 'amber' : 'good');
       setLines((l) => [...l, { who: 'dolmir', text: data.text, tone: amber ? 'amber' : 'accent', evidence }]);
       speak(data.text);
       emit('CONSOLE.REPLY', `AI live · ${evidence.length} strumenti consultati`, 'accent');
@@ -251,6 +256,12 @@ export function Parla() {
 
   /* ------------------------------------------------------------- render */
   const toneText = (t?: string) => (t === 'amber' ? 'text-amber' : t === 'good' ? 'text-good' : 'text-accent');
+  const coreState: CoreState =
+    mic === 'listening' ? 'listening'
+    : speaking ? 'speaking'
+    : busy ? 'thinking'
+    : stage !== null && stageTone === 'amber' ? 'amber'
+    : 'idle';
   const suggestions: readonly string[] = mode === 'degraded' ? c.intents.map((i) => i.ask) : c.starters;
 
   return (
@@ -264,6 +275,17 @@ export function Parla() {
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
 
         <div className="mt-[var(--space-block)] max-w-[52rem]">
+          {/* The Core: the system's presence — and the microphone. */}
+          <div className="mb-6 text-center">
+            <DolmirCore
+              state={coreState}
+              onActivate={mic !== 'unsupported' ? listen : undefined}
+              label={mic === 'listening' ? 'Interrompi ascolto' : 'Parla con DOLMIR'}
+            />
+            <p className="telemetry mt-1 text-faint">
+              {mic === 'listening' ? c.micListening : mic !== 'unsupported' ? 'TOCCATE IL NUCLEO PER PARLARE' : 'SCRIVETE QUI SOTTO'}
+            </p>
+          </div>
           <div className="glass-solid relative border-rule">
             {/* console header */}
             <div className="flex items-center justify-between gap-3 border-b border-rule/70 px-4 py-3 sm:px-6">
@@ -343,7 +365,7 @@ export function Parla() {
                   <span
                     className={`whitespace-nowrap font-mono text-[0.625rem] tracking-[0.14em] transition-colors duration-300 ${
                       stage === i
-                        ? stageTone === 'amber' && i >= 4 ? 'text-amber' : stageTone === 'good' && i === 5 ? 'text-good' : 'text-accent'
+                        ? stageTone === 'amber' && i >= 4 ? 'text-amber' : stageTone === 'good' && i === 6 ? 'text-good' : 'text-accent'
                         : stage !== null && i < stage ? 'text-muted' : 'text-faint'
                     }`}
                   >

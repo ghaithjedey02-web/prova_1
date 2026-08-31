@@ -26,7 +26,7 @@ import { Film } from './Film';
 
 const SOURCES = [
   '/film/dolmir-film.mp4',
-  'https://d2ol7oe51mr4n9.cloudfront.net/user_3IWNhA6wnS80L9kj7n6EaO07HtE/83400e39-a690-4bf8-838a-f6cb070ad34b.mp4',
+  'https://d2ol7oe51mr4n9.cloudfront.net/user_3IWNhA6wnS80L9kj7n6EaO07HtE/d49b9409-3acd-412c-a6ec-7d926331c831.mp4',
 ] as const;
 
 interface Cap {
@@ -37,13 +37,16 @@ interface Cap {
   overlay?: 'fields' | 'conflict' | 'gate' | 'action';
 }
 
-/** Caption timing on the produced cut (crossfades at 4.4s intervals). */
+/** Caption timing on the produced cut: 8 shots, 2.6s per chapter step. */
 const CAPS: readonly Cap[] = [
-  { at: 0,    code: 'IL CAOS',         line: 'Email, PDF, Excel, telefono: il lavoro arriva da tutte le parti.' },
-  { at: 4.4,  code: 'COMPRENSIONE',    line: 'DOLMIR legge la richiesta e la trasforma in dati.', overlay: 'fields' },
-  { at: 8.8,  code: 'VERIFICA',        line: 'Poi confronta le fonti, una per una.', overlay: 'conflict', amber: true },
-  { at: 13.2, code: 'DECISIONE UMANA', line: 'E si ferma. Perché qui decide una persona.', overlay: 'gate', amber: true },
-  { at: 17.6, code: 'AZIONE',          line: 'Approvato: l’ordine parte, il registro è scritto.', overlay: 'action' },
+  { at: 0,    code: 'IL CAOS',         line: 'Email, ordini, fatture, segnali: ognuno per conto suo.' },
+  { at: 2.6,  code: 'INGESTIONE',      line: 'DOLMIR li raccoglie in un solo flusso.' },
+  { at: 5.2,  code: 'COMPRENSIONE',    line: 'E li trasforma in dati, con la fonte attaccata.', overlay: 'fields' },
+  { at: 7.8,  code: 'VERIFICA',        line: 'Ogni dato viene confrontato con le altre fonti.' },
+  { at: 10.4, code: 'CONFLITTO',       line: 'Quando qualcosa non torna, non tira a indovinare.', overlay: 'conflict', amber: true },
+  { at: 13.0, code: 'DECISIONE UMANA', line: 'Il sistema si ferma: la decisione è vostra.', overlay: 'gate', amber: true },
+  { at: 15.6, code: 'AZIONE',          line: 'Approvato: il flusso riparte, ordinato e scritto nel registro.', overlay: 'action' },
+  { at: 18.2, code: 'DOLMIR',          line: 'Il caos è diventato un sistema.' },
 ];
 
 const FIELDS = [
@@ -63,9 +66,40 @@ export function FilmCinema() {
   const [approved, setApproved] = useState(false);
   const [reduce, setReduce] = useState<boolean | null>(null);
 
+  const host = useRef<HTMLDivElement>(null);
+  const modeRef = useRef<Mode>('poster');
+  modeRef.current = mode;
+
   useEffect(() => {
     setReduce(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }, []);
+
+  /* The film starts by itself when the section enters the viewport (muted),
+     and stands down when the visitor scrolls far away. No play button needed
+     for the experience; RIVEDI remains for a second pass. */
+  useEffect(() => {
+    if (reduce !== false) return;
+    const el = host.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      const v = video.current;
+      if (!v) return;
+      if (e?.isIntersecting) {
+        if (modeRef.current === 'poster') {
+          setMode('playing');
+          setCap(0);
+          v.currentTime = 0;
+          void v.play().catch(() => setMode('fallback'));
+        } else if (modeRef.current === 'playing' && v.paused) {
+          void v.play().catch(() => { /* stays paused */ });
+        }
+      } else if (modeRef.current === 'playing' && !v.paused) {
+        v.pause();
+      }
+    }, { threshold: 0.45 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [reduce]);
 
   /* The gate "presses" APPROVA midway through the decision scene. */
   useEffect(() => {
@@ -109,7 +143,7 @@ export function FilmCinema() {
   const c = CAPS[cap]!;
 
   return (
-    <div data-inspect="FilmCinema · il film prodotto">
+    <div ref={host} data-inspect="FilmCinema · il film prodotto">
       <div className="relative overflow-hidden border border-rule bg-void">
         <div className="relative aspect-video w-full">
           <video
@@ -209,7 +243,7 @@ export function FilmCinema() {
                 <span aria-hidden className="ml-1 block border-y-[9px] border-l-[14px] border-y-transparent border-l-current" />
               </span>
               <span className="font-mono text-[0.8125rem] tracking-[0.22em] text-ink">{t.poster}</span>
-              <span className="telemetry text-faint">23 secondi · senza audio · una richiesta vera, dall’arrivo all’azione</span>
+              <span className="telemetry text-faint">21 secondi · senza audio · dentro il sistema</span>
             </button>
           )}
 
