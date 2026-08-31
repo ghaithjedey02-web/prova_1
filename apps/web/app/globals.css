@@ -538,9 +538,3 @@ html {
 :root[data-scene] main {
   padding-top: 2rem;
 }
-
-/* The chaos scene of the system film: tools adrift, gently. */
-@keyframes dolmir-drift {
-  from { translate: 0 -4px; }
-  to   { translate: 0 5px; }
-}

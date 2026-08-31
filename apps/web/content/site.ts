@@ -117,38 +117,64 @@ export const problema = {
 /* ============================================ home === the system film ======*/
 
 /**
- * The thirty-second film, built as code: eight scenes that explain DOLMIR
- * with the sound off. The captions are the voice-over.
+ * The film: one continuous WebGL transformation, ~25 seconds, no audio by
+ * design — the captions are the voice-over, and the human gate genuinely
+ * pauses the timeline until the viewer decides. Chapter times are seconds on
+ * the film clock (the gate stops the clock).
  */
 export const film = {
   poster: 'GUARDA DOLMIR LAVORARE',
-  posterSub: '30 secondi · senza audio · senza paroloni',
+  posterSub: '25 secondi · senza audio · il finale lo decidi tu',
   replay: 'RIVEDI',
-  scenes: [
-    { code: '01 · IL CAOS',        caption: 'Il lavoro di un’azienda non vive in un solo software.', ms: 4200 },
-    { code: '02 · INPUT',          caption: 'Qualcosa entra. Un’email, con una richiesta vera.', ms: 3400 },
-    { code: '03 · COMPRENSIONE',   caption: 'DOLMIR la legge. E la capisce, campo per campo.', ms: 4200 },
-    { code: '04 · CONNESSIONE',    caption: 'Verifica sui sistemi che avete già.', ms: 3800 },
-    { code: '05 · INTELLIGENZA',   caption: 'Misura quanto è sicuro. Davvero.', ms: 3400 },
-    { code: '06 · REVISIONE UMANA', caption: 'E quando serve giudizio, si ferma.', ms: 4200 },
-    { code: '07 · AZIONE',         caption: 'Approvato da una persona: il sistema agisce.', ms: 3600 },
-    { code: '08 · RISULTATO',      caption: 'Un flusso solo. Controllato. Tracciato.', ms: 4600 },
+  chapters: [
+    { code: 'IL CAOS',        at: 0,    caption: 'Il lavoro di un’azienda non vive in un solo software.' },
+    { code: 'SCANSIONE',      at: 4.5,  caption: 'DOLMIR lo intercetta. E comincia a leggere.' },
+    { code: 'COMPRENSIONE',   at: 8.0,  caption: 'Le parole diventano dati. Con la fonte attaccata.' },
+    { code: 'CONNESSIONE',    at: 13.0, caption: 'E si collegano ai sistemi che avete già.' },
+    { code: 'REVISIONE UMANA', at: 17.5, caption: 'Poi tutto si ferma. Perché adesso tocca a voi.' },
+    { code: 'AZIONE',         at: 17.5, caption: 'Approvato. Il sistema agisce, e lo scrive nel registro.' },
+    { code: 'RISULTATO',      at: 21.0, caption: 'Da informazione, ad azione.' },
   ],
-  chaos: ['Email', 'PDF', 'Excel', 'Ordini', 'Fatture', 'CRM', 'ERP', 'Messaggi', 'Cartelle', 'Persone'],
-  emailFrom: 'cliente@azienda.example',
-  emailSubject: 'Richiesta di offerta — 120 pezzi',
-  fields: [
-    ['CLIENTE', 'Azienda X', '0.98'],
-    ['ARTICOLO', 'SL-4410', '0.96'],
-    ['QUANTITÀ', '120', '0.99'],
-    ['CONSEGNA', '18/09', '0.93'],
+  /* Scene 01: the stray signals of a normal week. */
+  signals: [
+    { x: 12, y: 22, t: 'IN.EMAIL' },
+    { x: 78, y: 14, t: 'FATTURA_00482' },
+    { x: 30, y: 70, t: 'ORDINE_2026/184' },
+    { x: 86, y: 58, t: 'PDF_019' },
+    { x: 55, y: 12, t: 'RICHIESTA CLIENTE' },
+    { x: 8,  y: 52, t: 'MAGAZZINO' },
+    { x: 68, y: 80, t: 'SOLLECITO' },
+    { x: 40, y: 34, t: 'CRM ↯ ERP' },
   ],
-  systems: ['EMAIL', 'DOLMIR', 'ERP', 'CRM', 'DATI'],
-  intel: ['CONTESTO', 'REGOLE', 'VALIDAZIONE'],
-  confidence: '94,7%',
-  gateLine: 'Il sistema non indovina. Chiede.',
-  actions: ['Offerta preparata', 'ERP aggiornato', 'Risposta pronta per il cliente', 'Registro scritto'],
+  /* Scene 03: raw phrases physically becoming fields. */
+  morphs: [
+    { raw: '«consegna richiesta il 12»', k: 'CONSEGNA', v: '12/09/2026' },
+    { raw: '«ce ne servono 40»',         k: 'QUANTITÀ', v: '40 pz' },
+    { raw: '«Meccanica Rossi»',          k: 'CLIENTE',  v: 'Officine Rossi S.r.l.' },
+  ],
+  /* Scene 04: the constellation. Positions are percentages of the stage. */
+  nodes: [
+    { x: 50, y: 18, t: 'EMAIL' },
+    { x: 84, y: 34, t: 'ERP' },
+    { x: 84, y: 66, t: 'CRM' },
+    { x: 50, y: 84, t: 'ARCHIVIO' },
+    { x: 16, y: 66, t: 'MAGAZZINO' },
+    { x: 16, y: 34, t: 'DOCUMENTI' },
+  ],
+  confidence: 'CONFIDENZA 97,4%',
+  gateTitle: 'REVISIONE UMANA',
+  gateLine: 'Il sistema non indovina. Il finale di questo film lo approvate voi.',
+  rejectLine: 'Fermato. Nessuna azione eseguita — ed è un esito corretto.',
+  flow: ['INPUT', 'CAPIRE', 'VERIFICARE', 'PERSONA', 'AZIONE'],
+  stats: [
+    ['PROCESSO', '1'],
+    ['PASSAGGI MANUALI', '7 → 0'],
+    ['SISTEMI COLLEGATI', '4'],
+    ['DECISIONE UMANA', '1'],
+    ['AZIONE', '1'],
+  ],
   closing: 'L’intelligenza che fa funzionare le aziende.',
+  endCaption: 'Fine. Questo finale lo avete deciso voi.',
   disclaimer: 'Sequenza dimostrativa con dati di esempio.',
 } as const;
 

@@ -86,7 +86,10 @@ enterprise technology film` — aspect 16:9, durata 4–8s per clip.
   dolmir.com, riga mono `SISTEMA · VERIFICA · PERSONA · AZIONE`.
 
 **Consegna:** master 16:9 H.264 ≤ 12 MB per il web. NOTA: il capitolo 01
-oggi contiene il film di sistema costruito in codice
-(`components/live/SystemFilm.tsx`, anche su `/scene/film`). Quando l'MP4
-prodotto esiste, sostituisce o affianca quel componente nello stesso
-punto — decisione da prendere guardando entrambi.
+oggi contiene il film cinematico costruito in codice — un unico piano
+sequenza WebGL di 25s con pausa reale al cancello umano
+(`components/live/Film.tsx` + `FilmScene.tsx`, anche su `/scene/film`;
+capitoli e ricette di ripresa in `docs/brand/AD-SCENES.md`). Un MP4
+prodotto avrebbe senso solo se supera quel piano sequenza — decisione da
+prendere guardando entrambi. Il finale interattivo (APPROVA/RIFIUTA) non
+è replicabile in un MP4: è l'argomento del prodotto, non un effetto.

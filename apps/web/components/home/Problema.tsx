@@ -1,7 +1,7 @@
 import { Chapter } from '@/components/ui/Chapter';
 import { Container } from '@/components/ui/Container';
 import { Reveal } from '@/components/ui/Reveal';
-import { SystemFilm } from '@/components/live/SystemFilm';
+import { Film } from '@/components/live/Film';
 import { problema as c } from '@/content/site';
 
 /**
@@ -56,10 +56,10 @@ export function Problema() {
           </p>
         </Reveal>
 
-        {/* The thirty-second film: the whole argument, sound off. */}
+        {/* The film: one continuous take, sound off, the finale is yours. */}
         <Reveal delay={200}>
           <div className="mt-[var(--space-block)] max-w-[56rem]">
-            <SystemFilm />
+            <Film />
           </div>
         </Reveal>
 
