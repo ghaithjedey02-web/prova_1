@@ -90,6 +90,14 @@ export function Capabilities() {
             {/* The family, stated in shapes and then in words. */}
             <div key={item.k} className="settle grid gap-0 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
               <div className="relative flex min-h-[15rem] items-center justify-center border-b border-rule p-6 md:border-b-0 md:border-r">
+                <div aria-hidden className="sheet-fine absolute inset-0 opacity-60" />
+                <div
+                  aria-hidden
+                  className="absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_50%_45%,color-mix(in_oklab,var(--c-accent)_7%,transparent)_0%,transparent_70%)]"
+                />
+                <p className="telemetry absolute left-5 top-4 text-faint">
+                  SCHEMA · {item.label.toUpperCase()}
+                </p>
                 <Schematic kind={item.diagram} />
               </div>
               <div className="flex flex-col justify-center p-6 sm:p-8">

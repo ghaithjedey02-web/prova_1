@@ -513,3 +513,17 @@ img, svg, video, canvas { display: block; max-width: 100%; }
   background: var(--c-ground);
   border: 1px solid var(--c-accent);
 }
+
+/* ------------------------------------------------------------- finishing ---*/
+
+/* Selection in the house colours: even highlighting text stays in-system. */
+::selection {
+  background: var(--c-accent);
+  color: var(--c-ground);
+}
+
+/* Thin, dark scrollbars, so Windows doesn't paint a grey slab down the page. */
+html {
+  scrollbar-color: var(--c-rule-strong) var(--c-ground);
+  scrollbar-width: thin;
+}

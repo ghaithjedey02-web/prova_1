@@ -10,7 +10,7 @@ const legal = [
 
 export function Footer() {
   return (
-    <footer className="relative mt-[var(--space-section)] border-t border-rule bg-void">
+    <footer className="relative border-t border-rule bg-void">
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-line to-transparent" />
       <Container>
         <div className="grid gap-12 py-16 md:grid-cols-[1.7fr_1fr_1fr] md:py-20">

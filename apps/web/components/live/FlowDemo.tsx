@@ -268,9 +268,25 @@ export function FlowDemo() {
                 )}
 
                 {phase === 'idle' && (
-                  <p className="border-t border-rule px-5 py-4 text-[var(--text-micro)] text-muted sm:px-7">
-                    Dati di esempio. L’azienda e i documenti citati non sono reali.
-                  </p>
+                  <div className="px-5 pb-6 sm:px-7">
+                    {/* The place the result will land, drawn before it exists:
+                        an instrument with an empty dial reads as ready, where
+                        an empty black panel reads as broken. */}
+                    <div className="mt-2 border border-dashed border-rule p-5">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="telemetry text-faint">RISULTATO</p>
+                        <p className="telemetry text-faint">— IN ATTESA DI ESECUZIONE</p>
+                      </div>
+                      <div aria-hidden className="mt-4 space-y-2.5">
+                        <div className="h-px w-3/4 bg-rule" />
+                        <div className="h-px w-1/2 bg-rule" />
+                        <div className="h-px w-2/3 bg-rule" />
+                      </div>
+                    </div>
+                    <p className="mt-4 text-[var(--text-micro)] text-muted">
+                      Dati di esempio. L’azienda e i documenti citati non sono reali.
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
