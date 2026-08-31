@@ -127,13 +127,13 @@ export function Hero() {
 
           <div className="mt-9 flex flex-wrap items-center gap-3">
             <Magnetic>
-              <Button href={cta.primary.href} arrow className="sm:px-8 sm:py-4.5 sm:text-[var(--text-body)]">
-                {cta.primary.label}
+              <Button href="/#prova" arrow className="sm:px-8 sm:py-4.5 sm:text-[var(--text-body)]">
+                Prova DOLMIR
               </Button>
             </Magnetic>
             <Magnetic>
-              <Button href={cta.secondary.href} variant="secondary" className="sm:px-8 sm:py-4.5 sm:text-[var(--text-body)]">
-                Vedi il sistema
+              <Button href={cta.primary.href} variant="secondary" className="sm:px-8 sm:py-4.5 sm:text-[var(--text-body)]">
+                Portateci un processo
               </Button>
             </Magnetic>
           </div>

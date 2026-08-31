@@ -22,7 +22,7 @@ export const site = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://dolmir.com',
   tagline: 'Sistemi digitali e AI per le imprese',
   description:
-    'DOLMIR costruisce sistemi digitali su misura: software, automazioni AI, integrazioni e interfacce che collegano il lavoro disperso di un’azienda in un processo unico — con una persona che approva.',
+    'DOLMIR costruisce sistemi software intelligenti: leggono email e documenti, verificano i dati sui sistemi che avete già e preparano le azioni — con una persona che approva ogni decisione che richiede giudizio.',
   locale: 'it_IT',
   email: 'info@dolmir.com',
   region: 'Lombardia',
@@ -117,9 +117,9 @@ export const problema = {
 /* ==================================== home === the intelligence core ========*/
 
 export const intelligence = {
-  n: '02',
+  n: '05',
   label: 'Intelligenza',
-  headline: 'Dentro il sistema che costruiamo.',
+  headline: 'Come funziona, visto da dentro.',
   body:
     'Questa non è un’illustrazione: è la forma di ogni sistema DOLMIR. Informazioni non strutturate entrano da sinistra, il nucleo le capisce, e a destra escono azioni pronte. In mezzo, sempre, una persona che decide.',
   /* What flows in and what comes out. Sector-agnostic on purpose: this is the
@@ -213,11 +213,11 @@ export const capabilities = {
 /* ======================================== home === the simulator ============*/
 
 export const simulator = {
-  n: '08',
+  n: '02',
   label: 'Prova DOLMIR',
   headline: 'Consegnate un problema. Guardate cosa succede.',
   body:
-    'Accesso temporaneo alla stessa architettura che installiamo: scegliete una situazione reale, avviatela e decidete voi, al cancello. Tutto gira nel vostro browser — nessuna chiamata esterna, nessun dato reale. Il motore vero è nel capitolo 06; qui vedete la stessa forma su sette casi.',
+    'Accesso temporaneo alla stessa architettura che installiamo: scegliete una situazione reale, avviatela e decidete voi, al cancello. Tutto gira nel vostro browser — nessuna chiamata esterna, nessun dato reale. Il motore vero è nel capitolo 07; qui vedete la stessa forma su sette casi.',
   /* The one word the whole frame keys on, per phase. */
   sysStates: {
     idle: 'IN ATTESA',
@@ -550,7 +550,7 @@ export const simulator = {
 
 export const chapters = {
   automation: {
-    n: '07',
+    n: '08',
     label: 'Automazione',
     headline: 'Il flusso, dall’ingresso alla firma.',
     body:
