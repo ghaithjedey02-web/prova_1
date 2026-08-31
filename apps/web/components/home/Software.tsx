@@ -32,6 +32,8 @@ const toneChip = {
 export function Software() {
   const host = useRef<HTMLDivElement>(null);
   const [landed, setLanded] = useState(0);
+  /* Phase 7: a row is not a picture of a record — it opens its own registro. */
+  const [openRow, setOpenRow] = useState<number | null>(null);
 
   useEffect(() => {
     const el = host.current;
@@ -54,6 +56,9 @@ export function Software() {
     <section className="relative py-[var(--space-section)]" data-inspect="Software · interfaccia dimostrativa">
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
+        <Reveal delay={100}>
+          <p className="telemetry mt-4 text-faint">OGNI RIGA SI APRE: DENTRO C’È IL SUO REGISTRO.</p>
+        </Reveal>
 
         <Reveal delay={140}>
           <div ref={host} className="glass-solid mt-[var(--space-block)] overflow-hidden">
@@ -107,11 +112,17 @@ export function Software() {
                 <ul className="stack-rules">
                   {app.rows.map((r, i) => {
                     const on = i < landed;
+                    const open = openRow === i;
                     return (
-                      <li
-                        key={r.id}
-                        className={`grid grid-cols-[5.5rem_1fr] items-center gap-x-4 gap-y-2 px-5 py-4 transition-all duration-[var(--duration-base)] ease-[var(--ease-mech-out)] sm:grid-cols-[5.5rem_1fr_7rem_9rem] ${
+                      <li key={r.id} className={`transition-all duration-[var(--duration-base)] ease-[var(--ease-mech-out)] ${
                           on ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+                        }`}>
+                      <button
+                        type="button"
+                        aria-expanded={open}
+                        onClick={() => setOpenRow(open ? null : i)}
+                        className={`grid w-full grid-cols-[5.5rem_1fr] items-center gap-x-4 gap-y-2 px-5 py-4 text-left transition-colors duration-[var(--duration-fast)] sm:grid-cols-[5.5rem_1fr_7rem_9rem] ${
+                          open ? 'bg-raised/60' : 'hover:bg-raised/40'
                         }`}
                       >
                         <span className="telemetry text-muted">{r.id}</span>
@@ -136,6 +147,17 @@ export function Software() {
                         >
                           {r.s}
                         </span>
+                      </button>
+                      {open && (
+                        <div className="settle border-t border-rule/60 bg-void/50 px-5 py-4 sm:pl-[7.5rem]">
+                          <p className="telemetry mb-2 text-faint">REGISTRO · {r.id} · DATI DIMOSTRATIVI</p>
+                          <ol className="space-y-1.5">
+                            {r.trail.map((line) => (
+                              <li key={line} className="font-mono text-[0.6875rem] leading-relaxed text-muted">{line}</li>
+                            ))}
+                          </ol>
+                        </div>
+                      )}
                       </li>
                     );
                   })}

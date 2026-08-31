@@ -174,6 +174,7 @@ export function Simulator() {
   const [srcHover, setSrcHover] = useState<string | null>(null);
   const [override, setOverride] = useState<{ conf: number; note: string; tone: string } | null>(null);
   const [genericView, setGenericView] = useState(false);
+  const [vostro, setVostro] = useState<number | null>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const seq = useRef(0);
   const logBox = useRef<HTMLDivElement>(null);
@@ -817,7 +818,68 @@ export function Simulator() {
                   </div>
                 </div>
               </div>
-              <p className="mt-5 max-w-[68ch] text-[0.8125rem] leading-relaxed text-muted">{simulator.differentiatorNote}</p>
+              <p className="mt-6 max-w-[40ch] font-display text-[1.15rem] font-semibold leading-snug text-ink">
+                {simulator.differentiatorClaim}
+              </p>
+              <p className="mt-2 max-w-[68ch] text-[0.8125rem] leading-relaxed text-muted">{simulator.differentiatorNote}</p>
+            </div>
+
+            {/* --------------------------------------- your company, imagined */}
+            <div className="border-t border-rule p-5 sm:p-7">
+              <div className="flex flex-wrap items-baseline justify-between gap-3">
+                <p className="font-display text-[1.15rem] font-semibold text-ink">{simulator.vostro.title}</p>
+                <p className="telemetry text-faint">{simulator.vostro.ask}</p>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Dove si perde il lavoro">
+                {simulator.vostro.items.map((it, i) => (
+                  <button
+                    key={it.k}
+                    type="button"
+                    role="tab"
+                    aria-selected={vostro === i}
+                    onClick={() => setVostro(vostro === i ? null : i)}
+                    className={`border px-4 py-2.5 telemetry transition-colors duration-[var(--duration-fast)] ${
+                      vostro === i ? 'border-accent bg-accent-soft text-accent' : 'border-rule text-muted hover:border-rule-strong hover:text-ink'
+                    }`}
+                  >
+                    {it.label}
+                  </button>
+                ))}
+              </div>
+
+              {vostro !== null && (() => {
+                const it = simulator.vostro.items[vostro]!;
+                return (
+                  <div key={it.k} className="settle mt-5 border border-rule bg-surface/70 p-5">
+                    <div className="flex flex-wrap items-center gap-y-2">
+                      {it.flow.map((step, i) => (
+                        <span key={step} className="flex items-center">
+                          <span
+                            className={`border px-2.5 py-2 font-mono text-[0.625rem] tracking-[0.1em] ${
+                              step === 'PERSONA' || step === 'PERSONE' ? 'border-amber/60 text-amber' : 'border-accent/40 text-accent'
+                            }`}
+                          >
+                            {step}
+                          </span>
+                          {i < it.flow.length - 1 && <span aria-hidden className="wire mx-1 block h-px w-3.5 flex-none" />}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="mt-4 max-w-[68ch] text-[0.8125rem] leading-relaxed text-ink-2">{it.note}</p>
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-rule pt-3">
+                      <p className="telemetry text-faint">SISTEMI COINVOLTI · {it.systems}</p>
+                      <a
+                        href="/contatto"
+                        className="border border-accent bg-accent-soft px-4 py-2 font-mono text-[0.6875rem] tracking-[0.14em] text-accent transition-colors hover:bg-accent hover:text-ground"
+                      >
+                        PARLIAMONE →
+                      </a>
+                    </div>
+                  </div>
+                );
+              })()}
+              <p className="telemetry mt-3 text-[0.5625rem] text-faint">{simulator.vostro.disclaimer}</p>
             </div>
           </div>
         </Reveal>

@@ -285,9 +285,27 @@ export const simulator = {
   /* The differentiator, stated as two chains rather than as an attack. */
   generic: ['DOMANDA', 'RISPOSTA'],
   dolmirChain: ['INPUT', 'COMPRENSIONE', 'DATI AZIENDALI', 'REGOLE', 'CONFIDENZA', 'PERSONA', 'AZIONE', 'REGISTRO'],
+  differentiatorClaim: 'Un assistente risponde. DOLMIR costruisce un sistema che lavora.',
   differentiatorNote:
-    'Un assistente generico genera risposte. DOLMIR collega l’intelligenza alle operazioni: ogni passaggio è verificato, tracciato, e si ferma davanti a una persona.',
+    'Ogni passaggio è verificato sui dati aziendali, tracciato nel registro, e si ferma davanti a una persona quando serve giudizio.',
   disclaimer: 'Simulazione con dati di esempio. I tempi indicati sono illustrativi, non misurati presso un cliente.',
+  /* Phase after the run: the visitor points at their own bottleneck and DOLMIR
+     sketches the concept — explicitly a capability visual, never an analysis. */
+  vostro: {
+    title: 'Adesso immaginate il vostro.',
+    ask: 'Dove si perde oggi il vostro lavoro?',
+    disclaimer: 'Concept — una visualizzazione della capacità, non un’analisi della vostra azienda.',
+    items: [
+      { k: 'preventivi',   label: 'Preventivi',        flow: ['RICHIESTA', 'LETTURA', 'STORICO', 'BOZZA', 'PERSONA', 'INVIO'],       systems: 'Email · Gestionale · Storico offerte', note: 'Le richieste arrivano già lette e confrontate con lo storico. La bozza si prepara da sola; il prezzo lo approva il preventivista.' },
+      { k: 'ordini',       label: 'Ordini',            flow: ['CONFERMA', 'ESTRAZIONE', 'ANAGRAFICHE', 'CONTROLLO', 'PERSONA', 'GESTIONALE'], systems: 'Email · ERP · Anagrafiche', note: 'Le righe si scrivono nel gestionale da sole; le eccezioni — codici nuovi, quantità anomale — si fermano davanti a una persona.' },
+      { k: 'fatture',      label: 'Fatture',           flow: ['FATTURA', 'LETTURA', 'VS ORDINE', 'SCOSTAMENTI', 'PERSONA', 'REGISTRAZIONE'], systems: 'PEC · ERP · Scadenzario', note: 'Ogni fattura viene confrontata con il suo ordine prima della registrazione: gli scostamenti si vedono prima, non dopo.' },
+      { k: 'richieste',    label: 'Richieste clienti', flow: ['RICHIESTA', 'CLASSIFICAZIONE', 'CONTESTO', 'BOZZA', 'PERSONA', 'RISPOSTA'],   systems: 'Email · CRM · Storico', note: 'Ogni richiesta viene classificata e instradata con il suo contesto già raccolto. Nessuna risposta parte da sola.' },
+      { k: 'documenti',    label: 'Documenti',         flow: ['ACQUISIZIONE', 'ESTRAZIONE', 'COLLEGAMENTO', 'VERIFICA', 'INDICE', 'RICERCA'], systems: 'Email · Archivio · Commesse', note: 'I dati escono dagli allegati con l’evidenza esatta e si collegano alla pratica giusta. Tutto diventa cercabile per contenuto.' },
+      { k: 'approvazioni', label: 'Approvazioni',      flow: ['INNESCO', 'CONTESTO', 'NOTIFICA', 'PERSONA', 'REGISTRO', 'RIPRESA'],   systems: 'Flussi · Documenti · Registro', note: 'La decisione resta vostra. Cambia quanto costa arrivarci: il contesto arriva già raccolto, la firma resta umana.' },
+      { k: 'report',       label: 'Report',            flow: ['DATI', 'RACCOLTA', 'STRUTTURA', 'VERIFICA', 'REPORT', 'PERSONE'],      systems: 'ERP · CRM · Fogli', note: 'I numeri che oggi qualcuno raccoglie a mano ogni settimana si raccolgono da soli, con la fonte dichiarata per ogni valore.' },
+      { k: 'assistenza',   label: 'Assistenza',        flow: ['SEGNALAZIONE', 'LETTURA', 'CONTRATTO', 'PRIORITÀ', 'PERSONA', 'TICKET'], systems: 'Email · CRM · Storico interventi', note: 'Ogni segnalazione arriva con contratto, storico e priorità proposti. L’assegnazione resta una scelta del responsabile.' },
+    ],
+  },
   scenarios: [
     {
       k: 'manifattura',
@@ -573,11 +591,16 @@ export const chapters = {
         { k: 'Completate', v: 219, tone: 'good' },
       ],
       rows: [
-        { id: 'RIC-4471', c: 'Cliente A', s: 'Bozza pronta', tone: 'good', conf: 0.94, t: '08:41' },
-        { id: 'RIC-4472', c: 'Cliente B', s: 'Campi da verificare', tone: 'amber', conf: 0.61, t: '08:44' },
-        { id: 'RIC-4473', c: 'Cliente C', s: 'Serve stima tecnica', tone: 'amber', conf: 0.22, t: '08:52' },
-        { id: 'RIC-4474', c: 'Cliente D', s: 'Instradata', tone: 'neutral', conf: 0.88, t: '09:03' },
-        { id: 'RIC-4475', c: 'Cliente E', s: 'Bozza pronta', tone: 'good', conf: 0.91, t: '09:11' },
+        { id: 'RIC-4471', c: 'Cliente A', s: 'Bozza pronta', tone: 'good', conf: 0.94, t: '08:41',
+          trail: ['08:41 · email ricevuta e classificata', '08:41 · 6 campi estratti, tutti sopra soglia', '08:42 · precedente trovato nello storico', '08:42 · bozza preparata · in attesa di approvazione'] },
+        { id: 'RIC-4472', c: 'Cliente B', s: 'Campi da verificare', tone: 'amber', conf: 0.61, t: '08:44',
+          trail: ['08:44 · PDF letto · 5 campi estratti', '08:44 · 2 campi sotto soglia: quantità, consegna', '08:45 · assegnata a M.R. con l’evidenza allegata'] },
+        { id: 'RIC-4473', c: 'Cliente C', s: 'Serve stima tecnica', tone: 'amber', conf: 0.22, t: '08:52',
+          trail: ['08:52 · nessun precedente comparabile', '08:52 · il sistema non propone un prezzo', '08:53 · passata al preventivista con la motivazione'] },
+        { id: 'RIC-4474', c: 'Cliente D', s: 'Instradata', tone: 'neutral', conf: 0.88, t: '09:03',
+          trail: ['09:03 · riconosciuta come conferma d’ordine', '09:03 · instradata al flusso ordini, non quotata'] },
+        { id: 'RIC-4475', c: 'Cliente E', s: 'Bozza pronta', tone: 'good', conf: 0.91, t: '09:11',
+          trail: ['09:11 · email letta · 6 campi estratti', '09:12 · confronto storico: 2 offerte simili', '09:12 · bozza pronta · in attesa di approvazione'] },
       ],
       disclaimer: 'Interfaccia dimostrativa con dati di esempio.',
     },
