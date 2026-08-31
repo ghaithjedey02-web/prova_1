@@ -527,3 +527,14 @@ html {
   scrollbar-color: var(--c-rule-strong) var(--c-ground);
   scrollbar-width: thin;
 }
+
+/* Capture stages (/scene/*): the chrome steps out of frame so a screen
+   recording of the viewport is a clean advertising master. */
+:root[data-scene] header,
+:root[data-scene] footer,
+:root[data-scene] [data-readout] {
+  display: none;
+}
+:root[data-scene] main {
+  padding-top: 2rem;
+}

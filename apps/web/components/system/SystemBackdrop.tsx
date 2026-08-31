@@ -139,6 +139,7 @@ export function SystemReadout() {
 
   return (
     <aside
+      data-readout
       className={`pointer-events-none fixed bottom-5 right-[var(--gutter)] z-30 hidden transition-opacity duration-[var(--duration-base)] lg:block ${
         visible ? 'opacity-100' : 'opacity-0'
       }`}

@@ -396,7 +396,11 @@ export function Simulator() {
 
             <div className="grid lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
               {/* ------------------------------------------------- the input */}
-              <div className="border-b border-rule p-5 sm:p-7 lg:border-b-0 lg:border-r">
+              <div
+                className={`border-b border-rule p-5 transition-opacity duration-[var(--duration-slow)] sm:p-7 lg:border-b-0 lg:border-r ${
+                  phase === 'gate' && !modifying ? 'opacity-55' : 'opacity-100'
+                }`}
+              >
                 <div className="flex items-center justify-between gap-3">
                   <p className="telemetry text-faint">{sc.docKind} · IN ARRIVO</p>
                   <span className="telemetry text-faint">{simulator.disclaimer.split('.')[0]}.</span>
@@ -517,7 +521,11 @@ export function Simulator() {
                   </p>
                   <SystemMap stage={stage} phase={phase} />
                 </div>
-                <ol className="grid grid-cols-2 gap-x-4 gap-y-1.5 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+                <ol
+                  className={`grid grid-cols-2 gap-x-4 gap-y-1.5 transition-opacity duration-[var(--duration-slow)] sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 ${
+                    phase === 'gate' && !modifying ? 'opacity-55' : 'opacity-100'
+                  }`}
+                >
                   {simulator.stages.map((st, i) => (
                     <li
                       key={st}
