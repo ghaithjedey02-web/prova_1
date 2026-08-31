@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { Decode } from '@/components/ui/Decode';
 import { Magnetic } from '@/components/ui/Magnetic';
-import { cta, hero } from '@/content/site';
+import { cta, hero, pipeline } from '@/content/site';
 
 /**
  * The awakening.
@@ -137,6 +137,18 @@ export function Hero() {
               </Button>
             </Magnetic>
           </div>
+
+          {/* The whole product in seven words — the same line the page then
+              walks through, chapter by chapter. Amber only where a person
+              decides. */}
+          <p className="telemetry mt-8 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+            {pipeline.words.map((w, i) => (
+              <span key={w} className="flex items-center gap-x-2">
+                {i > 0 && <span aria-hidden className="block h-px w-3 bg-rule-strong" />}
+                <span className={i === pipeline.human ? 'text-amber' : 'text-muted'}>{w}</span>
+              </span>
+            ))}
+          </p>
         </div>
 
         {/* ------------------------------------------------------ telemetry */}

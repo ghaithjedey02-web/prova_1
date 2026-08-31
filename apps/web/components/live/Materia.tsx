@@ -203,6 +203,7 @@ export function Materia() {
       className="relative h-[260vh] md:h-[400vh]"
       aria-labelledby="materia-heading"
       data-inspect="Materia · sequenza fisico → sistema"
+      data-spine="3"
     >
       <div className="sticky top-0 flex h-screen w-full flex-col justify-end overflow-hidden pb-10 pt-[5.25rem] md:pb-20 lg:pt-0">
         {/* One scene at a time: the fixed machine behind the whole site steps

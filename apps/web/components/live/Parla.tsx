@@ -25,12 +25,44 @@ import { parla as c } from '@/content/site';
 
 type Intent = (typeof c.intents)[number];
 interface Evidence { tool: string; label: string; data: unknown }
-interface Line { who: 'you' | 'dolmir'; text: string; tone?: string; fx?: string; link?: { t: string; href: string }; evidence?: Evidence[] }
+interface Line { id?: number; who: 'you' | 'dolmir'; text: string; tone?: string; fx?: string; link?: { t: string; href: string }; evidence?: Evidence[] }
 type MicState = 'idle' | 'listening' | 'unsupported';
 type Mode = 'unknown' | 'live' | 'degraded';
 
 function normalize(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * The reply arrives as one block from the server; it RENDERS as a system
+ * writing — a steady character reveal, ~2s regardless of length. Purely
+ * presentational (the text is already complete), skipped under reduced
+ * motion, and any newer line snaps the previous one to its full text.
+ */
+function Typed({ text, animate, onGrow }: { text: string; animate: boolean; onGrow?: () => void }) {
+  const [n, setN] = useState(animate ? 0 : text.length);
+  useEffect(() => {
+    if (!animate) { setN(text.length); return; }
+    setN(0);
+    // Wall-time, not per-tick: a busy main thread must never stretch the
+    // reveal — throttled timers simply catch up to where the clock says.
+    const t0 = performance.now();
+    const dur = Math.min(2400, 600 + text.length * 14);
+    const id = setInterval(() => {
+      const k = Math.min(1, (performance.now() - t0) / dur);
+      setN(Math.ceil(k * text.length));
+      if (k >= 1) clearInterval(id);
+    }, 32);
+    return () => clearInterval(id);
+  }, [text, animate]);
+  useEffect(() => { if (animate && n > 0) onGrow?.(); }, [n, animate, onGrow]);
+  const doneTyping = n >= text.length;
+  return (
+    <>
+      {text.slice(0, n)}
+      {animate && !doneTyping && <span aria-hidden className="text-accent">▌</span>}
+    </>
+  );
 }
 
 function matchIntent(text: string): Intent | null {
@@ -73,7 +105,9 @@ export function Parla() {
   const [reduce, setReduce] = useState(false);
   const [mode, setMode] = useState<Mode>('unknown');
   const [speaking, setSpeaking] = useState(false);
+  const [typedId, setTypedId] = useState(-1);
 
+  const lineSeq = useRef(0);
   const recRef = useRef<{ stop: () => void } | null>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const spinRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -85,6 +119,9 @@ export function Parla() {
     setReduce(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     const SR = window as unknown as { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown };
     if (!(SR.SpeechRecognition ?? SR.webkitSpeechRecognition)) setMic('unsupported');
+    // Voice lists load lazily in most browsers; asking early means the good
+    // Italian voice is ready by the first reply.
+    try { window.speechSynthesis?.getVoices(); } catch { /* no synth */ }
   }, []);
 
   useEffect(() => () => {
@@ -98,6 +135,12 @@ export function Parla() {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: reduce ? 'auto' : 'smooth' });
   }, [lines, reduce]);
 
+  /* Keeps the transcript pinned to the bottom while a reply is typing out. */
+  const scrollLog = useCallback(() => {
+    const el = logRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, []);
+
   const speak = useCallback((text: string) => {
     if (!voiceOn) return;
     try {
@@ -106,7 +149,17 @@ export function Parla() {
       synth.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'it-IT';
-      u.rate = 1.02;
+      // Not every it-IT voice sounds like a system worth trusting: prefer the
+      // neural/cloud voices, then the named local Italians, then any Italian.
+      const it = synth.getVoices().filter((v) => v.lang?.toLowerCase().startsWith('it'));
+      const best =
+        it.find((v) => /neural|natural|online|premium/i.test(v.name)) ??
+        it.find((v) => /google/i.test(v.name)) ??
+        it.find((v) => /alice|elsa|luca|federica|paola/i.test(v.name)) ??
+        it[0];
+      if (best) u.voice = best;
+      u.rate = 1.04;
+      u.pitch = 0.96;
       u.onstart = () => setSpeaking(true);
       u.onend = () => setSpeaking(false);
       u.onerror = () => setSpeaking(false);
@@ -148,10 +201,12 @@ export function Parla() {
       }, i * stepMs));
     });
     timers.current.push(setTimeout(() => {
+      const id = ++lineSeq.current;
       const reply: Line = intent
-        ? { who: 'dolmir', text: intent.reply, tone, fx: 'fx' in intent ? (intent as { fx?: string }).fx : undefined, link: 'link' in intent ? (intent as { link?: { t: string; href: string } }).link : undefined }
-        : { who: 'dolmir', text: c.fallback, tone: 'accent' };
+        ? { id, who: 'dolmir', text: intent.reply, tone, fx: 'fx' in intent ? (intent as { fx?: string }).fx : undefined, link: 'link' in intent ? (intent as { link?: { t: string; href: string } }).link : undefined }
+        : { id, who: 'dolmir', text: c.fallback, tone: 'accent' };
       setLines((l) => [...l, reply]);
+      setTypedId(id);
       speak(reply.text);
       setBusy(false);
       timers.current.push(setTimeout(() => { setStage(null); setActivity('idle'); }, 2600));
@@ -203,7 +258,9 @@ export function Parla() {
       const amber = /approvazion|persona|umana|fermo|cancello/i.test(data.text);
       setMode('live');
       stopSpin(6, amber ? 'amber' : 'good');
-      setLines((l) => [...l, { who: 'dolmir', text: data.text, tone: amber ? 'amber' : 'accent', evidence }]);
+      const id = ++lineSeq.current;
+      setLines((l) => [...l, { id, who: 'dolmir', text: data.text, tone: amber ? 'amber' : 'accent', evidence }]);
+      setTypedId(id);
       speak(data.text);
       emit('CONSOLE.REPLY', `AI live · ${evidence.length} strumenti consultati`, 'accent');
       setBusy(false);
@@ -219,7 +276,7 @@ export function Parla() {
     if (mic === 'listening') { recRef.current?.stop(); return; }
     interface SpeechRecognitionLike {
       lang: string; interimResults: boolean; maxAlternatives: number;
-      onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+      onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal?: boolean }> }) => void) | null;
       onerror: ((e: { error: string }) => void) | null;
       onend: (() => void) | null;
       start: () => void; stop: () => void;
@@ -230,12 +287,25 @@ export function Parla() {
     try {
       const rec = new Ctor();
       rec.lang = 'it-IT';
-      rec.interimResults = false;
+      // Interim results stream into the input while the visitor is still
+      // talking — the system is visibly hearing them, word by word.
+      rec.interimResults = true;
       rec.maxAlternatives = 1;
       rec.onresult = (e) => {
-        const t = e.results[0]?.[0]?.transcript ?? '';
-        if (t) void answer(t);
-        else setNote(c.errors.noSpeech);
+        let final = '';
+        let interim = '';
+        for (let i = 0; i < e.results.length; i++) {
+          const r = e.results[i];
+          const t = r?.[0]?.transcript ?? '';
+          if (r?.isFinal) final += t;
+          else interim += t;
+        }
+        if (final.trim()) {
+          setInput('');
+          void answer(final.trim());
+        } else if (interim.trim()) {
+          setInput(interim.trim());
+        }
       };
       rec.onerror = (e) => {
         setMic('idle');
@@ -271,6 +341,7 @@ export function Parla() {
       id="parla"
       aria-labelledby="parla-heading"
       data-inspect="Parla · la console del sistema"
+      data-spine="2"
     >
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
@@ -313,7 +384,9 @@ export function Parla() {
                     ) : (
                       <div>
                         <p className={`telemetry ${toneText(l.tone)}`}>DOLMIR</p>
-                        <p className="mt-1 max-w-[58ch] whitespace-pre-line text-[0.9375rem] leading-relaxed text-ink">{l.text}</p>
+                        <p className="mt-1 max-w-[58ch] whitespace-pre-line text-[0.9375rem] leading-relaxed text-ink">
+                          <Typed text={l.text} animate={!reduce && l.id === typedId} onGrow={scrollLog} />
+                        </p>
                         {l.evidence && l.evidence.length > 0 && (
                           <div className="mt-3 border border-rule/70 bg-void/50">
                             <p className="telemetry border-b border-rule/60 px-3 py-1.5 text-faint">{c.evidenceLabel}</p>

@@ -19,6 +19,7 @@ export function Problema() {
       className="relative py-[var(--space-section)]"
       aria-labelledby="problema-heading"
       data-inspect="Problema · il lavoro frammentato"
+      data-spine="0"
     >
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />

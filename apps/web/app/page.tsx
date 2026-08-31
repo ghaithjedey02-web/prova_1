@@ -7,6 +7,7 @@ import { Simulator } from '@/components/live/Simulator';
 import { Parla } from '@/components/live/Parla';
 import { HumanGate } from '@/components/home/HumanGate';
 import { Closing } from '@/components/home/Closing';
+import { Spine } from '@/components/system/Spine';
 import { site } from '@/content/site';
 
 const jsonLd = {
@@ -46,6 +47,7 @@ export default function HomePage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <Spine />
       <Hero />
       <Problema />
       <Simulator />

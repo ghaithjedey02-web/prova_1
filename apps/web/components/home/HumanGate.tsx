@@ -15,7 +15,7 @@ const c = chapters.human;
  */
 export function HumanGate() {
   return (
-    <section className="relative py-[var(--space-section)]" data-inspect="HumanGate · confidence gate">
+    <section className="relative py-[var(--space-section)]" data-inspect="HumanGate · confidence gate" data-spine="5">
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
 

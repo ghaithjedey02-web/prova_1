@@ -50,6 +50,17 @@ export const cta = {
   secondary: { label: 'Vedi la dimostrazione', href: '/dimostrazione' },
 } as const;
 
+/**
+ * The seven words of the DOLMIR pipeline — the one sentence the whole site
+ * keeps repeating until a visitor who never reads a paragraph still knows it:
+ * hero strip, scroll spine, film chapters, console stages. The human decision
+ * is the only amber word, everywhere.
+ */
+export const pipeline = {
+  words: ['INPUT', 'ANALISI', 'DATI', 'VERIFICA', 'CONFLITTI', 'DECISIONE UMANA', 'AZIONE'],
+  human: 5,
+} as const;
+
 /* =========================================================== home === hero ===*/
 
 export const hero = {

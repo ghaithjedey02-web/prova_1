@@ -443,6 +443,7 @@ export function Intelligence() {
       className="relative py-[var(--space-section)]"
       aria-labelledby="intelligence-heading"
       data-inspect="Intelligence · il livello operativo"
+      data-spine="3"
     >
       <Container>
         <header className="max-w-[56ch]">

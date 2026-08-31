@@ -32,6 +32,8 @@ const SOURCES = [
 interface Cap {
   at: number;
   code: string;
+  /** The one huge word of the chapter — the film read at a glance, muted. */
+  word: string;
   line: string;
   amber?: boolean;
   overlay?: 'fields' | 'conflict' | 'gate' | 'action';
@@ -39,14 +41,14 @@ interface Cap {
 
 /** Caption timing on the produced cut: 8 shots, 2.6s per chapter step. */
 const CAPS: readonly Cap[] = [
-  { at: 0,    code: 'INPUT',           line: 'Email, ordini, fatture, segnali: ognuno per conto suo.' },
-  { at: 2.6,  code: 'ANALISI',         line: 'DOLMIR li raccoglie in un solo flusso.' },
-  { at: 5.2,  code: 'DATI',            line: 'E li trasforma in dati, con la fonte attaccata.', overlay: 'fields' },
-  { at: 7.8,  code: 'VERIFICA',        line: 'Ogni dato viene confrontato con le altre fonti.' },
-  { at: 10.4, code: 'CONFLITTI',       line: 'Quando qualcosa non torna, non tira a indovinare.', overlay: 'conflict', amber: true },
-  { at: 13.0, code: 'DECISIONE UMANA', line: 'Il sistema si ferma: la decisione è vostra.', overlay: 'gate', amber: true },
-  { at: 15.6, code: 'AZIONE',          line: 'Approvato: il flusso riparte, ordinato e scritto nel registro.', overlay: 'action' },
-  { at: 18.2, code: 'DOLMIR',          line: 'Il caos è diventato un sistema.' },
+  { at: 0,    code: 'INPUT',           word: 'CAOS',              line: 'Email, ordini, fatture, segnali: ognuno per conto suo.' },
+  { at: 2.6,  code: 'ANALISI',         word: 'UN SOLO FLUSSO',    line: 'DOLMIR li raccoglie in un solo flusso.' },
+  { at: 5.2,  code: 'DATI',            word: 'DATI',              line: 'E li trasforma in dati, con la fonte attaccata.', overlay: 'fields' },
+  { at: 7.8,  code: 'VERIFICA',        word: 'VERIFICA',          line: 'Ogni dato viene confrontato con le altre fonti.' },
+  { at: 10.4, code: 'CONFLITTI',       word: 'CONFLITTO',         line: 'Quando qualcosa non torna, non tira a indovinare.', overlay: 'conflict', amber: true },
+  { at: 13.0, code: 'DECISIONE UMANA', word: 'DECIDE UNA PERSONA', line: 'Il sistema si ferma: la decisione è vostra.', overlay: 'gate', amber: true },
+  { at: 15.6, code: 'AZIONE',          word: 'AZIONE',            line: 'Approvato: il flusso riparte, ordinato e scritto nel registro.', overlay: 'action' },
+  { at: 18.2, code: 'DOLMIR',          word: 'UN SISTEMA',        line: 'Il caos è diventato un sistema.' },
 ];
 
 const FIELDS = [
@@ -301,10 +303,20 @@ export function FilmCinema({
             </div>
           )}
 
-          {/* caption bar */}
+          {/* caption bar — the chapter word first, huge, so the film reads
+              even at a glance with no sound and no attention to the caption */}
           {mode === 'playing' && (
-            <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-void/85 to-transparent px-4 pb-3 pt-8 sm:px-6">
-              <p key={cap} className="settle mx-auto max-w-[46rem] text-center text-[0.8125rem] leading-snug text-ink sm:text-[0.9375rem]">
+            <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-void/90 via-void/50 to-transparent px-4 pb-3 pt-12 sm:px-6">
+              <p
+                key={`w${cap}`}
+                aria-hidden
+                className={`settle mb-1.5 hidden text-center font-display text-[clamp(1.25rem,3.4vw,2.25rem)] font-semibold uppercase leading-none tracking-[0.06em] sm:block ${
+                  c.amber ? 'text-amber' : 'text-ink'
+                }`}
+              >
+                {c.word}
+              </p>
+              <p key={cap} className="settle mx-auto max-w-[46rem] text-center text-[0.8125rem] leading-snug text-ink sm:text-[0.9375rem] sm:text-ink-2">
                 {c.line}
               </p>
             </div>

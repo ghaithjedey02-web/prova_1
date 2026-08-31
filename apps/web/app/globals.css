@@ -213,13 +213,17 @@ img, svg, video, canvas { display: block; max-width: 100%; }
   letter-spacing: -0.018em;
 }
 
-.label {
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--c-muted);
-  font-weight: 500;
+/* Layered so a text-* utility on the same element can recolour the label:
+   unlayered rules would silently beat every Tailwind utility. */
+@layer components {
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    font-weight: 500;
+  }
 }
 
 .lead {
@@ -385,13 +389,17 @@ img, svg, video, canvas { display: block; max-width: 100%; }
    resolves.
    ========================================================================= */
 
-.telemetry {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--c-muted);
-  font-variant-numeric: tabular-nums;
+/* Layered (see .label): telemetry is recoloured by utilities all over the
+   site — accent chapter codes, amber warnings, faint footnotes. */
+@layer components {
+  .telemetry {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 .glass {

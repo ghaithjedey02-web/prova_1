@@ -124,7 +124,7 @@ export function FlowDemo() {
   const draft = result?.draft;
 
   return (
-    <section className="relative py-[var(--space-section)]" data-inspect="FlowDemo · rfq-engine + MockProvider">
+    <section className="relative py-[var(--space-section)]" data-inspect="FlowDemo · rfq-engine + MockProvider" data-spine="4">
       <Container>
         <Chapter
           n="06"

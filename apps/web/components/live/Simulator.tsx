@@ -361,6 +361,7 @@ export function Simulator() {
       className="relative scroll-mt-[var(--nav-h)] py-[var(--space-section)]"
       aria-labelledby="simulator-heading"
       data-inspect="Simulator · sei settori, simulazione locale"
+      data-spine="1"
     >
       <Container>
         <Chapter n={simulator.n} label={simulator.label} headline={simulator.headline} lead={simulator.body} />

@@ -7,7 +7,7 @@ import { closing as c, cta } from '@/content/site';
 /** The close. One action, and exactly what to bring to it. */
 export function Closing() {
   return (
-    <section className="relative py-[var(--space-section)]">
+    <section className="relative py-[var(--space-section)]" data-spine="6">
       <Container>
         <div className="grid gap-[var(--space-block)] lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
