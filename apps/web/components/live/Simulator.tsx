@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Chapter } from '@/components/ui/Chapter';
 import { Container } from '@/components/ui/Container';
 import { Reveal } from '@/components/ui/Reveal';
@@ -56,7 +56,7 @@ function SystemMap({ stage, phase }: { stage: number; phase: Phase }) {
     return at.includes(stage);
   };
   return (
-    <svg viewBox="0 0 300 34" className="h-[26px] w-auto max-w-full" aria-hidden>
+    <svg viewBox="0 0 300 34" className="w-full max-w-[340px] sm:h-[26px] sm:w-auto" aria-hidden>
       {simulator.map.map((n, i) => {
         const x = 12 + i * 46;
         const active = on(n.k, n.at);
@@ -95,6 +95,68 @@ function SystemMap({ stage, phase }: { stage: number; phase: Phase }) {
   );
 }
 
+/**
+ * One line of the raw document, with the phrases DOLMIR extracted from it
+ * underlined in the colour of their outcome once the run has read them —
+ * accent for verified, amber for uncertain, red for conflicts — and lit
+ * bright while the visitor points at the field they became. The raw text
+ * literally turns into structure in front of them.
+ */
+function DocLine({
+  line,
+  fields,
+  revealed,
+  srcHover,
+}: {
+  line: string;
+  fields: readonly { k: string; v: string; conf: number }[];
+  revealed: boolean;
+  srcHover: string | null;
+}) {
+  const hits = fields
+    .map((f) => {
+      const src = 'src' in f ? ((f as { src?: string }).src ?? null) : null;
+      if (!src) return null;
+      const at = line.indexOf(src);
+      if (at < 0) return null;
+      const st = ('state' in f ? (f as { state?: string }).state : 'ok') ?? 'ok';
+      return { src, at, st };
+    })
+    .filter((h): h is { src: string; at: number; st: string } => h !== null)
+    .sort((a, b) => a.at - b.at);
+
+  if (hits.length === 0 || !revealed) return <>{line}</>;
+
+  const out: ReactNode[] = [];
+  let cursor = 0;
+  hits.forEach((h, i) => {
+    if (h.at < cursor) return; // overlapping evidence: first wins
+    out.push(line.slice(cursor, h.at));
+    const tone =
+      h.st === 'ok' ? 'decoration-accent/70' : h.st === 'warn' ? 'decoration-amber/80' : 'decoration-bad/80';
+    const hot = srcHover === h.src;
+    out.push(
+      <mark
+        key={i}
+        className={`bg-transparent underline decoration-2 underline-offset-4 transition-colors duration-[var(--duration-fast)] ${tone} ${
+          hot
+            ? h.st === 'ok'
+              ? 'bg-accent-soft text-accent'
+              : h.st === 'warn'
+                ? 'bg-amber-soft text-amber'
+                : 'bg-bad-soft text-bad'
+            : 'text-inherit'
+        }`}
+      >
+        {h.src}
+      </mark>,
+    );
+    cursor = h.at + h.src.length;
+  });
+  out.push(line.slice(cursor));
+  return <>{out}</>;
+}
+
 export function Simulator() {
   const [scenarioIdx, setScenarioIdx] = useState(0);
   const [phase, setPhase] = useState<Phase>('idle');
@@ -107,6 +169,9 @@ export function Simulator() {
      parameter and watch the decision re-run. The override replaces the
      scenario's stock gate until the next run. */
   const [modifying, setModifying] = useState(false);
+  /* WHAT DOLMIR SEES: hovering an extracted field lights the exact phrase of
+     the document it came from. One string of shared state links the two. */
+  const [srcHover, setSrcHover] = useState<string | null>(null);
   const [override, setOverride] = useState<{ conf: number; note: string; tone: string } | null>(null);
   const [genericView, setGenericView] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -327,7 +392,12 @@ export function Simulator() {
                   <p className="telemetry text-faint">{sc.docKind} · IN ARRIVO</p>
                   <span className="telemetry text-faint">{simulator.disclaimer.split('.')[0]}.</span>
                 </div>
-                <div key={sc.k} className="settle mt-4 border border-rule bg-surface/70 p-5">
+                <div
+                  key={`${sc.k}-${phase === 'idle' ? 'idle' : 'live'}`}
+                  className={`settle mt-4 border border-rule bg-surface/70 p-5 ${
+                    phase === 'running' && stage >= 1 && stage <= 2 ? 'scan' : ''
+                  }`}
+                >
                   <p className="font-mono text-[0.8125rem] text-ink">{sc.docTitle}</p>
                   <div className="mt-3 space-y-1 border-b border-rule pb-3">
                     {sc.docMeta.map((m) => (
@@ -336,9 +406,21 @@ export function Simulator() {
                   </div>
                   <div className="mt-4 space-y-1.5">
                     {sc.docLines.map((l) => (
-                      <p key={l} className="text-[0.8125rem] leading-relaxed text-ink-2">{l}</p>
+                      <p key={l} className="text-[0.8125rem] leading-relaxed text-ink-2">
+                        <DocLine
+                          line={l}
+                          fields={sc.fields}
+                          revealed={phase !== 'idle' && (phase !== 'running' || stage >= 2)}
+                          srcHover={srcHover}
+                        />
+                      </p>
                     ))}
                   </div>
+                  {phase !== 'idle' && (
+                    <p className="telemetry mt-3 border-t border-rule/60 pt-2.5 text-[0.5625rem] text-faint">
+                      EVIDENZA SOTTOLINEATA · PASSA SU UN CAMPO PER VEDERE DA DOVE VIENE
+                    </p>
+                  )}
                 </div>
 
                 <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -365,18 +447,33 @@ export function Simulator() {
                     <p className="telemetry mb-3 text-faint">CAMPI ESTRATTI · CON CONFIDENZA</p>
                     {sc.fields.slice(0, fieldsShown).map((f) => {
                       const st = ('state' in f ? f.state : 'ok') as string;
+                      const src = 'src' in f ? (f.src as string) : null;
                       const vColor =
                         st === 'ok' ? 'text-ink-2' : st === 'warn' ? 'text-amber' : 'text-bad';
+                      const linked = srcHover !== null && srcHover === src;
                       return (
-                        <div key={f.k} className="settle grid grid-cols-[7rem_minmax(0,1fr)_3rem] items-baseline gap-2 border-b border-rule/60 py-2">
-                          <dt className="telemetry text-[0.625rem] text-faint">{f.k}</dt>
-                          <dd className={`font-mono text-[0.75rem] ${vColor}`}>
-                            {st === 'conflict' || st === 'missing' ? '⚠ ' : ''}{f.v}
-                          </dd>
-                          <dd className={`text-right font-mono text-[0.6875rem] tnum ${
+                        <div
+                          key={f.k}
+                          onMouseEnter={() => setSrcHover(src)}
+                          onMouseLeave={() => setSrcHover(null)}
+                          onFocus={() => setSrcHover(src)}
+                          onBlur={() => setSrcHover(null)}
+                          tabIndex={0}
+                          className={`settle flex flex-wrap items-baseline gap-x-2 gap-y-0.5 border-b border-rule/60 py-2 outline-none transition-colors sm:grid sm:grid-cols-[7rem_minmax(0,1fr)_3rem] ${
+                            linked ? 'bg-accent-soft/40' : ''
+                          }`}
+                        >
+                          <dt className="telemetry w-[5.5rem] text-[0.625rem] text-faint sm:w-auto">{f.k}</dt>
+                          <dd className={`ml-auto text-right font-mono text-[0.6875rem] tnum sm:order-3 sm:ml-0 ${
                             st === 'ok' ? (f.conf < 0.92 ? 'text-muted' : 'text-good') : st === 'warn' ? 'text-amber' : 'text-bad'
                           }`}>
                             {f.conf.toFixed(2)}
+                          </dd>
+                          <dd className={`w-full font-mono text-[0.75rem] sm:order-2 sm:w-auto ${vColor}`}>
+                            {st === 'conflict' || st === 'missing' ? '⚠ ' : ''}{f.v}
+                            {!src && (
+                              <span className="telemetry ml-2 text-[0.5625rem] text-faint">· DA SISTEMI COLLEGATI</span>
+                            )}
                           </dd>
                         </div>
                       );
@@ -387,7 +484,7 @@ export function Simulator() {
 
               {/* ---------------------------------------------- the machine */}
               <div className="flex flex-col p-5 sm:p-7">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-rule pb-4">
+                <div className="mb-4 flex flex-col gap-3 border-b border-rule pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                   <p className="telemetry text-faint">
                     STATO{' '}
                     <span
@@ -439,8 +536,11 @@ export function Simulator() {
 
                 {/* confidence + gate */}
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-rule pt-4">
-                  <p className="telemetry text-faint">
-                    CONFIDENZA{' '}
+                  <p
+                    className="telemetry text-faint"
+                    title="Misurata sui campi estratti e sui confronti con i sistemi. Sotto la soglia di azione, il processo passa a una persona: il sistema non agisce su ciò che non sa."
+                  >
+                    <span className="cursor-help underline decoration-rule-strong decoration-dotted underline-offset-4">CONFIDENZA</span>{' '}
                     <span className={`tnum text-[0.9rem] ${conf === 0 ? 'text-faint' : conf < 80 ? 'text-amber' : 'text-accent'}`}>
                       {conf === 0 ? '—' : `${conf.toFixed(1).replace('.', ',')}%`}
                     </span>
@@ -530,13 +630,20 @@ export function Simulator() {
                         ['CAMPI ESTRATTI', String(sc.fields.length)],
                         ['VERIFICATI', String(verified)],
                         ['DA REVISIONARE', String(toReview)],
+                        ['TEMPO MANUALE*', `~${sc.manualMinutes} min`],
+                        ['CON DOLMIR*', 'secondi + 1 decisione'],
+                        ['PASSAGGI*', '7 → 3'],
+                        ['PUNTI INTERCETTATI', String(sc.fields.length - stockVerified)],
                       ].map(([k, v]) => (
                         <div key={k} className="bg-surface/90 px-3 py-3">
                           <dt className="telemetry text-[0.5625rem] text-faint">{k}</dt>
-                          <dd className={`mt-1 font-mono text-[1.05rem] tnum ${k === 'DA REVISIONARE' && v !== '0' ? 'text-amber' : 'text-ink'}`}>{v}</dd>
+                          <dd className={`mt-1 font-mono tnum ${v!.length > 8 ? 'text-[0.75rem] leading-[1.6]' : 'text-[1.05rem]'} ${
+                            (k === 'DA REVISIONARE' || k === 'PUNTI INTERCETTATI') && v !== '0' ? 'text-amber' : 'text-ink'
+                          }`}>{v}</dd>
                         </div>
                       ))}
                     </dl>
+                    <p className="telemetry mt-2 text-[0.5625rem] text-faint">* valori illustrativi di simulazione, non misurati presso un cliente.</p>
 
                     <ul className="mt-4 space-y-2">
                       {sc.actions.map((a, i) => (
