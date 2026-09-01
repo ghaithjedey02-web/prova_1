@@ -345,7 +345,7 @@ export const parla = {
   systemPanel: 'IL SISTEMA, MENTRE LAVORA',
   consultedLabel: 'DATI CONSULTATI',
   nothingYet: 'In attesa di una domanda.',
-  panelDegraded: 'Nessuno strumento da consultare: il modello live non è attivo su questo ambiente.',
+  panelDegraded: 'Nessuno strumento da consultare: il modello non è collegato qui.',
   gateTitle: 'DECISIONE UMANA',
   gateLead: 'Ho trovato più possibilità. Non scelgo al posto vostro.',
   gateStake: 'SE SI SBAGLIA',
@@ -357,87 +357,6 @@ export const parla = {
   unknownLead: 'I dati non bastano per rispondere con certezza. Non tiro a indovinare.',
   unknownMissing: 'COSA MANCHEREBBE',
   suggestLabel: 'PROVATE A CHIEDERE',
-  /* What the console can answer. Deterministic on purpose: the public demo
-     never fakes an AI it is not running — and says so if asked. */
-  intents: [
-    {
-      id: 'come-funziona',
-      ask: 'Fammi vedere come funziona.',
-      match: ['come funziona', 'come lavori', 'cosa fai', 'spiegami', 'funzioni', 'fammi vedere come'],
-      seq: [0, 1, 2, 3, 4, 5, 6],
-      tone: 'accent',
-      reply:
-        'Leggo quello che arriva — email, PDF, gestionali — e lo trasformo in dati, ognuno con la sua fonte attaccata. Poi verifico sui sistemi che avete già: anagrafiche, giacenze, listini. Se tutto torna preparo l’azione; se qualcosa non torna, mi fermo. E prima di eseguire, la decisione passa sempre da una persona.',
-    },
-    {
-      id: 'perche-fermato',
-      ask: 'Perché ti sei fermato?',
-      match: ['fermato', 'non hai approvato', 'bloccato', 'perche ti fermi', 'perché ti fermi', 'rifiutato'],
-      seq: [1, 3, 4, 5],
-      tone: 'amber',
-      reply:
-        'Nel caso difficile del demo ho trovato quattro punti che non tornano, e con una confidenza del 58,4% non indovino: elenco i punti con l’evidenza e chiedo a una persona — oppure preparo le domande da fare al cliente.',
-      fx: 'conflicts',
-    },
-    {
-      id: 'trova-problema',
-      ask: 'Trova il problema.',
-      match: ['trova il problema', 'cosa hai trovato', 'quali problemi', 'incongruenze', 'che problema', 'conflitto', 'in conflitto'],
-      seq: [1, 2, 3, 4],
-      tone: 'amber',
-      reply:
-        'Quattro incongruenze, ognuna con la sua fonte: il cliente scritto in un modo ed esistente in anagrafica in un altro, un codice con due candidati, una quantità che email e allegato dichiarano diversa, e una consegna richiesta prima della capacità disponibile.',
-      fx: 'conflicts',
-    },
-    {
-      id: 'dopo-approvazione',
-      ask: 'Cosa succede dopo?',
-      match: ['cosa succede dopo', 'dopo l’approvazione', 'dopo lapprovazione', 'e poi', 'succede dopo', 'quando approvi'],
-      seq: [5, 6],
-      tone: 'good',
-      reply:
-        'Dopo il sì della persona eseguo: ordine inserito nel gestionale, conferma preparata per il cliente, CRM allineato. E ogni azione resta scritta nel registro — cosa ho letto, cosa ho verificato, chi ha deciso.',
-    },
-    {
-      id: 'caso-difficile',
-      ask: 'Fammi vedere un caso difficile.',
-      match: ['caso difficile', 'caso complesso', 'caso ambiguo'],
-      seq: [0, 1, 5],
-      tone: 'amber',
-      reply:
-        'Nel simulatore qui sopra c’è un ordine con un cliente ambiguo, un codice con due candidati, una quantità contraddittoria e una consegna impossibile. Apritelo e guardate dove mi fermo: la scheda si chiama proprio «Caso difficile».',
-      link: { t: 'APRI IL SIMULATORE →', href: '/#prova' },
-    },
-    {
-      id: 'chi-decide',
-      ask: 'Chi decide alla fine?',
-      match: ['chi decide', 'decisione umana', 'sostituite le persone', 'sostituisci', 'umano', 'persona decide', 'cosa faresti'],
-      seq: [5],
-      tone: 'amber',
-      reply:
-        'Una persona. Sempre. Io capisco, verifico e preparo — ma ogni azione che richiede giudizio passa da un cancello umano: chi conosce il cliente approva, modifica o rifiuta. Anche il rifiuto è un esito corretto.',
-    },
-    {
-      id: 'cosa-non-fai',
-      ask: 'Cosa non fai?',
-      match: ['cosa non fai', 'limiti', 'non sai fare', 'cosa non sai'],
-      seq: [3, 5],
-      tone: 'accent',
-      reply:
-        'Non indovino quando i dati non bastano. Non eseguo azioni senza un’approvazione dove serve giudizio. Non sostituisco il vostro gestionale né le vostre persone. E non invento mai numeri: se un valore è di esempio, lo dichiaro.',
-    },
-    {
-      id: 'sei-vero',
-      ask: 'Sei un’AI vera?',
-      match: ['sei vero', 'sei un ai', 'sei un’ai', 'sei una ai', 'intelligenza artificiale vera', 'chatgpt', 'sei reale', 'demo'],
-      seq: [0],
-      tone: 'accent',
-      reply:
-        'Questa console pubblica è una demo: risposte predefinite, dati di esempio, nessun collegamento a sistemi reali — non fingo di essere quello che qui non sto eseguendo. Il sistema che installiamo è la versione vera: collegato ai vostri dati, con le stesse regole di prudenza.',
-    },
-  ],
-  fallback:
-    'Nel demo pubblico rispondo a un set di domande predefinite sul funzionamento di DOLMIR — non è ancora il sistema completo. Provate una delle domande qui sotto, oppure portateci un processo vero: su quello rispondiamo di persona.',
   conflicts: [
     'CLIENTE · «Meccanica Rossi» ≈ Officine Rossi S.r.l.',
     'CODICE · SL-441 → 2 candidati',
@@ -463,13 +382,16 @@ export const parla = {
   ] as const,
   evidenceLabel: 'DATI CONSULTATI',
   thinking: 'INTERROGO I SISTEMI…',
-  degradedNote:
-    'Il modello live non è attivo su questo ambiente: la console risponde in modalità dimostrativa ridotta, con risposte predefinite.',
+  /* No model configured: one honest state, never a rehearsed conversation. */
+  offlineState: 'MODELLO NON ATTIVO SU QUESTO AMBIENTE',
+  offlineBody:
+    'La console parla con un modello AI reale, e su questo ambiente quel modello non è collegato. Preferiamo dirvelo piuttosto che rispondervi con frasi preparate: un sistema che recita non è il sistema che costruiamo. Scriveteci e ve lo facciamo vedere mentre lavora sui vostri processi.',
+  offlineCta: 'PARLIAMONE →',
+  offlinePlaceholder: 'Console non attiva su questo ambiente',
   busyNote: 'Troppe richieste ravvicinate — riprovate fra qualche secondo.',
   offlineNote: 'Il sistema non risponde in questo momento. Riprovate, oppure scrivete a info@dolmir.com.',
   disclaimer: 'Demo live · AI reale · dati aziendali simulati · nessun dato di clienti veri.',
   contextNote: 'La conversazione ha memoria: potete fare domande di seguito («e per i preventivi?»).',
-  disclaimerDegraded: 'Demo dimostrativa · risposte predefinite · dati di esempio.',
 } as const;
 
 /* ==================================== home === what DOLMIR builds ===========*/

@@ -116,6 +116,10 @@ export function useConsole({ onReply }: { onReply?: (text: string) => void } = {
     }
 
     if (res.status === 503) {
+      // No model behind the field. Take the question back out of the
+      // transcript rather than leaving it hanging without an answer, and let
+      // the console show one honest state instead.
+      setTurns((t) => t.filter((x) => x.id !== youId));
       setDegraded(true);
       setBusy(false);
       setStage(null);

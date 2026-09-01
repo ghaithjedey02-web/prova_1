@@ -29,6 +29,10 @@
     "./providers/openai-compatible": {
       "types": "./dist/providers/openai-compatible.d.ts",
       "default": "./dist/providers/openai-compatible.js"
+    },
+    "./tts": {
+      "types": "./dist/providers/tts.d.ts",
+      "default": "./dist/providers/tts.js"
     }
   },
   "scripts": {

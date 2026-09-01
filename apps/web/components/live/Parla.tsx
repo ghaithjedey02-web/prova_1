@@ -25,26 +25,11 @@ import { parla as c } from '@/content/site';
  * its answer is the difference between a chatbot and a system. On a phone the
  * same information stacks, with the stage trail collapsing to one line.
  *
- * Nothing here is simulated. If the server has no model configured the console
- * says MODALITÀ RIDOTTA, answers from a small declared set, and never claims
- * otherwise.
+ * Nothing here is simulated, and nothing is rehearsed. If the server has no
+ * model configured, the console says so plainly and offers a person — it does
+ * not fall back to a set of canned answers, because a console that can field
+ * eight rehearsed questions IS a decision tree, however well it is dressed.
  */
-
-type Mode = 'live' | 'degraded';
-
-/* Deterministic answers, used only when the server has no model. */
-function matchIntent(text: string) {
-  const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
-  const t = norm(text);
-  let best: (typeof c.intents)[number] | null = null;
-  let score = 0;
-  for (const it of c.intents) {
-    let s = 0;
-    for (const m of it.match) { const mm = norm(m); if (t.includes(mm)) s += mm.length; }
-    if (s > score) { score = s; best = it; }
-  }
-  return score >= 4 ? best : null;
-}
 
 /** Up to four scalar fields of a record, for the evidence detail line. */
 function preview(data: unknown): string[] {
@@ -60,7 +45,6 @@ function preview(data: unknown): string[] {
 }
 
 export function Parla() {
-  const [mode, setMode] = useState<Mode>('live');
   const [input, setInput] = useState('');
   const [note, setNote] = useState<string | null>(null);
   const [reduce, setReduce] = useState(false);
@@ -71,7 +55,7 @@ export function Parla() {
   useEffect(() => { setReduce(window.matchMedia('(prefers-reduced-motion: reduce)').matches); }, []);
 
   const console_ = useConsole({ onReply: (t) => voice.speak(t) });
-  const { turns, stage, passed, busy, degraded, failure } = console_;
+  const { turns, stage, passed, busy, failure } = console_;
 
   const voice = useVoice({
     enabled: voiceOn,
@@ -79,40 +63,25 @@ export function Parla() {
     onError: (kind) => setNote(c.errors[kind]),
   });
 
-  /* ------------------------------------------- the scripted fallback path */
-  const degradedTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const [degradedTurns, setDegradedTurns] = useState<Turn[]>([]);
-  const dseq = useRef(10_000);
-
-  const answerDegraded = useCallback((q: string, echo = false) => {
-    const intent = matchIntent(q);
-    if (echo) {
-      const id = ++dseq.current;
-      setDegradedTurns((l) => [...l, { id, who: 'you', text: q }]);
-    }
-    degradedTimers.current.push(setTimeout(() => {
-      const rid = ++dseq.current;
-      const text = intent?.reply ?? c.fallback;
-      setDegradedTurns((l) => [...l, { id: rid, who: 'dolmir', text, tone: intent?.tone === 'amber' ? 'amber' : 'accent' }]);
-      voice.speak(text);
-      setActivity('idle');
-    }, reduce ? 0 : 700));
-    setActivity('analyzing');
-  }, [reduce, voice]);
-
+  /* --------------------------------------------------- no model, no theatre
+     When the server has no model configured there is nothing intelligent to
+     say, so the console says exactly that — once — and offers the way to a
+     person. It does not answer from a script: a console that can field eight
+     rehearsed questions reads as a decision tree, which is the opposite of
+     what this product is. */
+  const [offline, setOffline] = useState(false);
+  const onNoModel = useCallback(() => { setOffline(true); setActivity('idle'); }, []);
   const { onDegraded } = console_;
-  useEffect(() => { onDegraded(answerDegraded); }, [onDegraded, answerDegraded]);
-  useEffect(() => { if (degraded) setMode('degraded'); }, [degraded]);
-  useEffect(() => () => degradedTimers.current.forEach(clearTimeout), []);
+  useEffect(() => { onDegraded(onNoModel); }, [onDegraded, onNoModel]);
 
   const submit = useCallback(async (text: string) => {
     const clean = text.trim();
     if (!clean) return;
     setNote(null);
     setStarted(true);
-    if (mode === 'degraded') { answerDegraded(clean, true); return; }
+    if (offline) return;   // nothing to ask: there is no model behind the field
     await console_.ask(clean);
-  }, [mode, answerDegraded, console_]);
+  }, [offline, console_]);
 
   /* The background machine follows the console's real state. */
   useEffect(() => {
@@ -129,11 +98,11 @@ export function Parla() {
   }, [failure]);
 
   useEffect(() => {
-    if (mode === 'degraded') emit('CONSOLE.MODE', 'modello live non configurato · modalità ridotta', 'amber');
-  }, [mode]);
+    if (offline) emit('CONSOLE.MODE', 'modello non configurato su questo ambiente', 'amber');
+  }, [offline]);
 
   /* Keep the newest line in view while an answer streams in. */
-  const all = mode === 'degraded' ? [...turns, ...degradedTurns] : turns;
+  const all = turns;
   const lastText = all[all.length - 1]?.text ?? '';
   useEffect(() => {
     const el = logRef.current;
@@ -156,7 +125,7 @@ export function Parla() {
     voice.mic === 'listening' ? c.micListening
     : voice.speaking ? 'STO PARLANDO'
     : stage ? c.stageHint[stage]
-    : mode === 'degraded' ? 'MODALITÀ RIDOTTA'
+    : offline ? c.offlineState
     : c.online;
 
   return (
@@ -197,12 +166,12 @@ export function Parla() {
             {/* header: identity + what the system is doing, right now */}
             <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 border-b border-rule px-4 py-3 sm:px-6">
               <p className="telemetry text-ink">DOLMIR INTELLIGENCE</p>
-              <p className={`telemetry flex items-center gap-2 ${mode === 'degraded' ? 'text-amber' : stage === 'DECISIONE' ? 'text-amber' : busy || voice.mic === 'listening' ? 'text-accent' : 'text-good'}`}>
+              <p className={`telemetry flex items-center gap-2 ${offline || stage === 'DECISIONE' ? 'text-amber' : busy || voice.mic === 'listening' ? 'text-accent' : 'text-good'}`}>
                 <span
                   aria-hidden
                   className={`block size-1.5 rounded-full ${
-                    mode === 'degraded' || stage === 'DECISIONE' ? 'bg-amber' : busy || voice.mic === 'listening' ? 'bg-accent' : 'bg-good'
-                  } ${reduce ? '' : 'animate-pulse'}`}
+                    offline || stage === 'DECISIONE' ? 'bg-amber' : busy || voice.mic === 'listening' ? 'bg-accent' : 'bg-good'
+                  } ${reduce || offline ? '' : 'animate-pulse'}`}
                 />
                 {statusLine}
               </p>
@@ -216,12 +185,23 @@ export function Parla() {
                   className="max-h-[24rem] min-h-[13rem] overflow-y-auto px-4 py-5 sm:px-6 lg:max-h-[30rem]"
                   aria-live="polite"
                 >
-                  {all.length === 0 && !voice.interim && (
+                  {offline ? (
+                    <div className="py-2">
+                      <p className="telemetry text-amber">{c.offlineState}</p>
+                      <p className="mt-2 max-w-[52ch] text-[0.9375rem] leading-relaxed text-ink-2">{c.offlineBody}</p>
+                      <a
+                        href="/contatto"
+                        className="mt-4 inline-block border border-accent px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground"
+                      >
+                        {c.offlineCta}
+                      </a>
+                    </div>
+                  ) : all.length === 0 && !voice.interim ? (
                     <div className="py-2">
                       <p className="max-w-[42ch] text-[1.0625rem] leading-relaxed text-ink sm:text-[1.125rem]">{c.prompt}</p>
                       <p className="telemetry mt-3 text-faint">{c.promptSub}</p>
                     </div>
-                  )}
+                  ) : null}
 
                   <ol className="space-y-6">
                     {all.map((t) => (
@@ -279,13 +259,14 @@ export function Parla() {
                   <input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder={c.inputPlaceholder}
+                    placeholder={offline ? c.offlinePlaceholder : c.inputPlaceholder}
+                    disabled={offline}
                     aria-label="Scrivi a DOLMIR"
                     className="min-w-0 flex-1 border border-rule bg-void/60 px-3.5 py-2.5 text-[0.9375rem] text-ink placeholder:text-faint focus:border-accent/60 focus:outline-none"
                   />
                   <button
                     type="submit"
-                    disabled={busy || !input.trim()}
+                    disabled={busy || offline || !input.trim()}
                     className="border border-rule-strong px-3.5 font-mono text-[0.6875rem] tracking-[0.16em] text-ink-2 transition-colors enabled:hover:border-accent enabled:hover:text-accent disabled:opacity-40 sm:px-4"
                   >
                     {c.send}
@@ -300,13 +281,13 @@ export function Parla() {
                 evidence={all.flatMap((t) => t.evidence ?? [])}
                 count={evidenceCount}
                 reduce={reduce}
-                degraded={mode === 'degraded'}
+                degraded={offline}
               />
             </div>
 
             {/* voice controls + honesty line */}
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-rule px-4 py-2.5 sm:px-6">
-              <p className="telemetry text-faint">{mode === 'degraded' ? c.disclaimerDegraded : c.disclaimer}</p>
+              <p className="telemetry text-faint">{offline ? c.offlineState : c.disclaimer}</p>
               <div className="flex items-center gap-2">
                 {voice.speaking && (
                   <button
@@ -332,9 +313,10 @@ export function Parla() {
           </div>
 
           {note && <p className="mt-3 text-[0.8125rem] text-amber">{note}</p>}
-          {mode === 'degraded' && !note && <p className="mt-3 text-[0.8125rem] text-amber">{c.degradedNote}</p>}
+
 
           {/* ------------------------------------------------- the invitations */}
+          {!offline && (
           <div className={`mt-5 transition-opacity duration-500 ${started ? 'opacity-70' : 'opacity-100'}`}>
             <p className="telemetry text-faint">{c.suggestLabel}</p>
             <ul className="mt-2.5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -354,6 +336,7 @@ export function Parla() {
             </ul>
             <p className="telemetry mt-3 text-faint">{c.contextNote}</p>
           </div>
+          )}
         </div>
       </Container>
     </section>

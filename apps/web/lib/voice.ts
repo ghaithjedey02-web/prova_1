@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { speakable } from './speech-text';
+import { sentences, speakable } from './speech-text';
 
 /**
  * The voice layer of the console.
@@ -21,8 +21,15 @@ import { speakable } from './speech-text';
  *      spelled out like a serial number.
  *
  * Recognition is Web Speech (it-IT) — the only engine available in-browser
- * with no key and no upload. Synthesis prefers the best installed Italian
- * voice. Both degrade to silence without breaking the console: the keyboard
+ * with no key and no upload.
+ *
+ * SYNTHESIS asks the server first. `/api/voce` returns neural Italian audio
+ * from whichever provider is configured; the browser only ever receives MP3
+ * bytes, never a key. When no provider is configured the route answers 503
+ * and we fall back to `speechSynthesis`, reading sentence by sentence so it
+ * at least breathes. The fallback is never presented as the product voice.
+ *
+ * Everything degrades to silence without breaking the console: the keyboard
  * always works.
  */
 
@@ -95,10 +102,24 @@ export function useVoice({
     try { window.speechSynthesis?.getVoices(); } catch { /* no synth here */ }
   }, []);
 
-  const shutUp = useCallback(() => {
+  const audioEl = useRef<HTMLAudioElement | null>(null);
+  const speakSeq = useRef(0);
+
+  const stopAudio = useCallback(() => {
+    const a = audioEl.current;
+    if (a) {
+      a.pause();
+      if (a.src.startsWith('blob:')) URL.revokeObjectURL(a.src);
+      audioEl.current = null;
+    }
+  }, []);
+
+  const shutUpAll = useCallback(() => {
+    speakSeq.current += 1;              // invalidates any in-flight request
+    stopAudio();
     try { window.speechSynthesis?.cancel(); } catch { /* nothing to stop */ }
     setSpeaking(false);
-  }, []);
+  }, [stopAudio]);
 
   /* -------------------------------------------------- microphone amplitude */
   const stopMeter = useCallback(() => {
@@ -153,8 +174,9 @@ export function useVoice({
     const Ctor = recognitionCtor();
     if (!Ctor) { setMic('unsupported'); errRef.current('unsupported'); return; }
 
-    // Barge-in: the visitor speaking always wins over the system speaking.
-    shutUp();
+    // Barge-in: the visitor speaking always wins over the system speaking —
+    // server audio and browser synthesis alike.
+    shutUpAll();
 
     try {
       const rec = new Ctor();
@@ -201,40 +223,73 @@ export function useVoice({
       setMic('unsupported');
       errRef.current('unsupported');
     }
-  }, [mic, shutUp, startMeter, stopListening, stopMeter]);
+  }, [mic, shutUpAll, startMeter, stopListening, stopMeter]);
 
   /* ---------------------------------------------------------- synthesis */
-  const speak = useCallback((text: string) => {
-    if (!enabledRef.current || !text.trim()) return;
+  /** The fallback: the browser voice, at least reading one sentence at a time. */
+  const speakLocally = useCallback((text: string, token: number) => {
     try {
       const synth = window.speechSynthesis;
       if (!synth) return;
       synth.cancel();
-      const u = new SpeechSynthesisUtterance(speakable(text));
-      u.lang = 'it-IT';
-      // Not every it-IT voice sounds like a system worth trusting: prefer the
-      // neural/cloud voices, then the named local Italians, then any Italian.
       const it = synth.getVoices().filter((v) => v.lang?.toLowerCase().startsWith('it'));
       const best =
         it.find((v) => /neural|natural|online|premium|enhanced/i.test(v.name)) ??
         it.find((v) => /google/i.test(v.name)) ??
         it.find((v) => /alice|elsa|luca|federica|paola/i.test(v.name)) ??
         it[0];
-      if (best) u.voice = best;
-      u.rate = 1.03;
-      u.pitch = 0.96;
-      u.onstart = () => setSpeaking(true);
-      u.onend = () => setSpeaking(false);
-      u.onerror = () => setSpeaking(false);
-      synth.speak(u);
+      const parts = sentences(speakable(text));
+      if (!parts.length) return;
+      setSpeaking(true);
+      parts.forEach((part, i) => {
+        const u = new SpeechSynthesisUtterance(part);
+        u.lang = 'it-IT';
+        if (best) u.voice = best;
+        u.rate = 1.0;
+        u.pitch = 0.98;
+        if (i === parts.length - 1) {
+          u.onend = () => { if (speakSeq.current === token) setSpeaking(false); };
+          u.onerror = () => { if (speakSeq.current === token) setSpeaking(false); };
+        }
+        synth.speak(u);
+      });
     } catch { /* voice output is a bonus, never a requirement */ }
   }, []);
 
-  useEffect(() => () => { stopListening(); shutUp(); }, [stopListening, shutUp]);
+  const speak = useCallback((text: string) => {
+    if (!enabledRef.current || !text.trim()) return;
+    const token = ++speakSeq.current;
+    stopAudio();
+    try { window.speechSynthesis?.cancel(); } catch { /* nothing to stop */ }
+
+    void (async () => {
+      try {
+        const res = await fetch('/api/voce', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ text: speakable(text) }),
+        });
+        if (speakSeq.current !== token) return;          // interrupted while waiting
+        if (!res.ok) { speakLocally(text, token); return; }
+        const blob = await res.blob();
+        if (speakSeq.current !== token) return;
+        const el = new Audio(URL.createObjectURL(blob));
+        audioEl.current = el;
+        el.onplay = () => { if (speakSeq.current === token) setSpeaking(true); };
+        el.onended = () => { if (speakSeq.current === token) { setSpeaking(false); stopAudio(); } };
+        el.onerror = () => { if (speakSeq.current === token) speakLocally(text, token); };
+        await el.play().catch(() => { if (speakSeq.current === token) speakLocally(text, token); });
+      } catch {
+        if (speakSeq.current === token) speakLocally(text, token);
+      }
+    })();
+  }, [speakLocally, stopAudio]);
+
+  useEffect(() => () => { stopListening(); shutUpAll(); }, [stopListening, shutUpAll]);
 
   return {
     mic, speaking, interim, level,
-    listen, stopListening, speak, shutUp,
+    listen, stopListening, speak, shutUp: shutUpAll,
     supported: mic !== 'unsupported',
   };
 }

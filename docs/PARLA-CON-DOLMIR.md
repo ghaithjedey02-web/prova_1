@@ -90,22 +90,74 @@ l'unica strada che il modello ha per esprimerle.
   `lib/speech-text.ts`, testato — perché «ORD-10482» letto lettera per
   lettera è la cosa che fa suonare un sistema come una macchina.
 
-Limite noto e dichiarato: la sintesi resta quella del browser. Una voce
-neurale di livello prodotto richiede un provider TTS server-side (chiave e
-costo per carattere): l'architettura è pronta ad accoglierlo — la sintesi è
-isolata in `lib/voice.ts` — ma non è stata aggiunta senza una decisione sul
-fornitore.
+### La voce, adesso
 
-## Modalità ridotta
+La sintesi del browser non è più il piano: è la rete di sicurezza.
 
-Senza chiave configurata la rotta risponde 503 e la console:
-1. mostra **MODALITÀ RIDOTTA** in testata,
-2. risponde da un piccolo insieme dichiarato di risposte,
-3. scrive «Demo dimostrativa · risposte predefinite · dati di esempio».
+```
+console → POST /api/voce → provider TTS neurale → MP3 → <audio>
+                        ↘ 503 (nessun provider) → speechSynthesis del browser
+```
 
-Non finge mai di essere il modello live. Per attivarlo: `ANTHROPIC_API_KEY`
-fra le variabili d'ambiente del progetto Vercel (opzionale
-`DOLMIR_CONSOLE_MODEL`).
+`packages/ai-core/src/providers/tts.ts` sceglie il provider da quale chiave
+esiste: **ElevenLabs** (`eleven_multilingual_v2`, italiano) se
+`ELEVENLABS_API_KEY` è presente, altrimenti **OpenAI**
+(`gpt-4o-mini-tts`) con `OPENAI_API_KEY`. Il browser riceve solo byte audio:
+la chiave non lo raggiunge mai.
+
+Il fallback del browser oggi legge **frase per frase** invece che in un
+fiato solo, così almeno respira. E la riscrittura del testo è stata corretta:
+prima sillabava i codici («o-r-d-e uno zero quattro…»), che è l'altro modo di
+suonare come una macchina. Adesso il record viene nominato e il numero resta
+un numero — «ordine 10482».
+
+## Quando il modello non è collegato
+
+Senza chiave configurata la rotta risponde 503 e la console mostra **uno
+stato onesto**: «MODELLO NON ATTIVO SU QUESTO AMBIENTE», una spiegazione, e
+il collegamento a una persona. Il campo di scrittura si disattiva e le
+domande di esempio spariscono.
+
+**Non esiste più un insieme di risposte preconfezionate.** C'era, e faceva
+esattamente il danno che doveva evitare: chi provava la console incontrava
+otto risposte recitate e ne concludeva — correttamente — che dietro non
+c'era intelligenza. Una console che sa rispondere a otto domande preparate
+*è* un albero decisionale, per quanto ben vestito. Meglio dire che il
+modello non è collegato.
+
+### Come si attiva
+
+Una sola variabile d'ambiente sul progetto Vercel:
+
+| variabile | effetto |
+|---|---|
+| `ANTHROPIC_API_KEY` | **accende la conversazione**: modello reale, strumenti, streaming |
+| `DOLMIR_CONSOLE_MODEL` | opzionale, per fissare il modello |
+| `ELEVENLABS_API_KEY` | voce neurale italiana (consigliata) |
+| `OPENAI_API_KEY` | voce alternativa, se ElevenLabs non c'è |
+
+Senza la prima, tutto il resto del capitolo è inerte: è la chiave che
+trasforma la console da pagina a prodotto.
+
+## Il prompt di sistema è parte del prodotto
+
+La prima versione si comportava da guardiano: deviava i saluti, rifiutava
+tutto ciò che leggeva come «fuori tema» e usava la parola *demo* come scusa
+per non rispondere. Non era un limite del modello — era scritto nel prompt.
+
+Oggi il prompt concede esplicitamente:
+- rispondere a un saluto **come una persona**, senza trasformarlo in un
+  disclaimer;
+- ragionare **con la propria competenza** su processi, automazione, AI,
+  produzione, amministrazione — senza strumenti, perché quello è mestiere,
+  non un dato dell'azienda demo;
+- vietato dire «sono solo una demo» come scusa.
+
+E mantiene i vincoli veri: ogni fatto dell'azienda dimostrativa da uno
+strumento, il cancello umano, NON DETERMINATO, nessuna promessa commerciale.
+
+`packages/ai-core/test/console-prompt.test.ts` blocca la regressione: se
+qualcuno rimettesse la regola del «fuori tema», il test fallisce.
 
 ## Test
 
