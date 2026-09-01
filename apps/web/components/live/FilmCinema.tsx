@@ -160,7 +160,7 @@ export function FilmCinema({
   return (
     <div ref={host}>
       <div className="relative overflow-hidden border border-rule bg-void">
-        <div className={`relative w-full ${frame === 'short' ? 'aspect-[21/9]' : 'aspect-video'}`}>
+        <div className={`relative w-full ${frame === 'short' ? 'aspect-[5/4] sm:aspect-[16/9] lg:aspect-[21/9]' : 'aspect-video'}`}>
           <video
             ref={video}
             src={SOURCES[srcIdx]}

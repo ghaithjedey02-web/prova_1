@@ -308,7 +308,7 @@ export function Explainer({ children }: { children?: React.ReactNode }) {
   const s = c.beats[beat] ?? c.beats[0]!;
 
   return (
-    <div ref={host} className="relative aspect-[21/9] overflow-hidden border border-rule-strong bg-void">
+    <div ref={host} className="relative aspect-[5/4] overflow-hidden border border-rule-strong bg-void sm:aspect-[16/9] lg:aspect-[21/9]">
       <canvas ref={canvas} aria-hidden className="absolute inset-0 h-full w-full" />
 
       {/* Every word is real DOM, in our own typeface. */}

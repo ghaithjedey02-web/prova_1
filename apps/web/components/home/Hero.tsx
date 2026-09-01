@@ -76,10 +76,12 @@ export function Hero() {
 
           {/* The whole product in seven words — the line the page then walks
               through, chapter by chapter. Amber only where a person decides. */}
-          <p className="telemetry mt-9 flex flex-wrap items-center gap-x-2.5 gap-y-2">
+          {/* The rules are hidden where the line wraps: a dash orphaned at the
+              start of a new row reads as a typo, not as a connector. */}
+          <p className="telemetry mt-9 flex flex-wrap items-center gap-x-3 gap-y-2 sm:gap-x-2.5">
             {pipeline.words.map((w, i) => (
               <span key={w} className="flex items-center gap-x-2.5">
-                {i > 0 && <span aria-hidden className="block h-px w-3 bg-rule-bright" />}
+                {i > 0 && <span aria-hidden className="hidden h-px w-3 bg-rule-bright sm:block" />}
                 <span className={i === pipeline.human ? 'text-amber' : 'text-muted'}>{w}</span>
               </span>
             ))}
