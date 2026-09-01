@@ -154,7 +154,7 @@ export function Film({ autoStart = false }: { autoStart?: boolean }) {
   /* -------------------------------------------- reduced motion: storyboard */
   if (stage === 'board') {
     return (
-      <div className="grid gap-px border border-rule bg-rule/60 sm:grid-cols-2 lg:grid-cols-4" data-inspect="Film · storyboard">
+      <div className="grid gap-px border border-rule bg-rule/60 sm:grid-cols-2 lg:grid-cols-4">
         {film.chapters.map((c, i) => (
           <figure key={c.code} className="bg-surface/85 p-5">
             <figcaption className="telemetry text-accent">{c.code}</figcaption>
@@ -182,7 +182,7 @@ export function Film({ autoStart = false }: { autoStart?: boolean }) {
   const running = mode === 'playing' || mode === 'done' || mode === 'rejected';
 
   return (
-    <div data-inspect="Film · un unico piano sequenza">
+    <div>
       <div className="relative overflow-hidden border border-rule bg-void">
         <div className="sheet-fine absolute inset-0 opacity-30" aria-hidden />
 
@@ -321,21 +321,21 @@ export function Film({ autoStart = false }: { autoStart?: boolean }) {
                       <button
                         type="button"
                         onClick={() => decide('approve')}
-                        className="border border-accent bg-accent/10 px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground"
+                        className="border border-accent bg-accent/10 px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground"
                       >
                         APPROVA
                       </button>
                       <button
                         type="button"
                         onClick={() => decide('modify')}
-                        className="border border-rule-strong px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-ink-2 transition-colors hover:border-muted"
+                        className="border border-rule-strong px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-ink-2 transition-colors hover:border-muted"
                       >
                         MODIFICA
                       </button>
                       <button
                         type="button"
                         onClick={() => decide('reject')}
-                        className="border border-rule-strong px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-muted transition-colors hover:border-bad hover:text-bad"
+                        className="border border-rule-strong px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-muted transition-colors hover:border-bad hover:text-bad"
                       >
                         RIFIUTA
                       </button>
@@ -381,13 +381,13 @@ export function Film({ autoStart = false }: { autoStart?: boolean }) {
                     <p className="font-display text-2xl font-semibold tracking-[0.28em] text-ink">DOLMIR</p>
                     <p className="mt-3 text-[0.9375rem] leading-snug text-ink-2">{film.closing}</p>
                     <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
-                      <a href="/#prova" className="border border-accent bg-accent/10 px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground">
+                      <a href="/#prova" className="border border-accent bg-accent/10 px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground">
                         PROVA DOLMIR
                       </a>
-                      <a href="/contatto" className="border border-rule-strong px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-ink-2 transition-colors hover:border-muted">
+                      <a href="/contatto" className="border border-rule-strong px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-ink-2 transition-colors hover:border-muted">
                         PORTATECI UN PROCESSO
                       </a>
-                      <button type="button" onClick={play} className="px-3 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-muted transition-colors hover:text-ink">
+                      <button type="button" onClick={play} className="px-3 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-muted transition-colors hover:text-ink">
                         {film.replay}
                       </button>
                     </div>
@@ -399,7 +399,7 @@ export function Film({ autoStart = false }: { autoStart?: boolean }) {
                   <div className="settle glass-solid w-full max-w-[24rem] border-amber/40 p-5 text-center sm:p-6">
                     <p className="telemetry text-amber">NESSUNA AZIONE</p>
                     <p className="mt-3 text-[0.9375rem] leading-snug text-ink-2">{film.rejectLine}</p>
-                    <button type="button" onClick={play} className="mt-5 border border-rule-strong px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-ink-2 transition-colors hover:border-muted">
+                    <button type="button" onClick={play} className="mt-5 border border-rule-strong px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-ink-2 transition-colors hover:border-muted">
                       {film.replay}
                     </button>
                   </div>

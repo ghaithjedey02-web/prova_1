@@ -33,13 +33,13 @@ export default function StudioPage() {
             <Reveal key={sec.t} as="li" delay={i * 40}>
               <Container>
                 <div className="grid gap-6 py-12 lg:grid-cols-[5rem_1fr_1.5fr] lg:gap-10 lg:py-16">
-                  <span className="font-mono text-[var(--text-label)] tnum text-faint">
+                  <span className="font-mono text-[length:var(--text-label)] tnum text-faint">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <h2 className="headline text-[length:var(--text-display-s)] text-ink">{sec.t}</h2>
                   <div className="flex flex-col gap-5">
                     {sec.body.map((p) => (
-                      <p key={p} className="text-[var(--text-body)] leading-relaxed text-ink-2">{p}</p>
+                      <p key={p} className="text-[length:var(--text-body)] leading-relaxed text-ink-2">{p}</p>
                     ))}
                   </div>
                 </div>
@@ -59,7 +59,7 @@ export default function StudioPage() {
             <ul className="stack-rules border-y border-rule">
               {s.refuse.items.map((item, i) => (
                 <Reveal key={item} as="li" delay={i * 55}>
-                  <p className="flex gap-5 py-5 text-[var(--text-lead)] leading-snug text-ink-2">
+                  <p className="flex gap-5 py-5 text-[length:var(--text-lead)] leading-snug text-ink-2">
                     <span aria-hidden className="font-mono leading-tight text-bad">×</span>
                     {item}
                   </p>

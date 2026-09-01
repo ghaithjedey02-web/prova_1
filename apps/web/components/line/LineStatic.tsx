@@ -9,9 +9,9 @@ export function LineStatic() {
     <ol className="stack-rules border border-rule bg-surface/92 backdrop-blur-md">
       {stations.map((s) => (
         <li key={s.k} className="grid gap-3 p-6 sm:grid-cols-[auto_9rem_1fr] sm:items-baseline sm:gap-6">
-          <span className="font-mono text-[var(--text-label)] tnum text-accent">{s.k}</span>
+          <span className="font-mono text-[length:var(--text-label)] tnum text-accent">{s.k}</span>
           <span className={`subhead text-[1.15rem] ${s.kind === 'gate' ? 'text-amber' : 'text-ink'}`}>{s.t}</span>
-          <span className="text-[var(--text-small)] leading-relaxed text-muted">{s.d}</span>
+          <span className="text-[length:var(--text-small)] leading-relaxed text-muted">{s.d}</span>
         </li>
       ))}
     </ol>

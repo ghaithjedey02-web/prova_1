@@ -74,7 +74,7 @@ export function TheLine() {
 
   if (enabled === null || enabled === false || !palette) {
     return (
-      <section className="relative py-[var(--space-section)]" data-inspect="TheLine · percorso di una richiesta">
+      <section className="relative py-[var(--space-section)]">
         <Container>
           {head}
           <div className="mt-[var(--space-block)]">
@@ -88,7 +88,7 @@ export function TheLine() {
   const station = stations[active] ?? stations[0]!;
 
   return (
-    <section className="relative" aria-labelledby="line-heading" data-inspect="TheLine · percorso di una richiesta">
+    <section className="relative" aria-labelledby="line-heading">
       <Container>
         <div className="pt-[var(--space-section)]" id="line-heading">{head}</div>
       </Container>
@@ -107,7 +107,7 @@ export function TheLine() {
                 {stations.map((s, i) => (
                   <li
                     key={s.k}
-                    className={`whitespace-nowrap font-mono text-[var(--text-label)] tracking-[0.16em] transition-colors duration-[var(--duration-base)] ${
+                    className={`whitespace-nowrap font-mono text-[length:var(--text-label)] tracking-[0.16em] transition-colors duration-[var(--duration-base)] ${
                       i === active ? 'text-accent' : i < active ? 'text-muted' : 'text-rule-strong'
                     }`}
                   >

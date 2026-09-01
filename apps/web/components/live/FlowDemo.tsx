@@ -124,7 +124,7 @@ export function FlowDemo() {
   const draft = result?.draft;
 
   return (
-    <section className="relative py-[var(--space-section)]" data-inspect="FlowDemo · rfq-engine + MockProvider" data-spine="4">
+    <section className="relative py-[var(--space-section)]">
       <Container>
         <Chapter
           n="06"
@@ -169,13 +169,13 @@ export function FlowDemo() {
               {/* ------------------------------------------------- the email */}
               <div className="border-b border-rule p-5 lg:border-b-0 lg:border-r sm:p-7">
                 <p className="telemetry text-muted">In arrivo</p>
-                <dl className="mt-5 grid grid-cols-[4.5rem_1fr] gap-x-4 gap-y-2 border-b border-rule pb-5 font-mono text-[var(--text-label)]">
+                <dl className="mt-5 grid grid-cols-[4.5rem_1fr] gap-x-4 gap-y-2 border-b border-rule pb-5 font-mono text-[length:var(--text-label)]">
                   <dt className="text-muted">DA</dt>
                   <dd className="break-all text-ink-2">{sample.from}</dd>
                   <dt className="text-muted">OGGETTO</dt>
                   <dd className="text-ink-2">{sample.subject}</dd>
                 </dl>
-                <pre className="mt-5 font-sans text-[var(--text-small)] leading-relaxed whitespace-pre-wrap text-ink-2">
+                <pre className="mt-5 font-sans text-[length:var(--text-small)] leading-relaxed whitespace-pre-wrap text-ink-2">
                   {sample.body}
                 </pre>
                 <ul className="mt-5 flex flex-wrap gap-2 border-t border-rule pt-5">
@@ -205,7 +205,7 @@ export function FlowDemo() {
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-baseline gap-x-4">
                             <span className={`telemetry ${done ? 'text-accent' : 'text-faint'}`}>{s.k}</span>
-                            <span className={`text-[var(--text-small)] ${done ? 'text-ink' : 'text-faint'}`}>
+                            <span className={`text-[length:var(--text-small)] ${done ? 'text-ink' : 'text-faint'}`}>
                               {s.label}
                             </span>
                           </div>
@@ -216,7 +216,7 @@ export function FlowDemo() {
                                 return (
                                   <li key={f.key} className="settle flex items-baseline justify-between gap-3 border-b border-rule/60 pb-1">
                                     <span className="telemetry truncate text-muted">{f.label}</span>
-                                    <span className="truncate font-mono text-[var(--text-label)] text-ink-2">
+                                    <span className="truncate font-mono text-[length:var(--text-label)] text-ink-2">
                                       {cell && cell.value !== null ? String(cell.value) : '· · ·'}
                                     </span>
                                   </li>
@@ -242,13 +242,13 @@ export function FlowDemo() {
                         ? `€ ${draft.suggestedUnitPriceEur.toFixed(2)} /pz · totale € ${draft.suggestedTotalEur!.toFixed(2)}`
                         : 'Nessun prezzo proposto'}
                     </p>
-                    <p className="mt-3 max-w-[52ch] text-[var(--text-small)] leading-relaxed text-ink-2">
+                    <p className="mt-3 max-w-[52ch] text-[length:var(--text-small)] leading-relaxed text-ink-2">
                       {draft.priceRationale[0]}
                     </p>
                     <button
                       type="button"
                       onClick={approve}
-                      className="mt-6 bg-accent px-7 py-3 text-[var(--text-small)] font-medium text-accent-ink transition-colors hover:bg-accent-hover"
+                      className="mt-6 bg-accent px-7 py-3 text-[length:var(--text-small)] font-medium text-accent-ink transition-colors hover:bg-accent-hover"
                     >
                       Approva
                     </button>
@@ -260,7 +260,7 @@ export function FlowDemo() {
                     <p className="flex items-center gap-3 telemetry text-good">
                       <span aria-hidden>✓</span> Risposta pronta
                     </p>
-                    <p className="mt-4 max-w-[54ch] text-[var(--text-small)] leading-relaxed text-ink-2">
+                    <p className="mt-4 max-w-[54ch] text-[length:var(--text-small)] leading-relaxed text-ink-2">
                       La bozza è stata approvata da una persona ed è pronta all’invio. Il sistema ha preparato;
                       la decisione è rimasta umana — e questo passaggio non è disattivabile.
                     </p>
@@ -283,7 +283,7 @@ export function FlowDemo() {
                         <div className="h-px w-2/3 bg-rule" />
                       </div>
                     </div>
-                    <p className="mt-4 text-[var(--text-micro)] text-muted">
+                    <p className="mt-4 text-[length:var(--text-micro)] text-muted">
                       Dati di esempio. L’azienda e i documenti citati non sono reali.
                     </p>
                   </div>

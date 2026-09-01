@@ -37,11 +37,11 @@ export default function MetodoPage() {
                 <div className="relative grid gap-4 py-9 md:grid-cols-[auto_10rem_1fr_1fr] md:items-baseline md:gap-10 md:pl-0">
                   <span aria-hidden className="hidden size-[0.65rem] shrink-0 translate-y-2 bg-accent md:block" />
                   <div className="flex items-baseline gap-4">
-                    <span className="font-mono text-[var(--text-label)] tnum text-faint">{p.k}</span>
+                    <span className="font-mono text-[length:var(--text-label)] tnum text-faint">{p.k}</span>
                     <h2 className="headline text-[length:var(--text-display-s)] text-ink">{p.t}</h2>
                   </div>
-                  <p className="text-[var(--text-small)] leading-relaxed text-ink-2">{p.d}</p>
-                  <p className="text-[var(--text-micro)] leading-relaxed text-muted">
+                  <p className="text-[length:var(--text-small)] leading-relaxed text-ink-2">{p.d}</p>
+                  <p className="text-[length:var(--text-micro)] leading-relaxed text-muted">
                     <span className="label mr-2">Esito</span>
                     {p.out}
                   </p>
@@ -67,8 +67,8 @@ export default function MetodoPage() {
             </div>
             <Reveal delay={130}>
               <div className="border-t border-rule-strong pt-8">
-                <p className="text-[var(--text-lead)] leading-relaxed text-ink-2">{m.engagement.body}</p>
-                <p className="mt-6 text-[var(--text-small)] leading-relaxed text-muted">{m.engagement.note}</p>
+                <p className="text-[length:var(--text-lead)] leading-relaxed text-ink-2">{m.engagement.body}</p>
+                <p className="mt-6 text-[length:var(--text-small)] leading-relaxed text-muted">{m.engagement.note}</p>
                 <div className="mt-10"><Button href={cta.primary.href} arrow>{cta.primary.label}</Button></div>
               </div>
             </Reveal>
@@ -89,8 +89,8 @@ export default function MetodoPage() {
             {m.handover.items.map((item, i) => (
               <Reveal key={item.t} as="li" delay={i * 70} className="bg-surface/92 backdrop-blur-md">
                 <div className="h-full p-8">
-                  <h3 className="text-[var(--text-body)] font-medium text-ink">{item.t}</h3>
-                  <p className="mt-3 text-[var(--text-small)] leading-relaxed text-muted">{item.d}</p>
+                  <h3 className="text-[length:var(--text-body)] font-medium text-ink">{item.t}</h3>
+                  <p className="mt-3 text-[length:var(--text-small)] leading-relaxed text-muted">{item.d}</p>
                 </div>
               </Reveal>
             ))}

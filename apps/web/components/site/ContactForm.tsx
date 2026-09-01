@@ -93,7 +93,7 @@ export function ContactForm() {
           })}
         </div>
         {area && (
-          <p key={area.k} className="settle mt-4 border-l-2 border-accent pl-4 text-[var(--text-micro)] leading-relaxed text-muted">
+          <p key={area.k} className="settle mt-4 border-l-2 border-accent pl-4 text-[length:var(--text-micro)] leading-relaxed text-muted">
             <span className="telemetry mr-2 text-accent">CANALE APERTO</span>
             {area.d}
           </p>
@@ -138,11 +138,11 @@ export function ContactForm() {
             {(contatto.opportunita[area.k] ?? []).map((o, i) => (
               <li key={o} className="flex items-baseline gap-3">
                 <span className="telemetry text-faint">{String(i + 1).padStart(2, '0')}</span>
-                <span className="text-[var(--text-small)] leading-snug text-ink-2">{o}</span>
+                <span className="text-[length:var(--text-small)] leading-snug text-ink-2">{o}</span>
               </li>
             ))}
           </ol>
-          <p className="mt-4 border-t border-rule pt-3 text-[var(--text-micro)] leading-relaxed text-muted">
+          <p className="mt-4 border-t border-rule pt-3 text-[length:var(--text-micro)] leading-relaxed text-muted">
             {contatto.analisiNote}
           </p>
         </div>
@@ -169,12 +169,12 @@ export function ContactForm() {
             name="processo"
             rows={5}
             required
-            className="border border-rule bg-void px-4 py-3.5 text-[var(--text-small)] text-ink outline-none transition-colors duration-[var(--duration-fast)] placeholder:text-faint hover:border-rule-strong focus:border-accent"
+            className="border border-border-ui bg-void px-4 py-3.5 text-[length:var(--text-small)] text-ink outline-none transition-colors duration-[var(--duration-fast)] placeholder:text-faint hover:border-rule-strong focus:border-accent"
           />
-          <p className="text-[var(--text-micro)] text-muted">{contatto.formNote}</p>
+          <p className="text-[length:var(--text-micro)] text-muted">{contatto.formNote}</p>
         </div>
 
-        <label className="flex items-start gap-3 text-[var(--text-micro)] leading-relaxed text-muted">
+        <label className="flex items-start gap-3 text-[length:var(--text-micro)] leading-relaxed text-muted">
           <input
             type="checkbox"
             name="consenso"
@@ -188,7 +188,7 @@ export function ContactForm() {
         </label>
 
         {state === 'error' && (
-          <p role="alert" className="border-l-2 border-bad bg-bad-soft px-4 py-3.5 text-[var(--text-small)] text-bad">
+          <p role="alert" className="border-l-2 border-bad bg-bad-soft px-4 py-3.5 text-[length:var(--text-small)] text-bad">
             {message}
           </p>
         )}
@@ -196,12 +196,12 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={state === 'sending'}
-          className="mt-2 bg-accent px-7 py-4 text-[var(--text-small)] font-medium text-accent-ink transition-colors duration-[var(--duration-fast)] hover:bg-accent-hover disabled:opacity-60"
+          className="mt-2 bg-accent px-7 py-4 text-[length:var(--text-small)] font-medium text-accent-ink transition-colors duration-[var(--duration-fast)] hover:bg-accent-hover disabled:opacity-60"
         >
           {state === 'sending' ? 'Invio…' : 'Invia'}
         </button>
 
-        <p className="text-[var(--text-micro)] text-muted">{contatto.privacy}</p>
+        <p className="text-[length:var(--text-micro)] text-muted">{contatto.privacy}</p>
       </div>
     </form>
   );
@@ -229,7 +229,7 @@ function Field({
         type={type}
         required={required}
         autoComplete={autoComplete}
-        className="border border-rule bg-void px-4 py-3.5 text-[var(--text-small)] text-ink outline-none transition-colors duration-[var(--duration-fast)] placeholder:text-faint hover:border-rule-strong focus:border-accent"
+        className="border border-border-ui bg-void px-4 py-3.5 text-[length:var(--text-small)] text-ink outline-none transition-colors duration-[var(--duration-fast)] placeholder:text-faint hover:border-rule-strong focus:border-accent"
       />
     </div>
   );

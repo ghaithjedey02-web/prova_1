@@ -7,7 +7,7 @@ import { closing as c, cta } from '@/content/site';
 /** The close. One action, and exactly what to bring to it. */
 export function Closing() {
   return (
-    <section className="relative py-[var(--space-section)]" data-spine="6">
+    <section className="relative py-[var(--space-section)]">
       <Container>
         <div className="grid gap-[var(--space-block)] lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
@@ -35,7 +35,7 @@ export function Closing() {
                 {c.bring.map((b, i) => (
                   <li key={b} className="flex gap-4 border-t border-rule py-4 first:border-t-0 first:pt-0">
                     <span className="telemetry text-accent">{String(i + 1).padStart(2, '0')}</span>
-                    <span className="text-[var(--text-small)] leading-snug text-ink-2">{b}</span>
+                    <span className="text-[length:var(--text-small)] leading-snug text-ink-2">{b}</span>
                   </li>
                 ))}
               </ul>

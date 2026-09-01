@@ -36,7 +36,7 @@ export function Confidence({ value, floor }: { value: number; floor?: number }) 
       <span className="relative block h-1 w-12 overflow-hidden bg-rule/70">
         <span className={`block h-full ${tone}`} style={{ width: `${Math.max(pct, 2)}%` }} />
       </span>
-      <span className={`font-mono text-[var(--text-label)] tnum ${low ? 'text-amber' : 'text-muted'}`}>{pct}%</span>
+      <span className={`font-mono text-[length:var(--text-label)] tnum ${low ? 'text-amber' : 'text-muted'}`}>{pct}%</span>
     </span>
   );
 }
@@ -52,7 +52,7 @@ const toneMap = {
 export function Tag({ children, tone = 'neutral' }: { children: ReactNode; tone?: keyof typeof toneMap }) {
   return (
     <span
-      className={`inline-flex items-center border px-2.5 py-1 font-mono text-[var(--text-label)] uppercase tracking-[0.16em] ${toneMap[tone]}`}
+      className={`inline-flex items-center border px-2.5 py-1 font-mono text-[length:var(--text-label)] uppercase tracking-[0.16em] ${toneMap[tone]}`}
     >
       {children}
     </span>
@@ -84,11 +84,11 @@ export function Verdict({
     <div className={`border ${skin}`}>
       <div className="flex items-center gap-3 border-b border-inherit px-5 py-3">
         <span aria-hidden className={`block size-1.5 ${dot}`} />
-        <p className={`font-mono text-[var(--text-label)] uppercase tracking-[0.2em] ${text}`}>{code}</p>
+        <p className={`font-mono text-[length:var(--text-label)] uppercase tracking-[0.2em] ${text}`}>{code}</p>
       </div>
       <div className="px-5 py-6">
         <p className={`font-display text-[length:var(--text-display-s)] font-semibold tracking-[-0.02em] ${text}`}>{title}</p>
-        <p className="mt-3 max-w-[54ch] text-[var(--text-small)] leading-relaxed text-ink-2">{body}</p>
+        <p className="mt-3 max-w-[54ch] text-[length:var(--text-small)] leading-relaxed text-ink-2">{body}</p>
       </div>
     </div>
   );

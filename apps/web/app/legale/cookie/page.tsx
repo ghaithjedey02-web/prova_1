@@ -20,8 +20,8 @@ export default function Page() {
           ['Terze parti', 'I caratteri tipografici sono serviti insieme al sito. Nessun servizio di analisi, nessun social plugin, nessuna pubblicità.'],
         ].map(([k, v]) => (
           <div key={k} className="grid gap-2 py-6 sm:grid-cols-[12rem_1fr] sm:gap-8">
-            <dt className="text-[var(--text-small)] font-medium text-ink">{k}</dt>
-            <dd className="text-[var(--text-small)] leading-relaxed text-muted">{v}</dd>
+            <dt className="text-[length:var(--text-small)] font-medium text-ink">{k}</dt>
+            <dd className="text-[length:var(--text-small)] leading-relaxed text-muted">{v}</dd>
           </div>
         ))}
       </dl>

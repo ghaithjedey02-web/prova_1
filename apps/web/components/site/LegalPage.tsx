@@ -26,17 +26,17 @@ export function LegalPage({
         <h1 className="display mt-8 max-w-[16ch] text-[length:var(--text-display-l)]">{title}</h1>
 
         <div className="mt-10 max-w-[64ch]">
-          <p className="text-[var(--text-lead)] leading-relaxed text-ink-2">{intro}</p>
+          <p className="text-[length:var(--text-lead)] leading-relaxed text-ink-2">{intro}</p>
         </div>
 
         <div className="mt-10 flex max-w-[64ch] gap-4 border border-amber-line bg-amber-soft/50 p-6">
           <span aria-hidden className="mt-0.5 font-mono leading-none text-amber">△</span>
-          <p className="text-[var(--text-small)] leading-relaxed text-ink-2">{legalNote}</p>
+          <p className="text-[length:var(--text-small)] leading-relaxed text-ink-2">{legalNote}</p>
         </div>
 
         {children}
 
-        <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-rule pt-8 font-mono text-[var(--text-label)] tracking-[0.12em] text-muted">
+        <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-rule pt-8 font-mono text-[length:var(--text-label)] tracking-[0.12em] text-muted">
           <span>Titolare · {site.name}</span>
           <a href={`mailto:${site.email}`} className="transition-colors hover:text-accent">{site.email}</a>
           <Link href="/contatto" className="transition-colors hover:text-accent">Contatto</Link>

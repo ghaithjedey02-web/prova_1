@@ -18,8 +18,6 @@ export function Problema() {
     <section
       className="relative py-[var(--space-section)]"
       aria-labelledby="problema-heading"
-      data-inspect="Problema · il lavoro frammentato"
-      data-spine="0"
     >
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
@@ -37,7 +35,7 @@ export function Problema() {
                 {f}
               </li>
             ))}
-            <li className="flex w-full items-center gap-3 pt-5 text-[var(--text-small)] text-muted">
+            <li className="flex w-full items-center gap-3 pt-5 text-[length:var(--text-small)] text-muted">
               <span aria-hidden className="block h-px w-8 bg-rule-bright" />
               e in mezzo, una persona che ricopia
             </li>
@@ -61,8 +59,8 @@ export function Problema() {
           {c.nots.map((n, i) => (
             <Reveal key={n.t} delay={240 + i * 70} className="bg-surface/80">
               <div className="h-full p-6 sm:p-8">
-                <p className="text-[var(--text-body)] font-medium text-ink">{n.t}</p>
-                <p className="mt-3 text-[var(--text-small)] leading-relaxed text-muted">{n.d}</p>
+                <p className="text-[length:var(--text-body)] font-medium text-ink">{n.t}</p>
+                <p className="mt-3 text-[length:var(--text-small)] leading-relaxed text-muted">{n.d}</p>
               </div>
             </Reveal>
           ))}

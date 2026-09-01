@@ -202,8 +202,6 @@ export function Materia() {
       ref={host}
       className="relative h-[260vh] md:h-[400vh]"
       aria-labelledby="materia-heading"
-      data-inspect="Materia · sequenza fisico → sistema"
-      data-spine="3"
     >
       <div className="sticky top-0 flex h-screen w-full flex-col justify-end overflow-hidden pb-10 pt-[5.25rem] md:pb-20 lg:pt-0">
         {/* One scene at a time: the fixed machine behind the whole site steps
@@ -254,7 +252,7 @@ export function Materia() {
                 <p className="mt-3 text-[length:var(--text-display-s)] leading-snug text-ink">
                   {current.title}
                 </p>
-                <p className="mt-3 text-[0.8125rem] leading-relaxed text-muted sm:text-[var(--text-small)]">
+                <p className="mt-3 text-[0.8125rem] leading-relaxed text-muted sm:text-[length:var(--text-small)]">
                   {current.line}
                 </p>
               </div>
@@ -275,7 +273,7 @@ export function Materia() {
                         }`}
                       />
                       <span
-                        className={`telemetry text-[0.625rem] transition-colors ${
+                        className={`telemetry text-[0.75rem] transition-colors ${
                           i === act ? 'text-ink' : 'text-faint group-hover:text-muted'
                         }`}
                       >
@@ -300,7 +298,7 @@ export function Materia() {
                     key={f.k}
                     className="border-t border-rule pt-3 lg:grid lg:grid-cols-[6rem_minmax(0,1fr)] lg:items-baseline lg:gap-3"
                   >
-                    <dt className="telemetry text-[0.625rem] text-faint">{f.k}</dt>
+                    <dt className="telemetry text-[0.75rem] text-faint">{f.k}</dt>
                     <dd
                       key={f.v[act]}
                       className={`settle mt-1 font-mono text-[0.75rem] leading-snug [word-break:break-word] lg:mt-0 ${
@@ -312,7 +310,7 @@ export function Materia() {
                   </div>
                 ))}
               </dl>
-              <p className="mt-4 border-t border-rule pt-3 text-[0.625rem] leading-relaxed text-muted lg:mt-5 lg:pt-3.5 lg:text-[0.6875rem]">
+              <p className="mt-4 border-t border-rule pt-3 text-[0.75rem] leading-relaxed text-muted lg:mt-5 lg:pt-3.5 lg:text-[0.75rem]">
                 Dimostrazione. FL-2280 è un particolare di esempio: valori tecnici plausibili,
                 nessun dato di un cliente reale.
               </p>

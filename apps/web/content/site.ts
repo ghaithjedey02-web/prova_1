@@ -26,23 +26,41 @@ export const site = {
   locale: 'it_IT',
   email: 'info@dolmir.com',
   region: 'Lombardia',
+  /**
+   * Legal identifiers. NOT INVENTED — see docs/DA-COMPLETARE.md.
+   * A P.IVA printed on every page of an Italian company's website is a legal
+   * statement, not a design placeholder, so until the real one exists this
+   * says exactly that.
+   */
+  legalName: 'DOLMIR',
+  vat: 'in registrazione',
 } as const;
 
+/**
+ * Four destinations, in the order a stranger needs them: what we do, how it
+ * works, proof, and the thing they can try right now. Everything else —
+ * Studio, Affidabilità, the legal pages — lives in the footer, where people
+ * look for it when they already care.
+ */
 export const nav = [
-  { href: '/soluzioni', label: 'Sistemi' },
-  { href: '/#prova', label: 'Prova DOLMIR' },
+  { href: '/soluzioni', label: 'Cosa facciamo' },
+  { href: '/metodo', label: 'Come funziona' },
   { href: '/dimostrazione', label: 'Caso reale' },
-  { href: '/metodo', label: 'Metodo' },
-  { href: '/studio', label: 'Studio' },
+  { href: '/#parla', label: 'Parla con DOLMIR' },
 ] as const;
 
-/** The footer lists every page, including the ones the top bar leaves out. */
+/** The footer carries what the four-item top bar leaves out. */
 export const footerNav = [
-  { href: '/soluzioni', label: 'Sistemi' },
+  { href: '/soluzioni', label: 'I sistemi' },
+  { href: '/#parla', label: 'Parla con DOLMIR' },
+  { href: '/#prova', label: 'Prova il simulatore' },
   { href: '/dimostrazione', label: 'Caso reale' },
-  { href: '/affidabilita', label: 'Affidabilità' },
-  { href: '/metodo', label: 'Metodo' },
-  { href: '/studio', label: 'Studio' },
+] as const;
+
+export const legalNav = [
+  { href: '/legale/privacy', label: 'Privacy Policy' },
+  { href: '/legale/cookie', label: 'Cookie Policy' },
+  { href: '/legale/termini', label: 'Termini e condizioni' },
 ] as const;
 
 export const cta = {
@@ -64,41 +82,29 @@ export const pipeline = {
 /* =========================================================== home === hero ===*/
 
 export const hero = {
-  sysId: 'SYS.ID 00482',
   eyebrow: 'AI · Software · Infrastruttura digitale',
-  /* The awakening. Micro-signals appear across the whole viewport — the kinds
-     of events a running DOLMIR system actually produces — a few wires draw
-     between them, and the statement lands once the system is visibly alive.
-     Positions are viewport percentages; `wire` marks the signals the hairlines
-     connect, in order. */
-  signals: [
-    { x: 8,  y: 16, t: 'IN.EMAIL',   wire: 1 },
-    { x: 26, y: 9,  t: 'NODE 04' },
-    { x: 47, y: 14, t: 'CTX BUILD',  wire: 2 },
-    { x: 68, y: 8,  t: 'SYNC OK' },
-    { x: 88, y: 15, t: 'ERP LINK',   wire: 3 },
-    { x: 90, y: 38, t: 'QUEUE 3' },
-    { x: 76, y: 30, t: 'EXTRACT',    wire: 4 },
-    { x: 89, y: 62, t: 'CONF 0.97',  wire: 5 },
-    { x: 66, y: 74, t: 'ROUTE' },
-    { x: 82, y: 86, t: 'HUMAN GATE', wire: 6 },
-    { x: 12, y: 78, t: 'LAT 412MS' },
-    { x: 30, y: 88, t: 'REC WRITE' },
-    { x: 9,  y: 47, t: 'IN.PDF',     wire: 0 },
-    { x: 55, y: 46, t: 'CORE',       wire: 7 },
-  ] as readonly { x: number; y: number; t: string; wire?: number }[],
   line1: 'Email, PDF, gestionali:',
   line2: 'il lavoro si disperde.',
   line3: 'DOLMIR lo ricompone.',
   lead:
     'Costruiamo sistemi software intelligenti: leggono email e documenti, verificano i dati sui sistemi che avete già, preparano le azioni — e si fermano davanti a una persona per ogni decisione che richiede giudizio.',
-  telemetry: [
-    ['CANALI', '7 collegati'],
-    ['LATENZA', '< 900 ms'],
-    ['CONFIDENZA', 'dichiarata per campo'],
-    ['DECISIONE', 'umana'],
+  /**
+   * Four principles, not four metrics.
+   *
+   * This strip used to read CANALI 7 collegati · LATENZA < 900 ms — numbers
+   * that were never measured on anything, about an installation that does not
+   * exist. Invented performance figures in the first viewport are the fastest
+   * way to lose a technical reader and the surest way to mislead a
+   * non-technical one. These four are architectural facts: they are true of
+   * every system we build, and none of them is a number we cannot show.
+   */
+  principles: [
+    ['NESSUNA MIGRAZIONE', 'Lavoriamo sopra il gestionale che avete già.'],
+    ['DATI VERIFICATI', 'Ogni valore confrontato con la sua fonte.'],
+    ['CONFIDENZA DICHIARATA', 'Il sistema dice quanto è sicuro, campo per campo.'],
+    ['DECISIONE UMANA', 'Nessuna azione che richiede giudizio parte da sola.'],
   ] as const,
-  scroll: 'Entra nel sistema',
+  scroll: 'Continuate',
 } as const;
 
 /* ============================================ home === the problem ==========*/
@@ -317,14 +323,14 @@ export const intelligence = {
 /* ==================================== home === parla con DOLMIR =============*/
 
 export const parla = {
-  n: '03',
+  n: '02',
   label: 'Parla con DOLMIR',
   headline: 'Fategli una domanda. Il sistema risponde.',
   body:
     'Un modello AI reale, collegato a un’azienda dimostrativa con dati simulati. Chiedetegli quello che chiedereste al vostro ufficio — a voce o per iscritto: risponde con i dati, vi mostra cosa ha consultato, e si ferma dove serve una persona.',
   online: 'SYSTEM ONLINE',
   prompt: 'Chiedetemi qualcosa sull’azienda dimostrativa. Rispondo con i dati che consulto davanti a voi.',
-  promptSub: 'Parlate o scrivete. In italiano.',
+  promptSub: 'Parlate o scrivete, in italiano. La conversazione ha memoria.',
   micLabel: 'PARLA',
   micListening: 'VI ASCOLTO',
   micStop: 'FERMA',
@@ -342,7 +348,7 @@ export const parla = {
     DECISIONE: 'Serve una persona',
     RISPOSTA: 'Sto rispondendo',
   },
-  systemPanel: 'IL SISTEMA, MENTRE LAVORA',
+  systemPanel: 'Il sistema, mentre lavora',
   consultedLabel: 'DATI CONSULTATI',
   nothingYet: 'In attesa di una domanda.',
   panelDegraded: 'Nessuno strumento da consultare: il modello non è collegato qui.',
@@ -383,7 +389,7 @@ export const parla = {
   evidenceLabel: 'DATI CONSULTATI',
   thinking: 'INTERROGO I SISTEMI…',
   /* No model configured: one honest state, never a rehearsed conversation. */
-  offlineState: 'MODELLO NON ATTIVO SU QUESTO AMBIENTE',
+  offlineState: 'Modello non attivo su questo ambiente',
   offlineBody:
     'La console parla con un modello AI reale, e su questo ambiente quel modello non è collegato. Preferiamo dirvelo piuttosto che rispondervi con frasi preparate: un sistema che recita non è il sistema che costruiamo. Scriveteci e ve lo facciamo vedere mentre lavora sui vostri processi.',
   offlineCta: 'PARLIAMONE →',
@@ -391,7 +397,7 @@ export const parla = {
   busyNote: 'Troppe richieste ravvicinate — riprovate fra qualche secondo.',
   offlineNote: 'Il sistema non risponde in questo momento. Riprovate, oppure scrivete a info@dolmir.com.',
   disclaimer: 'Demo live · AI reale · dati aziendali simulati · nessun dato di clienti veri.',
-  contextNote: 'La conversazione ha memoria: potete fare domande di seguito («e per i preventivi?»).',
+  contextNote: 'Potete fare domande di seguito: «e per i preventivi?» o «quale è ancora in ritardo?» — DOLMIR ricorda di cosa state parlando.',
 } as const;
 
 /* ==================================== home === what DOLMIR builds ===========*/
@@ -463,7 +469,7 @@ export const capabilities = {
 /* ======================================== home === the simulator ============*/
 
 export const simulator = {
-  n: '02',
+  n: '03',
   label: 'Prova DOLMIR',
   headline: 'Consegnate un problema. Guardate cosa succede.',
   body:
@@ -857,7 +863,7 @@ export const chapters = {
   },
 
   human: {
-    n: '07',
+    n: '04',
     label: 'Controllo',
     headline: 'Il sistema si ferma prima di decidere.',
     body:

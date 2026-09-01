@@ -129,7 +129,7 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
           <div key={k} className="bg-surface/92 px-5 py-4">
             <dt className="telemetry text-faint">{k}</dt>
             <dd
-              className={`mt-1.5 font-mono text-[var(--text-micro)] ${
+              className={`mt-1.5 font-mono text-[length:var(--text-micro)] ${
                 v === 'SOSPESO' ? 'text-amber' : v === 'ELABORAZIONE' ? 'text-accent' : 'text-ink-2'
               }`}
             >
@@ -162,13 +162,13 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
                       on ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                     }`}
                   />
-                  <span className={`font-mono text-[var(--text-label)] uppercase tracking-[0.18em] ${on ? 'text-accent' : 'text-muted'}`}>
+                  <span className={`font-mono text-[length:var(--text-label)] uppercase tracking-[0.18em] ${on ? 'text-accent' : 'text-muted'}`}>
                     {meta?.code ?? s.id}
                   </span>
-                  <span className={`text-[var(--text-small)] font-medium leading-snug ${on ? 'text-ink' : 'text-ink-2'}`}>
+                  <span className={`text-[length:var(--text-small)] font-medium leading-snug ${on ? 'text-ink' : 'text-ink-2'}`}>
                     {meta?.t ?? s.label}
                   </span>
-                  <span className="text-[var(--text-micro)] leading-snug text-muted">{meta?.d ?? s.note}</span>
+                  <span className="text-[length:var(--text-micro)] leading-snug text-muted">{meta?.d ?? s.note}</span>
                 </button>
               </li>
             );
@@ -180,17 +180,17 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
         <Pane
           title={workflow.copy.inputTitle}
-          meta={<span className="font-mono text-[var(--text-label)] text-muted">{sample.id}</span>}
+          meta={<span className="font-mono text-[length:var(--text-label)] text-muted">{sample.id}</span>}
           className="max-h-[34rem] lg:sticky lg:top-[calc(var(--nav-h)+1.5rem)]"
         >
           <div className="p-5">
-            <dl className="mb-5 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-b border-rule pb-5 font-mono text-[var(--text-label)]">
+            <dl className="mb-5 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-b border-rule pb-5 font-mono text-[length:var(--text-label)]">
               <dt className="text-muted">DA</dt>
               <dd className="break-all text-ink-2">{sample.from}</dd>
               <dt className="text-muted">OGGETTO</dt>
               <dd className="text-ink-2">{sample.subject}</dd>
             </dl>
-            <pre className="font-sans text-[var(--text-small)] leading-relaxed whitespace-pre-wrap text-ink-2">
+            <pre className="font-sans text-[length:var(--text-small)] leading-relaxed whitespace-pre-wrap text-ink-2">
               {sample.body}
             </pre>
             {sample.attachments.length > 0 && (
@@ -198,7 +198,7 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
                 {sample.attachments.map((a) => (
                   <li
                     key={a.filename}
-                    className="flex items-center gap-2 border border-rule px-2.5 py-1.5 font-mono text-[var(--text-label)] text-muted"
+                    className="flex items-center gap-2 border border-rule px-2.5 py-1.5 font-mono text-[length:var(--text-label)] text-muted"
                   >
                     <span aria-hidden>▤</span>
                     {a.filename}
@@ -217,7 +217,7 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
                 <button
                   type="button"
                   onClick={() => void run(sample)}
-                  className="bg-accent px-4 py-1.5 font-mono text-[var(--text-label)] uppercase tracking-[0.16em] text-accent-ink transition-colors hover:bg-accent-hover"
+                  className="bg-accent px-4 py-1.5 font-mono text-[length:var(--text-label)] uppercase tracking-[0.16em] text-accent-ink transition-colors hover:bg-accent-hover"
                 >
                   Avvia
                 </button>
@@ -225,7 +225,7 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
                 <button
                   type="button"
                   onClick={() => pick(sample)}
-                  className="border border-rule px-4 py-1.5 font-mono text-[var(--text-label)] uppercase tracking-[0.16em] text-muted transition-colors hover:border-rule-strong hover:text-ink"
+                  className="border border-rule px-4 py-1.5 font-mono text-[length:var(--text-label)] uppercase tracking-[0.16em] text-muted transition-colors hover:border-rule-strong hover:text-ink"
                 >
                   Ripeti
                 </button>
@@ -247,7 +247,7 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
                     />
                     <div className="min-w-0 flex-1">
                       <p
-                        className={`text-[var(--text-small)] transition-colors duration-[var(--duration-base)] ${
+                        className={`text-[length:var(--text-small)] transition-colors duration-[var(--duration-base)] ${
                           done ? 'text-ink' : 'text-muted'
                         }`}
                       >
@@ -255,7 +255,7 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
                         {isHuman && done && <span className="ml-3"><Tag tone="amber">Attesa</Tag></span>}
                       </p>
                       {done && (
-                        <p className="mt-1.5 text-[var(--text-micro)] leading-relaxed text-muted">{stage.description}</p>
+                        <p className="mt-1.5 text-[length:var(--text-micro)] leading-relaxed text-muted">{stage.description}</p>
                       )}
                     </div>
                   </li>
@@ -263,7 +263,7 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
               })}
             </ol>
             {phase === 'idle' && (
-              <p className="border-t border-rule px-5 py-4 text-[var(--text-micro)] text-muted">
+              <p className="border-t border-rule px-5 py-4 text-[length:var(--text-micro)] text-muted">
                 Premi <span className="font-mono text-ink-2">Avvia</span> per eseguire il processo su questo caso.
                 {caseMeta ? ` ${caseMeta.d}` : ''}
               </p>
@@ -322,7 +322,7 @@ function Extracted({ result, workflow }: { result: ProcessedRfq; workflow: Workf
             <div key={f.key} className="grid grid-cols-[7.5rem_1fr_auto] items-center gap-4 px-5 py-3">
               <dt className="label truncate">{f.label}</dt>
               <dd
-                className={`truncate text-[var(--text-small)] ${
+                className={`truncate text-[length:var(--text-small)] ${
                   missing ? 'text-muted italic' : low ? 'text-amber' : 'text-ink'
                 }`}
                 title={cell?.evidence || undefined}
@@ -368,8 +368,8 @@ function Outcome({
           {priced ? (
             <p className="font-display text-[length:var(--text-display-l)] font-semibold tnum text-ink">
               € {draft.suggestedUnitPriceEur!.toFixed(2)}
-              <span className="ml-2 font-sans text-[var(--text-small)] font-normal text-muted">/pz</span>
-              <span className="ml-4 font-sans text-[var(--text-small)] font-normal text-muted">
+              <span className="ml-2 font-sans text-[length:var(--text-small)] font-normal text-muted">/pz</span>
+              <span className="ml-4 font-sans text-[length:var(--text-small)] font-normal text-muted">
                 totale € {draft.suggestedTotalEur!.toFixed(2)}
               </span>
             </p>
@@ -390,7 +390,7 @@ function Outcome({
 
           <ul className="mt-6 flex flex-col gap-2.5">
             {draft.priceRationale.map((r) => (
-              <li key={r} className="flex gap-3 text-[var(--text-small)] leading-relaxed text-muted">
+              <li key={r} className="flex gap-3 text-[length:var(--text-small)] leading-relaxed text-muted">
                 <span aria-hidden className="mt-2 block size-1 shrink-0 bg-rule-bright" />
                 {r}
               </li>
@@ -398,7 +398,7 @@ function Outcome({
           </ul>
 
           {result.triage && (
-            <p className="mt-6 border-t border-rule pt-5 text-[var(--text-small)] text-muted">
+            <p className="mt-6 border-t border-rule pt-5 text-[length:var(--text-small)] text-muted">
               <span className="label mr-2">Fattibilità</span>
               {result.triage.reasons[0]}
             </p>
@@ -407,7 +407,7 @@ function Outcome({
 
         <div className="bg-void p-6 sm:p-8">
           <p className="label mb-4">Bozza in italiano</p>
-          <pre className="max-h-72 overflow-auto font-sans text-[var(--text-micro)] leading-relaxed whitespace-pre-wrap text-ink-2">
+          <pre className="max-h-72 overflow-auto font-sans text-[length:var(--text-micro)] leading-relaxed whitespace-pre-wrap text-ink-2">
             {draft.draftBodyIt}
           </pre>
         </div>
@@ -415,16 +415,16 @@ function Outcome({
 
       {/* The approval gate — the whole positioning, made operable. */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-t border-rule px-5 py-5 sm:px-8">
-        <p className="max-w-[46ch] text-[var(--text-small)] text-muted">{workflow.copy.approvalHint}</p>
+        <p className="max-w-[46ch] text-[length:var(--text-small)] text-muted">{workflow.copy.approvalHint}</p>
         {phase === 'approved' ? (
-          <p className="flex items-center gap-2.5 text-[var(--text-small)] text-good">
+          <p className="flex items-center gap-2.5 text-[length:var(--text-small)] text-good">
             <span aria-hidden>✓</span> {priced ? 'Approvata da una persona' : 'Assegnata a una persona'}
           </p>
         ) : (
           <button
             type="button"
             onClick={onApprove}
-            className="bg-accent px-6 py-3 text-[var(--text-small)] font-medium text-accent-ink transition-colors duration-[var(--duration-fast)] hover:bg-accent-hover"
+            className="bg-accent px-6 py-3 text-[length:var(--text-small)] font-medium text-accent-ink transition-colors duration-[var(--duration-fast)] hover:bg-accent-hover"
           >
             {/* Without a price there is nothing to send — the honest action is to
                 route it to the person who can price it. */}

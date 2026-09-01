@@ -1,13 +1,9 @@
 import { Hero } from '@/components/home/Hero';
 import { Problema } from '@/components/home/Problema';
-import { Intelligence } from '@/components/live/Intelligence';
-import { Materia } from '@/components/live/Materia';
-import { FlowDemo } from '@/components/live/FlowDemo';
-import { Simulator } from '@/components/live/Simulator';
 import { Parla } from '@/components/live/Parla';
+import { Simulator } from '@/components/live/Simulator';
 import { HumanGate } from '@/components/home/HumanGate';
 import { Closing } from '@/components/home/Closing';
-import { Spine } from '@/components/system/Spine';
 import { site } from '@/content/site';
 
 const jsonLd = {
@@ -22,39 +18,33 @@ const jsonLd = {
 };
 
 /**
- * The narrative, in order:
+ * The homepage, as a first-time visitor walks it:
  *
- *   Hero          — the system wakes up; the claim is concrete: email, PDF,
- *                   gestionali → un sistema.
- *   Problema      — the quiet editorial chapter: where work actually lives,
- *                   what DOLMIR is in one sentence, what we do NOT replace.
- *   Intelligence  — inside the technology: channels in, core, actions out, live.
- *   Twin          — the transformation, in the visitor's hand: chaos → system.
- *   Capabilities  — the six families of systems DOLMIR builds, as instruments.
- *   Materia       — ONE real case, labelled as such: a machined part becomes a
- *                   record (the only place 3D is the content, not the ground).
- *   FlowDemo      — the same case running on the real RfqPipeline, refusals included.
- *   TheLine       — the journey of one request end to end.
- *   Simulator     — the visitor runs it: six sectors, telemetry exposed,
- *                   approve/reject in their hand, before/after animated.
- *   Software      — the interfaces; HumanGate — why it stops; Closing.
+ *   Hero      — what DOLMIR is, in one sentence and seven words.
+ *   Problema  — the work is not in the gestionale: where it actually lives,
+ *               and what we do NOT replace.
+ *   Parla     — the product, live: the film explains the idea in twenty
+ *               seconds, then the visitor talks to the system themselves.
+ *   Simulator — their turn: hand it a problem, watch it stop at the gate.
+ *   HumanGate — why it stops, which is the reason to trust it.
+ *   Closing   — one action.
  *
- * Sections that ARE the product rather than describing it drive the fixed
- * machine in the background through the system bus, so the core visibly reacts
- * to being used. Manufacturing is deliberately one chapter, not the identity.
+ * Six sections, deliberately. It used to run to nine, four of which were
+ * variations on "watch the technology work" — the operating-layer map, the
+ * 3D case, and the pipeline demo all argued the same point the console and
+ * the simulator already make, at the cost of about three viewport-heights of
+ * scrolling. They are not deleted: the map and the case live on their own
+ * routes, where a visitor who wants that depth goes looking for it. A
+ * homepage is not an index of everything we built.
  */
 export default function HomePage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <Spine />
       <Hero />
       <Problema />
-      <Simulator />
       <Parla />
-      <Intelligence />
-      <Materia />
-      <FlowDemo />
+      <Simulator />
       <HumanGate />
       <Closing />
     </>

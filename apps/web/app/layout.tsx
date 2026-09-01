@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Archivo, IBM_Plex_Mono, Instrument_Sans } from 'next/font/google';
 import { Nav } from '@/components/site/Nav';
-import { SystemBackdrop, SystemReadout } from '@/components/system/SystemBackdrop';
+import { SystemBackdrop } from '@/components/system/SystemBackdrop';
 import { Reticle } from '@/components/ui/Reticle';
-import { Inspect } from '@/components/system/Inspect';
 import { Footer } from '@/components/site/Footer';
 import { site } from '@/content/site';
 import './globals.css';
@@ -103,8 +102,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main">{children}</main>
           <Footer />
         </div>
-        <SystemReadout />
-        <Inspect />
       </body>
     </html>
   );

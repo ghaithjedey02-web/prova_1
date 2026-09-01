@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Container } from '@/components/ui/Container';
-import { InspectButton } from '@/components/system/Inspect';
 import { cta, nav, site } from '@/content/site';
 
 export function Nav() {
@@ -49,7 +48,7 @@ export function Nav() {
                   key={item.href}
                   href={item.href}
                   aria-current={active ? 'page' : undefined}
-                  className={`relative py-1 text-[var(--text-small)] transition-colors duration-[var(--duration-fast)] ${
+                  className={`relative py-1 text-[length:var(--text-small)] transition-colors duration-[var(--duration-fast)] ${
                     active ? 'text-ink' : 'text-muted hover:text-ink'
                   }`}
                 >
@@ -61,10 +60,9 @@ export function Nav() {
           </nav>
 
           <div className="flex items-center gap-2.5">
-            <InspectButton />
             <Link
               href={cta.primary.href}
-              className="hidden rounded-sm bg-accent px-5 py-2.5 text-[var(--text-micro)] font-medium text-accent-ink transition-colors duration-[var(--duration-fast)] hover:bg-accent-hover sm:inline-flex"
+              className="hidden rounded-sm bg-accent px-5 py-2.5 text-[length:var(--text-micro)] font-medium text-accent-ink transition-colors duration-[var(--duration-fast)] hover:bg-accent-hover sm:inline-flex"
             >
               {cta.primary.label}
             </Link>
@@ -98,7 +96,7 @@ export function Nav() {
                   href={item.href}
                   className="flex items-baseline gap-4 border-b border-rule py-4 last:border-0"
                 >
-                  <span className="font-mono text-[var(--text-label)] tnum text-accent">
+                  <span className="font-mono text-[length:var(--text-label)] tnum text-accent">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <span className="headline text-[1.65rem] text-ink">{item.label}</span>
@@ -106,7 +104,7 @@ export function Nav() {
               ))}
               <Link
                 href={cta.primary.href}
-                className="mt-5 mb-4 rounded-sm bg-accent px-5 py-4 text-center text-[var(--text-small)] font-medium text-accent-ink"
+                className="mt-5 mb-4 rounded-sm bg-accent px-5 py-4 text-center text-[length:var(--text-small)] font-medium text-accent-ink"
               >
                 {cta.primary.label}
               </Link>

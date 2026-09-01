@@ -9,13 +9,13 @@ const base =
   'ease-[var(--ease-mech)] active:translate-y-px';
 
 const sizes = {
-  md: 'px-6 py-3.5 text-[var(--text-small)]',
-  lg: 'px-8 py-4.5 text-[var(--text-body)]',
+  md: 'px-6 py-3.5 text-[length:var(--text-small)]',
+  lg: 'px-8 py-4.5 text-[length:var(--text-body)]',
 } as const;
 
 const variants: Record<Variant, string> = {
   primary: 'bg-accent text-accent-ink hover:bg-accent-hover',
-  secondary: 'border border-rule-strong text-ink hover:border-accent hover:text-accent',
+  secondary: 'border border-border-ui text-ink hover:border-accent hover:text-accent',
   ghost: 'text-ink-2 hover:text-accent',
 };
 

@@ -53,7 +53,7 @@ export function Software() {
   }, []);
 
   return (
-    <section className="relative py-[var(--space-section)]" data-inspect="Software · interfaccia dimostrativa">
+    <section className="relative py-[var(--space-section)]">
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
         <Reveal delay={100}>
@@ -84,7 +84,7 @@ export function Software() {
                   {app.nav.map((n, i) => (
                     <li key={n}>
                       <span
-                        className={`block px-3 py-2 text-[var(--text-micro)] ${
+                        className={`block px-3 py-2 text-[length:var(--text-micro)] ${
                           i === 1 ? 'bg-accent-soft text-accent' : 'text-muted'
                         }`}
                       >
@@ -103,7 +103,7 @@ export function Software() {
                       <dd className={`font-display text-[length:var(--text-display-s)] font-semibold ${toneText[s.tone as keyof typeof toneText]}`}>
                         <Counter to={s.v} />
                       </dd>
-                      <dt className="mt-1 text-[var(--text-micro)] leading-snug text-muted">{s.k}</dt>
+                      <dt className="mt-1 text-[length:var(--text-micro)] leading-snug text-muted">{s.k}</dt>
                     </div>
                   ))}
                 </dl>
@@ -126,7 +126,7 @@ export function Software() {
                         }`}
                       >
                         <span className="telemetry text-muted">{r.id}</span>
-                        <span className="truncate text-[var(--text-small)] text-ink">{r.c}</span>
+                        <span className="truncate text-[length:var(--text-small)] text-ink">{r.c}</span>
                         <span className="hidden items-center gap-2 sm:flex">
                           <span className="block h-1 w-full max-w-[3.5rem] bg-rule/70">
                             <span
@@ -153,7 +153,7 @@ export function Software() {
                           <p className="telemetry mb-2 text-faint">REGISTRO · {r.id} · DATI DIMOSTRATIVI</p>
                           <ol className="space-y-1.5">
                             {r.trail.map((line) => (
-                              <li key={line} className="font-mono text-[0.6875rem] leading-relaxed text-muted">{line}</li>
+                              <li key={line} className="font-mono text-[0.75rem] leading-relaxed text-muted">{line}</li>
                             ))}
                           </ol>
                         </div>

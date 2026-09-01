@@ -44,9 +44,9 @@ export default function AffidabilitaPage() {
                   <p className="font-mono text-[length:var(--text-display-s)] font-medium tracking-[0.02em] text-amber">
                     {step.k}
                   </p>
-                  <h2 className="mt-6 text-[var(--text-body)] font-medium text-ink">{step.t}</h2>
-                  <p className="mt-3 text-[var(--text-small)] leading-relaxed text-muted">{step.d}</p>
-                  <span className="mt-auto pt-8 font-mono text-[var(--text-label)] tnum text-faint">
+                  <h2 className="mt-6 text-[length:var(--text-body)] font-medium text-ink">{step.t}</h2>
+                  <p className="mt-3 text-[length:var(--text-small)] leading-relaxed text-muted">{step.d}</p>
+                  <span className="mt-auto pt-8 font-mono text-[length:var(--text-label)] tnum text-faint">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                 </div>
@@ -57,7 +57,7 @@ export default function AffidabilitaPage() {
           <Reveal delay={160}>
             <div className="mt-[var(--space-block)] grid gap-[var(--space-block)] lg:grid-cols-[1fr_1fr] lg:items-start">
               <h2 className="headline max-w-[18ch] text-[length:var(--text-display-m)]">{a.principle.headline}</h2>
-              <p className="text-[var(--text-lead)] leading-relaxed text-ink-2">{a.principle.body}</p>
+              <p className="text-[length:var(--text-lead)] leading-relaxed text-ink-2">{a.principle.body}</p>
             </div>
           </Reveal>
         </Container>
@@ -78,10 +78,10 @@ export default function AffidabilitaPage() {
             {a.guarantees.items.map((item, i) => (
               <Reveal key={item.t} as="li" delay={i * 45} className="bg-surface/92 backdrop-blur-md">
                 <div className="flex h-full gap-4 p-7">
-                  <span aria-hidden className="mt-1 font-mono text-[var(--text-body)] leading-none text-bad">×</span>
+                  <span aria-hidden className="mt-1 font-mono text-[length:var(--text-body)] leading-none text-bad">×</span>
                   <div>
-                    <h3 className="text-[var(--text-body)] font-medium text-ink">{item.t}</h3>
-                    <p className="mt-2.5 text-[var(--text-small)] leading-relaxed text-muted">{item.d}</p>
+                    <h3 className="text-[length:var(--text-body)] font-medium text-ink">{item.t}</h3>
+                    <p className="mt-2.5 text-[length:var(--text-small)] leading-relaxed text-muted">{item.d}</p>
                   </div>
                 </div>
               </Reveal>
@@ -109,8 +109,8 @@ export default function AffidabilitaPage() {
               {a.security.items.map((item, i) => (
                 <Reveal key={item.t} as="li" delay={i * 45}>
                   <div className="grid gap-2 py-6 sm:grid-cols-[13rem_1fr] sm:gap-8">
-                    <h3 className="text-[var(--text-small)] font-medium text-ink">{item.t}</h3>
-                    <p className="text-[var(--text-small)] leading-relaxed text-muted">{item.d}</p>
+                    <h3 className="text-[length:var(--text-small)] font-medium text-ink">{item.t}</h3>
+                    <p className="text-[length:var(--text-small)] leading-relaxed text-muted">{item.d}</p>
                   </div>
                 </Reveal>
               ))}

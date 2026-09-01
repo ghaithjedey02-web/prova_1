@@ -360,8 +360,6 @@ export function Simulator() {
       id="prova"
       className="relative scroll-mt-[var(--nav-h)] py-[var(--space-section)]"
       aria-labelledby="simulator-heading"
-      data-inspect="Simulator · sei settori, simulazione locale"
-      data-spine="1"
     >
       <Container>
         <Chapter n={simulator.n} label={simulator.label} headline={simulator.headline} lead={simulator.body} />
@@ -431,7 +429,7 @@ export function Simulator() {
                     ))}
                   </div>
                   {phase !== 'idle' && (
-                    <p className="telemetry mt-3 border-t border-rule/60 pt-2.5 text-[0.5625rem] text-faint">
+                    <p className="telemetry mt-3 border-t border-rule/60 pt-2.5 text-[0.75rem] text-faint">
                       EVIDENZA SOTTOLINEATA · PASSA SU UN CAMPO PER VEDERE DA DOVE VIENE
                     </p>
                   )}
@@ -477,8 +475,8 @@ export function Simulator() {
                             linked ? 'bg-accent-soft/40' : ''
                           }`}
                         >
-                          <dt className="telemetry w-[5.5rem] text-[0.625rem] text-faint sm:w-auto">{f.k}</dt>
-                          <dd className={`ml-auto text-right font-mono text-[0.6875rem] tnum sm:order-3 sm:ml-0 ${
+                          <dt className="telemetry w-[5.5rem] text-[0.75rem] text-faint sm:w-auto">{f.k}</dt>
+                          <dd className={`ml-auto text-right font-mono text-[0.75rem] tnum sm:order-3 sm:ml-0 ${
                             st === 'ok' ? (f.conf < 0.92 ? 'text-muted' : 'text-good') : st === 'warn' ? 'text-amber' : 'text-bad'
                           }`}>
                             {f.conf.toFixed(2)}
@@ -486,7 +484,7 @@ export function Simulator() {
                           <dd className={`w-full font-mono text-[0.75rem] sm:order-2 sm:w-auto ${vColor}`}>
                             {st === 'conflict' || st === 'missing' ? '⚠ ' : ''}{f.v}
                             {!src && (
-                              <span className="telemetry ml-2 text-[0.5625rem] text-faint">· DA SISTEMI COLLEGATI</span>
+                              <span className="telemetry ml-2 text-[0.75rem] text-faint">· DA SISTEMI COLLEGATI</span>
                             )}
                           </dd>
                         </div>
@@ -530,8 +528,8 @@ export function Simulator() {
                   {simulator.stages.map((st, i) => (
                     <li
                       key={st}
-                      className={`flex items-center gap-2 py-1 font-mono text-[0.625rem] tracking-[0.12em] transition-colors duration-[var(--duration-fast)] ${
-                        i < stage ? 'text-muted' : i === stage ? 'text-accent' : 'text-faint/70'
+                      className={`flex items-center gap-2 py-1 font-mono text-[0.75rem] tracking-[0.12em] transition-colors duration-[var(--duration-fast)] ${
+                        i < stage ? 'text-muted' : i === stage ? 'text-accent' : 'text-muted'
                       }`}
                     >
                       <span
@@ -549,7 +547,7 @@ export function Simulator() {
                 <div
                   ref={logBox}
                   aria-live="polite"
-                  className="mt-4 h-[11rem] overflow-y-auto border border-rule bg-void/60 p-3.5 font-mono text-[0.6875rem] leading-[1.7]"
+                  className="mt-4 h-[11rem] overflow-y-auto border border-rule bg-void/60 p-3.5 font-mono text-[0.75rem] leading-[1.7]"
                 >
                   {log.length === 0 ? (
                     <p className="text-faint">— telemetria del processo · premere AVVIA —</p>
@@ -590,7 +588,7 @@ export function Simulator() {
                     <p className="telemetry mt-4 text-faint">AZIONE PROPOSTA</p>
                     <ul className="mt-1.5 space-y-1">
                       {sc.actions.slice(0, 3).map((a) => (
-                        <li key={a} className="font-mono text-[0.6875rem] text-muted">→ {a}</li>
+                        <li key={a} className="font-mono text-[0.75rem] text-muted">→ {a}</li>
                       ))}
                     </ul>
 
@@ -630,7 +628,7 @@ export function Simulator() {
                                 key={o.k}
                                 type="button"
                                 onClick={() => applyOption(o)}
-                                className="flex-1 border border-rule bg-void/60 px-4 py-3 text-left font-mono text-[0.6875rem] text-ink-2 transition-colors hover:border-accent hover:text-accent"
+                                className="flex-1 border border-rule bg-void/60 px-4 py-3 text-left font-mono text-[0.75rem] text-ink-2 transition-colors hover:border-accent hover:text-accent"
                               >
                                 {o.label}
                               </button>
@@ -665,14 +663,14 @@ export function Simulator() {
                         ['PUNTI INTERCETTATI', String(sc.fields.length - stockVerified)],
                       ].map(([k, v]) => (
                         <div key={k} className="bg-surface/90 px-3 py-3">
-                          <dt className="telemetry text-[0.5625rem] text-faint">{k}</dt>
+                          <dt className="telemetry text-[0.75rem] text-faint">{k}</dt>
                           <dd className={`mt-1 font-mono tnum ${v!.length > 8 ? 'text-[0.75rem] leading-[1.6]' : 'text-[1.05rem]'} ${
                             (k === 'DA REVISIONARE' || k === 'PUNTI INTERCETTATI') && v !== '0' ? 'text-amber' : 'text-ink'
                           }`}>{v}</dd>
                         </div>
                       ))}
                     </dl>
-                    <p className="telemetry mt-2 text-[0.5625rem] text-faint">* valori illustrativi di simulazione, non misurati presso un cliente.</p>
+                    <p className="telemetry mt-2 text-[0.75rem] text-faint">* valori illustrativi di simulazione, non misurati presso un cliente.</p>
 
                     <ul className="mt-4 space-y-2">
                       {sc.actions.map((a, i) => (
@@ -690,7 +688,7 @@ export function Simulator() {
                       <p className="text-[0.8125rem] text-ink-2">Questo è ciò che costruiamo.</p>
                       <a
                         href="/contatto"
-                        className="border border-accent bg-accent-soft px-5 py-2.5 font-mono text-[0.6875rem] tracking-[0.14em] text-accent transition-colors hover:bg-accent hover:text-ground"
+                        className="border border-accent bg-accent-soft px-5 py-2.5 font-mono text-[0.75rem] tracking-[0.14em] text-accent transition-colors hover:bg-accent hover:text-ground"
                       >
                         PORTA UN PROCESSO REALE →
                       </a>
@@ -741,16 +739,16 @@ export function Simulator() {
                   {simulator.manual.map((m, i) => (
                     <li key={m.t} className="flex items-center gap-2">
                       <span
-                        className="border border-rule bg-surface/60 px-3 py-2 text-center font-mono text-[0.6875rem] leading-tight text-muted"
+                        className="border border-rule bg-surface/60 px-3 py-2 text-center font-mono text-[0.75rem] leading-tight text-muted"
                         style={{ transform: `translateY(${(i % 2) * 10 - 5}px)` }}
                       >
                         {m.t}
-                        <span className="mt-0.5 block text-[0.625rem] text-amber">~{m.m} min</span>
+                        <span className="mt-0.5 block text-[0.75rem] text-amber">~{m.m} min</span>
                       </span>
                       {i < simulator.manual.length - 1 && <span aria-hidden className="text-faint">→</span>}
                     </li>
                   ))}
-                  <li className="flex items-center pl-2 font-mono text-[0.6875rem] text-amber">
+                  <li className="flex items-center pl-2 font-mono text-[0.75rem] text-amber">
                     ≈ {totalManual} min per pratica*
                   </li>
                 </ol>
@@ -764,7 +762,7 @@ export function Simulator() {
                   {simulator.withDolmir.map((step, i) => (
                     <li key={step} className="flex items-center gap-2">
                       <span
-                        className={`border px-4 py-2.5 font-mono text-[0.6875rem] tracking-[0.12em] ${
+                        className={`border px-4 py-2.5 font-mono text-[0.75rem] tracking-[0.12em] ${
                           i === 2 ? 'border-amber/60 text-amber' : 'border-accent/60 text-accent'
                         }`}
                       >
@@ -773,7 +771,7 @@ export function Simulator() {
                       {i < simulator.withDolmir.length - 1 && <span aria-hidden className="wire block h-px w-8" />}
                     </li>
                   ))}
-                  <li className="flex items-center pl-2 font-mono text-[0.6875rem] text-accent">
+                  <li className="flex items-center pl-2 font-mono text-[0.75rem] text-accent">
                     secondi di macchina + una decisione umana
                   </li>
                 </ol>
@@ -807,7 +805,7 @@ export function Simulator() {
                   <div className="mt-3 flex items-center gap-2">
                     {simulator.generic.map((g, i) => (
                       <span key={g} className="flex items-center gap-2">
-                        <span className="border border-rule px-3.5 py-2 font-mono text-[0.6875rem] tracking-[0.12em] text-muted">{g}</span>
+                        <span className="border border-rule px-3.5 py-2 font-mono text-[0.75rem] tracking-[0.12em] text-muted">{g}</span>
                         {i < simulator.generic.length - 1 && <span aria-hidden className="text-faint">→</span>}
                       </span>
                     ))}
@@ -818,7 +816,7 @@ export function Simulator() {
                   <div className="mt-3 flex flex-wrap items-center gap-y-2">
                     {simulator.dolmirChain.map((g, i) => (
                       <span key={g} className="flex items-center">
-                        <span className={`border px-2.5 py-2 font-mono text-[0.625rem] tracking-[0.1em] ${
+                        <span className={`border px-2.5 py-2 font-mono text-[0.75rem] tracking-[0.1em] ${
                           g === 'PERSONA' ? 'border-amber/60 text-amber' : 'border-accent/40 text-accent'
                         }`}>{g}</span>
                         {i < simulator.dolmirChain.length - 1 && <span aria-hidden className="wire mx-1 block h-px w-3.5 flex-none" />}
@@ -865,7 +863,7 @@ export function Simulator() {
                       {it.flow.map((step, i) => (
                         <span key={step} className="flex items-center">
                           <span
-                            className={`border px-2.5 py-2 font-mono text-[0.625rem] tracking-[0.1em] ${
+                            className={`border px-2.5 py-2 font-mono text-[0.75rem] tracking-[0.1em] ${
                               step === 'PERSONA' || step === 'PERSONE' ? 'border-amber/60 text-amber' : 'border-accent/40 text-accent'
                             }`}
                           >
@@ -880,7 +878,7 @@ export function Simulator() {
                       <p className="telemetry text-faint">SISTEMI COINVOLTI · {it.systems}</p>
                       <a
                         href="/contatto"
-                        className="border border-accent bg-accent-soft px-4 py-2 font-mono text-[0.6875rem] tracking-[0.14em] text-accent transition-colors hover:bg-accent hover:text-ground"
+                        className="border border-accent bg-accent-soft px-4 py-2 font-mono text-[0.75rem] tracking-[0.14em] text-accent transition-colors hover:bg-accent hover:text-ground"
                       >
                         PARLIAMONE →
                       </a>
@@ -888,7 +886,7 @@ export function Simulator() {
                   </div>
                 );
               })()}
-              <p className="telemetry mt-3 text-[0.5625rem] text-faint">{simulator.vostro.disclaimer}</p>
+              <p className="telemetry mt-3 text-[0.75rem] text-faint">{simulator.vostro.disclaimer}</p>
             </div>
           </div>
         </Reveal>

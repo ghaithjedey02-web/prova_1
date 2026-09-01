@@ -31,7 +31,7 @@ export default function DemoPage() {
             <p className="lead mt-8 max-w-[62ch]">{demoCopy.lead}</p>
           </Reveal>
           <Reveal delay={210}>
-            <p className="mt-8 inline-flex max-w-[52ch] items-start gap-3 border border-amber-line bg-amber-soft/60 px-4 py-3 text-[var(--text-micro)] leading-snug text-amber">
+            <p className="mt-8 inline-flex max-w-[52ch] items-start gap-3 border border-amber-line bg-amber-soft/60 px-4 py-3 text-[length:var(--text-micro)] leading-snug text-amber">
               <span aria-hidden>△</span>
               {demoCopy.disclaimer}
             </p>
@@ -52,12 +52,12 @@ export default function DemoPage() {
             <div className="max-w-[54ch]">
               <p className="chapter">Nota tecnica</p>
               <h2 className="headline mt-7 text-[length:var(--text-display-m)]">{demoCopy.technical.headline}</h2>
-              <p className="mt-7 text-[var(--text-body)] leading-relaxed text-ink-2">{demoCopy.technical.body}</p>
+              <p className="mt-7 text-[length:var(--text-body)] leading-relaxed text-ink-2">{demoCopy.technical.body}</p>
             </div>
 
             <div className="plate p-8">
               <p className="label">Il passo successivo</p>
-              <p className="mt-5 text-[var(--text-body)] leading-relaxed text-ink-2">
+              <p className="mt-5 text-[length:var(--text-body)] leading-relaxed text-ink-2">
                 Questa pagina gira su dati inventati. Il modo utile di valutarci è vederla girare su cinque
                 richieste vere ricevute da voi nelle ultime due settimane — comprese quelle su cui sbaglia.
               </p>

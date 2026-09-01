@@ -33,18 +33,18 @@ export default function SoluzioniPage() {
             <Reveal key={item.k} as="li" delay={i * 40}>
               <Container>
                 <div className="group grid gap-6 py-12 lg:grid-cols-[5rem_1fr_1.15fr] lg:gap-10 lg:py-16">
-                  <span className="font-mono text-[var(--text-label)] tnum text-faint transition-colors group-hover:text-accent">
+                  <span className="font-mono text-[length:var(--text-label)] tnum text-faint transition-colors group-hover:text-accent">
                     {item.k}
                   </span>
 
                   <div>
                     <h2 className="headline text-[length:var(--text-display-s)] text-ink">{item.t}</h2>
-                    <p className="mt-3 text-[var(--text-small)] leading-relaxed text-accent">{item.lead}</p>
+                    <p className="mt-3 text-[length:var(--text-small)] leading-relaxed text-accent">{item.lead}</p>
                   </div>
 
                   <div>
-                    <p className="text-[var(--text-body)] leading-relaxed text-ink-2">{item.d}</p>
-                    <p className="mt-5 border-t border-rule pt-4 text-[var(--text-micro)] leading-relaxed text-muted">
+                    <p className="text-[length:var(--text-body)] leading-relaxed text-ink-2">{item.d}</p>
+                    <p className="mt-5 border-t border-rule pt-4 text-[length:var(--text-micro)] leading-relaxed text-muted">
                       <span className="label mr-2">Consegna</span>
                       {item.out}
                     </p>

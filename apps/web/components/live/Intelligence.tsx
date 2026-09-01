@@ -428,7 +428,7 @@ export function Intelligence() {
           <span className={`telemetry block transition-colors ${st === 'active' || st === 'hover' ? toneText : 'text-ink'}`}>
             {item.k}
           </span>
-          <span className="mt-0.5 block text-[0.6875rem] leading-snug text-muted">{item.d}</span>
+          <span className="mt-0.5 block text-[0.75rem] leading-snug text-muted">{item.d}</span>
         </button>
       </li>
     );
@@ -442,8 +442,6 @@ export function Intelligence() {
       ref={host}
       className="relative py-[var(--space-section)]"
       aria-labelledby="intelligence-heading"
-      data-inspect="Intelligence · il livello operativo"
-      data-spine="3"
     >
       <Container>
         <header className="max-w-[56ch]">
@@ -466,7 +464,7 @@ export function Intelligence() {
               key={p.k}
               type="button"
               onClick={() => (seq?.kind === i ? stopSeq() : start(i))}
-              className={`border px-3 py-1.5 font-mono text-[0.6875rem] tracking-[0.16em] transition-colors duration-[var(--duration-fast)] ${
+              className={`border px-3 py-1.5 font-mono text-[0.75rem] tracking-[0.16em] transition-colors duration-[var(--duration-fast)] ${
                 seq?.kind === i
                   ? 'border-accent bg-accent/10 text-accent'
                   : 'border-rule text-muted hover:border-rule-bright hover:text-ink'
@@ -478,7 +476,7 @@ export function Intelligence() {
           <button
             type="button"
             onClick={() => (watching ? stopSeq() : start('watch'))}
-            className={`ml-auto border px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] transition-colors duration-[var(--duration-fast)] ${
+            className={`ml-auto border px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] transition-colors duration-[var(--duration-fast)] ${
               watching
                 ? 'border-amber bg-amber-soft text-amber'
                 : 'border-accent bg-accent/10 text-accent hover:bg-accent hover:text-ground'
@@ -527,7 +525,7 @@ export function Intelligence() {
                 <span className={`telemetry block ${personSt === 'active' ? 'text-amber' : 'text-ink'}`}>
                   ◆ {c.person.k}
                 </span>
-                <span className="mt-0.5 block text-[0.6875rem] text-muted">{c.person.d}</span>
+                <span className="mt-0.5 block text-[0.75rem] text-muted">{c.person.d}</span>
               </button>
 
               <div className="flex min-h-[12rem] flex-1 items-center justify-center py-4 lg:min-h-[26rem]">
@@ -562,7 +560,7 @@ export function Intelligence() {
                 <span className={`telemetry block ${memorySt === 'active' || memorySt === 'hover' ? 'text-ink' : 'text-ink-2'}`}>
                   ▤ {c.memory.k}
                 </span>
-                <span className="mt-0.5 block text-[0.6875rem] text-muted">{c.memory.d}</span>
+                <span className="mt-0.5 block text-[0.75rem] text-muted">{c.memory.d}</span>
               </button>
             </div>
 

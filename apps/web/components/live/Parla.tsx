@@ -133,8 +133,6 @@ export function Parla() {
       className="relative py-[var(--space-section)]"
       id="parla"
       aria-labelledby="parla-heading"
-      data-inspect="Parla · la console del sistema"
-      data-spine="2"
     >
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
@@ -191,7 +189,7 @@ export function Parla() {
                       <p className="mt-2 max-w-[52ch] text-[0.9375rem] leading-relaxed text-ink-2">{c.offlineBody}</p>
                       <a
                         href="/contatto"
-                        className="mt-4 inline-block border border-accent px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground"
+                        className="mt-4 inline-block border border-accent px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground"
                       >
                         {c.offlineCta}
                       </a>
@@ -199,7 +197,7 @@ export function Parla() {
                   ) : all.length === 0 && !voice.interim ? (
                     <div className="py-2">
                       <p className="max-w-[42ch] text-[1.0625rem] leading-relaxed text-ink sm:text-[1.125rem]">{c.prompt}</p>
-                      <p className="telemetry mt-3 text-faint">{c.promptSub}</p>
+                      <p className="mt-3 text-[length:var(--text-small)] text-muted">{c.promptSub}</p>
                     </div>
                   ) : null}
 
@@ -243,7 +241,7 @@ export function Parla() {
                       type="button"
                       onClick={voice.listen}
                       aria-label={voice.mic === 'listening' ? c.micStop : c.micLabel}
-                      className={`flex min-w-[3.25rem] items-center justify-center gap-2 border px-3 font-mono text-[0.6875rem] tracking-[0.14em] transition-colors sm:px-4 ${
+                      className={`flex min-w-[3.25rem] items-center justify-center gap-2 border px-3 font-mono text-[0.75rem] tracking-[0.14em] transition-colors sm:px-4 ${
                         voice.mic === 'listening'
                           ? 'border-accent bg-accent text-ground'
                           : 'border-accent/70 text-accent hover:bg-accent/10'
@@ -262,12 +260,12 @@ export function Parla() {
                     placeholder={offline ? c.offlinePlaceholder : c.inputPlaceholder}
                     disabled={offline}
                     aria-label="Scrivi a DOLMIR"
-                    className="min-w-0 flex-1 border border-rule bg-void/60 px-3.5 py-2.5 text-[0.9375rem] text-ink placeholder:text-faint focus:border-accent/60 focus:outline-none"
+                    className="min-w-0 flex-1 border border-border-ui bg-void/60 px-3.5 py-2.5 text-[0.9375rem] text-ink placeholder:text-faint focus:border-accent/60 focus:outline-none"
                   />
                   <button
                     type="submit"
                     disabled={busy || offline || !input.trim()}
-                    className="border border-rule-strong px-3.5 font-mono text-[0.6875rem] tracking-[0.16em] text-ink-2 transition-colors enabled:hover:border-accent enabled:hover:text-accent disabled:opacity-40 sm:px-4"
+                    className="border border-border-ui px-3.5 font-mono text-[length:var(--text-label)] tracking-[0.12em] text-ink transition-colors enabled:hover:border-accent enabled:hover:text-accent disabled:opacity-40 sm:px-4"
                   >
                     {c.send}
                   </button>
@@ -287,13 +285,13 @@ export function Parla() {
 
             {/* voice controls + honesty line */}
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-rule px-4 py-2.5 sm:px-6">
-              <p className="telemetry text-faint">{offline ? c.offlineState : c.disclaimer}</p>
+              <p className="text-[length:var(--text-micro)] text-muted">{offline ? c.offlineState : c.disclaimer}</p>
               <div className="flex items-center gap-2">
                 {voice.speaking && (
                   <button
                     type="button"
                     onClick={voice.shutUp}
-                    className="border border-amber/60 px-2.5 py-1 font-mono text-[0.625rem] tracking-[0.14em] text-amber transition-colors hover:bg-amber/10"
+                    className="border border-amber/60 px-2.5 py-1 font-mono text-[0.75rem] tracking-[0.14em] text-amber transition-colors hover:bg-amber/10"
                   >
                     {c.interrupt}
                   </button>
@@ -302,8 +300,8 @@ export function Parla() {
                   type="button"
                   onClick={() => { setVoiceOn((v) => { if (v) voice.shutUp(); return !v; }); }}
                   aria-pressed={voiceOn}
-                  className={`border px-2.5 py-1 font-mono text-[0.625rem] tracking-[0.14em] transition-colors ${
-                    voiceOn ? 'border-rule-strong text-ink-2' : 'border-rule text-faint'
+                  className={`border px-2.5 py-1 font-mono text-[0.75rem] tracking-[0.14em] transition-colors ${
+                    voiceOn ? 'border-border-ui text-ink' : 'border-rule-strong text-muted'
                   }`}
                 >
                   {voiceOn ? c.voiceOn : c.voiceOff}
@@ -318,7 +316,7 @@ export function Parla() {
           {/* ------------------------------------------------- the invitations */}
           {!offline && (
           <div className={`mt-5 transition-opacity duration-500 ${started ? 'opacity-70' : 'opacity-100'}`}>
-            <p className="telemetry text-faint">{c.suggestLabel}</p>
+            <p className="text-[length:var(--text-micro)] uppercase tracking-[0.1em] text-muted">{c.suggestLabel}</p>
             <ul className="mt-2.5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {c.starters.map((s) => (
                 <li key={s.t}>
@@ -326,15 +324,15 @@ export function Parla() {
                     type="button"
                     disabled={busy}
                     onClick={() => void submit(s.t)}
-                    className="group h-full w-full border border-rule bg-surface/60 px-3.5 py-3 text-left transition-colors enabled:hover:border-accent/60 enabled:hover:bg-surface disabled:opacity-50"
+                    className="group h-full w-full border border-rule-strong bg-surface/60 px-3.5 py-3 text-left transition-colors enabled:hover:border-accent/60 enabled:hover:bg-surface disabled:opacity-50"
                   >
                     <span className="block text-[0.875rem] leading-snug text-ink-2 group-hover:text-ink">{s.t}</span>
-                    <span className="telemetry mt-1.5 block text-faint">{s.k}</span>
+                    <span className="mt-1.5 block text-[length:var(--text-micro)] text-muted">{s.k}</span>
                   </button>
                 </li>
               ))}
             </ul>
-            <p className="telemetry mt-3 text-faint">{c.contextNote}</p>
+            <p className="mt-3 max-w-[62ch] text-[length:var(--text-small)] leading-snug text-muted">{c.contextNote}</p>
           </div>
           )}
         </div>
@@ -361,7 +359,7 @@ function Answer({ turn, reduce, onDecide }: { turn: Turn; reduce: boolean; onDec
       {/* NON DETERMINATO — the system saying it does not know, on purpose. */}
       {turn.unknown && (
         <div className="mt-3 border border-amber/50 bg-amber-soft/40">
-          <p className="flex items-center gap-2 border-b border-amber/30 px-3 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-amber">
+          <p className="flex items-center gap-2 border-b border-amber/30 px-3 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-amber">
             <span aria-hidden className="block size-1.5 bg-amber" />
             {c.unknownTitle}
           </p>
@@ -387,7 +385,7 @@ function Answer({ turn, reduce, onDecide }: { turn: Turn; reduce: boolean; onDec
       {/* THE HUMAN GATE — the strongest moment in the experience. */}
       {turn.gate && (
         <div className={`mt-3 border-2 border-amber/70 bg-amber-soft/40 ${reduce ? '' : 'settle'}`}>
-          <p className="flex items-center gap-2 border-b border-amber/40 bg-amber/10 px-3 py-2 font-mono text-[0.6875rem] tracking-[0.2em] text-amber">
+          <p className="flex items-center gap-2 border-b border-amber/40 bg-amber/10 px-3 py-2 font-mono text-[0.75rem] tracking-[0.2em] text-amber">
             <span aria-hidden className={`block size-1.5 bg-amber ${reduce ? '' : 'animate-pulse'}`} />
             {c.gateTitle}
           </p>
@@ -399,7 +397,7 @@ function Answer({ turn, reduce, onDecide }: { turn: Turn; reduce: boolean; onDec
               {turn.gate.options.map((o, i) => (
                 <li key={o.label} className="bg-void/60 p-3">
                   <p className="flex items-baseline gap-2 text-[0.875rem] font-medium text-ink">
-                    <span className="tnum font-mono text-[0.625rem] text-amber">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="tnum font-mono text-[0.75rem] text-amber">{String(i + 1).padStart(2, '0')}</span>
                     {o.label}
                   </p>
                   {o.detail && <p className="mt-1 text-[0.8125rem] leading-snug text-muted">{o.detail}</p>}
@@ -415,7 +413,7 @@ function Answer({ turn, reduce, onDecide }: { turn: Turn; reduce: boolean; onDec
             )}
 
             {turn.decided ? (
-              <p className="mt-3 flex items-center gap-2 font-mono text-[0.6875rem] tracking-[0.16em] text-good">
+              <p className="mt-3 flex items-center gap-2 font-mono text-[0.75rem] tracking-[0.16em] text-good">
                 <span aria-hidden>✓</span> {c.gateDecided} · {turn.decided}
               </p>
             ) : (
@@ -423,21 +421,21 @@ function Answer({ turn, reduce, onDecide }: { turn: Turn; reduce: boolean; onDec
                 <button
                   type="button"
                   onClick={() => onDecide(turn.id, c.gateApprove)}
-                  className="border border-accent bg-accent px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-ground transition-opacity hover:opacity-90"
+                  className="border border-accent bg-accent px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-ground transition-opacity hover:opacity-90"
                 >
                   {c.gateApprove}
                 </button>
                 <button
                   type="button"
                   onClick={() => onDecide(turn.id, c.gateModify)}
-                  className="border border-amber/70 px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-amber transition-colors hover:bg-amber/10"
+                  className="border border-amber/70 px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-amber transition-colors hover:bg-amber/10"
                 >
                   {c.gateModify}
                 </button>
                 <button
                   type="button"
                   onClick={() => onDecide(turn.id, c.gateReject)}
-                  className="border border-rule-strong px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-muted transition-colors hover:border-muted hover:text-ink-2"
+                  className="border border-rule-strong px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-muted transition-colors hover:border-muted hover:text-ink-2"
                 >
                   {c.gateReject}
                 </button>
@@ -451,7 +449,7 @@ function Answer({ turn, reduce, onDecide }: { turn: Turn; reduce: boolean; onDec
       {turn.evidence && turn.evidence.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-1.5 lg:hidden">
           {turn.evidence.map((e, i) => (
-            <li key={`${e.tool}-${i}`} className="border border-rule bg-void/60 px-2.5 py-1 font-mono text-[0.625rem] tracking-[0.08em] text-muted">
+            <li key={`${e.tool}-${i}`} className="border border-rule bg-void/60 px-2.5 py-1 font-mono text-[0.75rem] tracking-[0.08em] text-muted">
               {e.summary}
             </li>
           ))}
@@ -476,7 +474,7 @@ function SystemPanel({
   const recent = evidence.slice(-6);
   return (
     <aside className="hidden min-w-0 flex-col lg:flex" aria-label={c.systemPanel}>
-      <p className="telemetry border-b border-rule px-4 py-2.5 text-faint">{c.systemPanel}</p>
+      <p className="border-b border-rule px-4 py-2.5 text-[length:var(--text-micro)] text-muted">{c.systemPanel}</p>
 
       {/* the pipeline, driven by real events from the server */}
       <ol className="space-y-0 border-b border-rule px-4 py-3">
@@ -493,7 +491,7 @@ function SystemPanel({
                 } ${active && !reduce ? 'animate-pulse' : ''}`}
               />
               <span
-                className={`font-mono text-[0.6875rem] tracking-[0.14em] transition-colors duration-300 ${
+                className={`font-mono text-[0.75rem] tracking-[0.14em] transition-colors duration-300 ${
                   active ? (amber ? 'text-amber' : 'text-accent') : done ? 'text-muted' : 'text-faint'
                 }`}
               >
@@ -521,7 +519,7 @@ function SystemPanel({
               <li key={`${e.tool}-${i}`} className={reduce ? '' : 'settle'}>
                 <p className="text-[0.8125rem] leading-snug text-ink-2">{e.summary}</p>
                 {preview(e.data).length > 0 && (
-                  <p className="mt-0.5 truncate font-mono text-[0.625rem] text-faint">{preview(e.data).join(' · ')}</p>
+                  <p className="mt-0.5 truncate font-mono text-[0.75rem] text-faint">{preview(e.data).join(' · ')}</p>
                 )}
               </li>
             ))}

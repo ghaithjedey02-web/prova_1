@@ -31,16 +31,25 @@
   --c-raised:        #13161A;
   --c-elevated:      #1A1E23;
 
-  /* ink */
+  /* ink — a four-step ladder, every step above 4.5:1 on every ground.
+     Measured, not eyeballed: 18.1 / 9.7 / 6.8 / 5.3 on --c-ground. The old
+     bottom two sat at 5.3 and 4.6 and carried most of the interface's
+     labels, which is how a dark site becomes an unreadable one. */
   --c-ink:           #F2F4F5;
   --c-ink-2:         #AEB6BA;
-  --c-muted:         #7B858A;
-  --c-faint:         #727B80;
+  --c-muted:         #8D969B;
+  --c-faint:         #7B858A;
 
-  /* structure */
-  --c-rule:          #1E2328;
-  --c-rule-strong:   #2E353B;
-  --c-rule-bright:   #454E55;
+  /* structure — three weights of line.
+     `rule` divides content inside a panel, where the layout already does the
+     work. `rule-strong` is the edge of a panel. `border-ui` is the minimum
+     for anything you can click or type into: 3:1 against its ground, which
+     is what WCAG asks of a control's boundary and what the old borders
+     (1.3–2.4) never met. */
+  --c-rule:          #262C32;
+  --c-rule-strong:   #3B434A;
+  --c-rule-bright:   #5A646B;
+  --c-border-ui:     #5A646B;
 
   /* instrument accent — the colour of a measurement being reported */
   --c-accent:        #45C7DE;
@@ -87,6 +96,7 @@
   --color-rule:         var(--c-rule);
   --color-rule-strong:  var(--c-rule-strong);
   --color-rule-bright:  var(--c-rule-bright);
+  --color-border-ui:    var(--c-border-ui);
   --color-accent:       var(--c-accent);
   --color-accent-hover: var(--c-accent-hover);
   --color-accent-ink:   var(--c-accent-ink);
@@ -121,7 +131,7 @@
   --text-body:       1.0625rem;
   --text-small:      0.9375rem;
   --text-micro:      0.8125rem;
-  --text-label:      0.6875rem;
+  --text-label:      0.75rem;
 
   --radius-xs: 0px;
   --radius-sm: 2px;
@@ -219,7 +229,7 @@ img, svg, video, canvas { display: block; max-width: 100%; }
   .label {
     font-family: var(--font-mono);
     font-size: var(--text-label);
-    letter-spacing: 0.16em;
+    letter-spacing: 0.11em;
     text-transform: uppercase;
     color: var(--c-muted);
     font-weight: 500;
@@ -239,7 +249,7 @@ img, svg, video, canvas { display: block; max-width: 100%; }
 .chapter {
   font-family: var(--font-mono);
   font-size: var(--text-label);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   display: inline-flex;
   align-items: center;
@@ -394,8 +404,8 @@ img, svg, video, canvas { display: block; max-width: 100%; }
 @layer components {
   .telemetry {
     font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.18em;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--c-muted);
     font-variant-numeric: tabular-nums;

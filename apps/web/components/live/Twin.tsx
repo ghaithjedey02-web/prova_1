@@ -242,7 +242,7 @@ export function Twin() {
   }, [palette]);
 
   return (
-    <section className="relative py-[var(--space-section)]" data-inspect="Twin · grafo dei sistemi">
+    <section className="relative py-[var(--space-section)]">
       <Container>
         <Chapter
           n="04"
@@ -339,7 +339,7 @@ export function Twin() {
               {hover ? (
                 <div className="settle" key={hover.k}>
                   <p className="telemetry text-accent">{hover.label}</p>
-                  <p className="mt-5 text-[var(--text-body)] leading-relaxed text-ink-2">{hover.does}</p>
+                  <p className="mt-5 text-[length:var(--text-body)] leading-relaxed text-ink-2">{hover.does}</p>
                   <ol className="mt-8 flex flex-col gap-2.5 border-t border-rule pt-6">
                     {hover.flow.map((f, i) => (
                       <li key={f} className="flex items-center gap-3 telemetry text-muted">
@@ -352,7 +352,7 @@ export function Twin() {
               ) : (
                 <div className="my-auto">
                   <p className="telemetry text-faint">Nessun nodo selezionato</p>
-                  <p className="mt-5 max-w-[32ch] text-[var(--text-small)] leading-relaxed text-muted">
+                  <p className="mt-5 max-w-[32ch] text-[length:var(--text-small)] leading-relaxed text-muted">
                     Passate il cursore su un sistema — o raggiungetelo da tastiera — per vedere cosa
                     DOLMIR ne farebbe e che percorso seguirebbe il dato.
                   </p>

@@ -41,7 +41,6 @@ export function Capabilities() {
     <section
       className="relative py-[var(--space-section)]"
       aria-labelledby="capabilities-heading"
-      data-inspect="Capabilities · sei famiglie di sistemi"
     >
       <Container>
         <Chapter
@@ -102,11 +101,11 @@ export function Capabilities() {
               </div>
               <div className="flex flex-col justify-center p-6 sm:p-8">
                 <p className="telemetry text-faint">OGGI</p>
-                <p className="mt-1.5 text-[var(--text-small)] leading-relaxed text-muted">{item.problem}</p>
+                <p className="mt-1.5 text-[length:var(--text-small)] leading-relaxed text-muted">{item.problem}</p>
                 <p className="telemetry mt-4 text-accent">CON DOLMIR</p>
-                <p className="mt-1.5 text-[var(--text-body)] leading-relaxed text-ink-2">{item.claim}</p>
+                <p className="mt-1.5 text-[length:var(--text-body)] leading-relaxed text-ink-2">{item.claim}</p>
                 <p className="telemetry mt-4 text-good">RISULTATO</p>
-                <p className="mt-1.5 text-[var(--text-small)] leading-relaxed text-ink-2">{item.result}</p>
+                <p className="mt-1.5 text-[length:var(--text-small)] leading-relaxed text-ink-2">{item.result}</p>
                 <ul className="mt-7 space-y-2.5 border-t border-rule pt-6">
                   {item.builds.map((b, i) => (
                     <li key={b} className="flex items-baseline gap-3">

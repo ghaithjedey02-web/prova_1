@@ -32,10 +32,10 @@ export default function ContattoPage() {
                 <ul className="mt-6 flex flex-col">
                   {c.what.map((w, i) => (
                     <li key={w} className="flex gap-4 border-t border-rule py-4 first:border-t-0 first:pt-0">
-                      <span className="font-mono text-[var(--text-label)] tnum text-accent">
+                      <span className="font-mono text-[length:var(--text-label)] tnum text-accent">
                         {String(i + 1).padStart(2, '0')}
                       </span>
-                      <span className="text-[var(--text-small)] leading-snug text-ink-2">{w}</span>
+                      <span className="text-[length:var(--text-small)] leading-snug text-ink-2">{w}</span>
                     </li>
                   ))}
                 </ul>
@@ -43,7 +43,7 @@ export default function ContattoPage() {
             </Reveal>
 
             <Reveal delay={280}>
-              <p className="mt-10 text-[var(--text-small)] leading-relaxed text-muted">
+              <p className="mt-10 text-[length:var(--text-small)] leading-relaxed text-muted">
                 Preferite scrivere direttamente?{' '}
                 <a
                   href={`mailto:${site.email}`}

@@ -169,7 +169,7 @@ export function FilmCinema({
   const c = CAPS[cap]!;
 
   return (
-    <div ref={host} data-inspect="FilmCinema · il film prodotto">
+    <div ref={host}>
       <div className="relative overflow-hidden border border-rule bg-void">
         <div className={`relative w-full ${frame === 'short' ? 'aspect-[21/9]' : 'aspect-video'}`}>
           <video
@@ -212,8 +212,8 @@ export function FilmCinema({
                   className="settle flex items-baseline gap-2 border border-accent/40 bg-void/75 px-2.5 py-1 backdrop-blur-sm"
                   style={{ animationDelay: `${300 + i * 550}ms`, animationFillMode: 'backwards' }}
                 >
-                  <span className="font-mono text-[0.625rem] tracking-[0.14em] text-muted">{k}</span>
-                  <span className="font-mono text-[0.6875rem] tracking-[0.06em] text-ink">{v}</span>
+                  <span className="font-mono text-[0.75rem] tracking-[0.14em] text-muted">{k}</span>
+                  <span className="font-mono text-[0.75rem] tracking-[0.06em] text-ink">{v}</span>
                 </div>
               ))}
             </div>
@@ -222,11 +222,11 @@ export function FilmCinema({
           {mode === 'playing' && c.overlay === 'conflict' && (
             <div key="conflict" className="absolute left-4 top-14 z-10 max-w-[80%] sm:left-6" aria-hidden>
               <div className="settle border border-amber/60 bg-void/80 px-3 py-2 backdrop-blur-sm" style={{ animationDelay: '700ms', animationFillMode: 'backwards' }}>
-                <p className="font-mono text-[0.6875rem] tracking-[0.16em] text-amber">◆ CONFLITTO RILEVATO</p>
-                <p className="mt-1 font-mono text-[0.625rem] leading-relaxed tracking-[0.06em] text-ink-2">
+                <p className="font-mono text-[0.75rem] tracking-[0.16em] text-amber">◆ CONFLITTO RILEVATO</p>
+                <p className="mt-1 font-mono text-[0.75rem] leading-relaxed tracking-[0.06em] text-ink-2">
                   QUANTITÀ · email: 40 pz ↔ allegato PDF: 60 pz
                 </p>
-                <p className="mt-0.5 font-mono text-[0.625rem] tracking-[0.1em] text-muted">IL SISTEMA NON INDOVINA</p>
+                <p className="mt-0.5 font-mono text-[0.75rem] tracking-[0.1em] text-muted">IL SISTEMA NON INDOVINA</p>
               </div>
             </div>
           )}
@@ -234,14 +234,14 @@ export function FilmCinema({
           {mode === 'playing' && c.overlay === 'gate' && (
             <div key="gate" className="absolute left-4 top-14 z-10 sm:left-6" aria-hidden>
               <div className="settle border border-amber/60 bg-void/80 px-3 py-2 backdrop-blur-sm" style={{ animationDelay: '400ms', animationFillMode: 'backwards' }}>
-                <p className="font-mono text-[0.6875rem] tracking-[0.16em] text-amber">DECISIONE UMANA RICHIESTA</p>
+                <p className="font-mono text-[0.75rem] tracking-[0.16em] text-amber">DECISIONE UMANA RICHIESTA</p>
                 <div className="mt-2 flex gap-1.5">
-                  <span className={`border px-2.5 py-1 font-mono text-[0.625rem] tracking-[0.16em] transition-all duration-300 ${
+                  <span className={`border px-2.5 py-1 font-mono text-[0.75rem] tracking-[0.16em] transition-all duration-300 ${
                     approved ? 'border-accent bg-accent text-ground' : 'border-accent/60 text-accent'
                   }`}>
                     APPROVA
                   </span>
-                  <span className={`border border-rule-strong px-2.5 py-1 font-mono text-[0.625rem] tracking-[0.16em] text-muted transition-opacity duration-300 ${approved ? 'opacity-40' : ''}`}>
+                  <span className={`border border-rule-strong px-2.5 py-1 font-mono text-[0.75rem] tracking-[0.16em] text-muted transition-opacity duration-300 ${approved ? 'opacity-40' : ''}`}>
                     RIFIUTA
                   </span>
                 </div>
@@ -252,8 +252,8 @@ export function FilmCinema({
           {mode === 'playing' && c.overlay === 'action' && (
             <div key="action" className="absolute left-4 top-14 z-10 sm:left-6" aria-hidden>
               <div className="settle border border-good/50 bg-void/80 px-3 py-2 backdrop-blur-sm" style={{ animationDelay: '600ms', animationFillMode: 'backwards' }}>
-                <p className="font-mono text-[0.6875rem] tracking-[0.16em] text-good">✓ AZIONE ESEGUITA</p>
-                <p className="mt-1 font-mono text-[0.625rem] tracking-[0.1em] text-muted">ORDINE INSERITO · REGISTRO AGGIORNATO</p>
+                <p className="font-mono text-[0.75rem] tracking-[0.16em] text-good">✓ AZIONE ESEGUITA</p>
+                <p className="mt-1 font-mono text-[0.75rem] tracking-[0.1em] text-muted">ORDINE INSERITO · REGISTRO AGGIORNATO</p>
               </div>
             </div>
           )}
@@ -277,8 +277,8 @@ export function FilmCinema({
           {mode === 'done' && endStyle === 'bar' && (
             <div className="absolute inset-x-0 bottom-0 z-10 flex flex-wrap items-center justify-center gap-2.5 bg-gradient-to-t from-void/90 to-transparent px-4 pb-4 pt-10">
               <p className="w-full text-center text-[0.875rem] text-ink-2">Sistemi software intelligenti per aziende industriali.</p>
-              <a href="/#prova" className="border border-accent bg-accent/10 px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground">PROVA DOLMIR</a>
-              <button type="button" onClick={play} className="px-3 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-muted transition-colors hover:text-ink">{t.replay}</button>
+              <a href="/#prova" className="border border-accent bg-accent/10 px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground">PROVA DOLMIR</a>
+              <button type="button" onClick={play} className="px-3 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-muted transition-colors hover:text-ink">{t.replay}</button>
             </div>
           )}
           {mode === 'done' && endStyle === 'center' && (
@@ -289,13 +289,13 @@ export function FilmCinema({
                   Sistemi software intelligenti per aziende industriali.
                 </p>
                 <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
-                  <a href="/#prova" className="border border-accent bg-accent/10 px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground">
+                  <a href="/#prova" className="border border-accent bg-accent/10 px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-accent transition-colors hover:bg-accent hover:text-ground">
                     PROVA DOLMIR
                   </a>
-                  <a href="/#parla" className="border border-rule-strong px-4 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-ink-2 transition-colors hover:border-muted">
+                  <a href="/#parla" className="border border-rule-strong px-4 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-ink-2 transition-colors hover:border-muted">
                     PARLA CON DOLMIR
                   </a>
-                  <button type="button" onClick={play} className="px-3 py-2 font-mono text-[0.6875rem] tracking-[0.18em] text-muted transition-colors hover:text-ink">
+                  <button type="button" onClick={play} className="px-3 py-2 font-mono text-[0.75rem] tracking-[0.18em] text-muted transition-colors hover:text-ink">
                     {t.replay}
                   </button>
                 </div>

@@ -22,8 +22,8 @@ export default function Page() {
           ['Diritti', 'Accesso, rettifica, cancellazione, limitazione, portabilità e opposizione, scrivendo all’indirizzo indicato in fondo.'],
         ].map(([k, v]) => (
           <div key={k} className="grid gap-2 py-6 sm:grid-cols-[12rem_1fr] sm:gap-8">
-            <dt className="text-[var(--text-small)] font-medium text-ink">{k}</dt>
-            <dd className="text-[var(--text-small)] leading-relaxed text-muted">{v}</dd>
+            <dt className="text-[length:var(--text-small)] font-medium text-ink">{k}</dt>
+            <dd className="text-[length:var(--text-small)] leading-relaxed text-muted">{v}</dd>
           </div>
         ))}
       </dl>
