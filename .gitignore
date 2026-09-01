@@ -8,3 +8,10 @@ dist/
 coverage/
 data/prospects/*.local.json
 out/
+
+# Higgsfield CLI credentials — `higgsfield auth login` writes a token file.
+# Belt and braces: it normally lands in $HOME, never here, but a stray
+# credentials file must never become a commit.
+.higgsfield/
+higgsfield-credentials.json
+**/.higgsfield/credentials*.json
