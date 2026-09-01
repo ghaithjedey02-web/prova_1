@@ -2,32 +2,27 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { film as t } from '@/content/site';
-import { Film } from './Film';
+import { Explainer } from './Explainer';
 
 /**
- * The flagship film — real industrial footage, DOLMIR's system layer on top.
+ * The film stage — a produced cut when one is committed, the code-rendered
+ * explainer when there is not.
  *
- * Five realistic scenes (generated with Higgsfield Cinema Studio: the Italian
- * machine-shop office under paper and phone calls, the technical drawing
- * being read, two sources disagreeing across two screens, the manager and
- * the amber light of a decision, the shop running clean) tell one concrete
- * story: CAOS → COMPRENSIONE → VERIFICA → DECISIONE UMANA → AZIONE.
+ * The order matters and used to be wrong. The second source was a CDN URL
+ * belonging to a video-generation service: an asset nobody here controls,
+ * which can expire without notice, and which failed to nothing — an empty
+ * black box where the homepage's central argument should be. A marketing
+ * site cannot rest its flagship on a borrowed link.
  *
- * The system graphics are deliberately NOT generated: extracted fields,
- * CONFLITTO RILEVATO with its evidence, the human gate and the action log
- * render as DOM overlays in brand typography — crisp, Italian, and telling
- * the product story even with the sound off (there is no sound). Amber
- * appears exactly once: at the human decision.
+ * So: if `public/film/dolmir-film.mp4` exists in the repo it plays, with the
+ * system graphics drawn over it as DOM in brand typography. If it does not,
+ * <Explainer /> tells the same story in motion design, weighs kilobytes, and
+ * cannot break. Reduced motion never autoplays either one.
  *
- * Sources: the repo's /film/dolmir-film.mp4 when committed, then the hosted
- * master; if neither plays, the procedural WebGL film takes over. Reduced
- * motion never autoplays and falls back to the WebGL film's storyboard.
+ * To commit a produced cut, see docs/DA-COMPLETARE.md.
  */
 
-const SOURCES = [
-  '/film/dolmir-film.mp4',
-  'https://d2ol7oe51mr4n9.cloudfront.net/user_3IWNhA6wnS80L9kj7n6EaO07HtE/d49b9409-3acd-412c-a6ec-7d926331c831.mp4',
-] as const;
+const SOURCES = ['/film/dolmir-film.mp4'] as const;
 
 interface Cap {
   at: number;
@@ -154,16 +149,10 @@ export function FilmCinema({
     if (mode !== 'playing') { setMode('playing'); void v.play().catch(() => setMode('fallback')); }
   }, [mode]);
 
+  /* No produced cut, or reduced motion: the explainer carries the story. It
+     is not a placeholder — it is the same argument, in typography we own. */
   if (reduce !== false || mode === 'fallback') {
-    /* No playable film (reduced motion, blocked network): the Core alone on
-       a quiet stage — never a dead player, never two competing posters. */
-    return children ? (
-      <div className={`relative flex items-center justify-center overflow-hidden border border-rule bg-void ${frame === 'short' ? 'aspect-[21/9]' : 'aspect-video'}`}>
-        <div className="pool absolute inset-0 opacity-40" aria-hidden />
-        <div className="sheet-fine absolute inset-0 opacity-30" aria-hidden />
-        {children}
-      </div>
-    ) : <Film />;
+    return <Explainer>{children}</Explainer>;
   }
 
   const c = CAPS[cap]!;

@@ -195,6 +195,23 @@ export const film = {
   disclaimer: 'Sequenza dimostrativa con dati di esempio.',
 } as const;
 
+/**
+ * The explainer's seven beats. Every word here is rendered as real DOM by
+ * components/live/Explainer.tsx — never baked into footage, so it stays
+ * readable, selectable, translatable and correctable.
+ */
+export const explainer = {
+  beats: ([
+    { code: 'IL PROBLEMA', word: 'CAOS', line: 'Email, allegati, fogli, telefonate. L’informazione esiste già — è solo sparsa.' },
+    { code: 'RACCOLTA',    word: 'UN SOLO FLUSSO', line: 'DOLMIR la intercetta dove nasce e la mette in fila.' },
+    { code: 'LETTURA',     word: 'DATI', line: 'Le parole diventano dati, ognuno con la sua fonte attaccata.' },
+    { code: 'CONTROLLO',   word: 'VERIFICA', line: 'Ogni dato viene confrontato con i sistemi che avete già.' },
+    { code: 'CONFLITTO',   word: 'NON TORNA', line: 'Due fonti dicono cose diverse. Il sistema non sceglie a caso.', amber: true },
+    { code: 'IL CANCELLO', word: 'DECIDE UNA PERSONA', line: 'Si ferma e chiede. È la parte che ci interessa di più.', amber: true },
+    { code: 'ESECUZIONE',  word: 'AZIONE', line: 'Approvato: il flusso riparte, ordinato, e resta scritto nel registro.' },
+  ] as readonly { code: string; word: string; line: string; amber?: boolean }[]),
+} as const;
+
 /* ==================================== home === the intelligence core ========*/
 
 export const intelligence = {
