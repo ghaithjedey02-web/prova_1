@@ -20,7 +20,7 @@ export function Problema() {
       aria-labelledby="problema-heading"
     >
       <Container>
-        <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
+        <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} id="problema-heading" />
 
         {/* The fragments: where the work actually lives. Offset like things
             left where they happened to land, because that is the point. */}

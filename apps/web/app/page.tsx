@@ -1,8 +1,11 @@
 import { Hero } from '@/components/home/Hero';
 import { Problema } from '@/components/home/Problema';
 import { Parla } from '@/components/live/Parla';
+import { CasoOperativo } from '@/components/home/CasoOperativo';
+import { Processi } from '@/components/home/Processi';
 import { Simulator } from '@/components/live/Simulator';
 import { HumanGate } from '@/components/home/HumanGate';
+import { TrustBand } from '@/components/home/TrustBand';
 import { Closing } from '@/components/home/Closing';
 import { site } from '@/content/site';
 
@@ -18,24 +21,25 @@ const jsonLd = {
 };
 
 /**
- * The homepage, as a first-time visitor walks it:
+ * The homepage as a B2B landing: understand → recognise → try → picture it →
+ * trust → act.
  *
- *   Hero      — what DOLMIR is, in one sentence and seven words.
- *   Problema  — the work is not in the gestionale: where it actually lives,
- *               and what we do NOT replace.
- *   Parla     — the product, live: the film explains the idea in twenty
- *               seconds, then the visitor talks to the system themselves.
- *   Simulator — their turn: hand it a problem, watch it stop at the gate.
- *   HumanGate — why it stops, which is the reason to trust it.
- *   Closing   — one action.
+ *   Hero          — what DOLMIR is, in one sentence and seven words.
+ *   Problema (01) — "il lavoro non è nel gestionale", and the three things
+ *                   we do NOT replace or change.
+ *   Parla    (02) — the product, live: the explainer tells the story, then
+ *                   the visitor talks to the system themselves.
+ *   Caso     (03) — the same order twice: seven manual hops today, one human
+ *                   decision with DOLMIR. Illustrative and declared.
+ *   Processi (04) — "adesso immaginate il vostro": eight processes, one
+ *                   shape, the visitor's own bottleneck drawn onto it.
+ *   Simulator(05) — their hands on it: run the case, hit the gate, decide.
+ *   HumanGate(06) — why it stops. The trust thesis, in the engine's words.
+ *   TrustBand     — six architectural guarantees, right before the ask.
+ *   Closing       — one concrete action, with what to bring to it.
  *
- * Six sections, deliberately. It used to run to nine, four of which were
- * variations on "watch the technology work" — the operating-layer map, the
- * 3D case, and the pipeline demo all argued the same point the console and
- * the simulator already make, at the cost of about three viewport-heights of
- * scrolling. They are not deleted: the map and the case live on their own
- * routes, where a visitor who wants that depth goes looking for it. A
- * homepage is not an index of everything we built.
+ * The technology showcases (operating-layer map, 3D case, pipeline demo)
+ * keep their own routes; the homepage's job is the visitor's own process.
  */
 export default function HomePage() {
   return (
@@ -44,8 +48,11 @@ export default function HomePage() {
       <Hero />
       <Problema />
       <Parla />
+      <CasoOperativo />
+      <Processi />
       <Simulator />
       <HumanGate />
+      <TrustBand />
       <Closing />
     </>
   );

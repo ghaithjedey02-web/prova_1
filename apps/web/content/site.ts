@@ -87,7 +87,7 @@ export const hero = {
   line2: 'il lavoro si disperde.',
   line3: 'DOLMIR lo ricompone.',
   lead:
-    'Costruiamo sistemi software intelligenti: leggono email e documenti, verificano i dati sui sistemi che avete già, preparano le azioni — e si fermano davanti a una persona per ogni decisione che richiede giudizio.',
+    'Costruiamo sistemi software intelligenti: leggono email e documenti, verificano i dati sui sistemi che avete già, applicano le vostre regole, preparano le azioni e dichiarano quanto sono sicuri — e si fermano davanti a una persona per ogni decisione che richiede giudizio.',
   /**
    * Four principles, not four metrics.
    *
@@ -127,6 +127,10 @@ export const problema = {
     {
       t: 'Non sostituiamo le persone.',
       d: 'Togliamo il ricopiare. Le decisioni che richiedono giudizio restano umane, per costruzione.',
+    },
+    {
+      t: 'Non vi chiediamo di cambiare come lavorate.',
+      d: 'Le email restano email, il gestionale resta il vostro. Cambia solo chi fa il lavoro di raccordo.',
     },
   ],
 } as const;
@@ -210,6 +214,89 @@ export const explainer = {
     { code: 'IL CANCELLO', word: 'DECIDE UNA PERSONA', line: 'Si ferma e chiede. È la parte che ci interessa di più.', amber: true },
     { code: 'ESECUZIONE',  word: 'AZIONE', line: 'Approvato: il flusso riparte, ordinato, e resta scritto nel registro.' },
   ] as readonly { code: string; word: string; line: string; amber?: boolean }[]),
+} as const;
+
+/**
+ * The before/after — the demo case, walked twice.
+ *
+ * The counts and minutes are ILLUSTRATIVE and declared as such in the UI:
+ * they describe the demo scenario, not a measurement taken at a customer.
+ * The argument is the SHAPE of the process, not a ROI number.
+ */
+export const caso = {
+  n: '03',
+  label: 'Un caso concreto',
+  headline: 'Lo stesso ordine, due modi di lavorare.',
+  body:
+    'Una conferma d’ordine arriva per email, con un allegato PDF. È il caso del simulatore qui sotto — dati di esempio, dichiarati. Guardate cosa succede oggi in molte aziende, e cosa cambia con un sistema in mezzo.',
+  primaTitle: 'OGGI, A MANO',
+  primaSteps: [
+    { t: 'Qualcuno apre l’email', note: 'quando la vede' },
+    { t: 'Legge il PDF allegato', note: 'e lo confronta col testo' },
+    { t: 'Cerca il cliente nel gestionale', note: 'il nome non coincide mai' },
+    { t: 'Ricopia i dati in Excel', note: 'primo punto di errore' },
+    { t: 'Inserisce l’ordine nel gestionale', note: 'secondo punto di errore' },
+    { t: 'Controlla quantità e consegna', note: 'se c’è tempo' },
+    { t: 'Scrive all’ufficio e risponde al cliente', note: 'terzo punto di errore' },
+  ],
+  primaStats: [
+    ['PASSAGGI', '7'],
+    ['PERSONE', '2'],
+    ['SISTEMI TOCCATI', '4'],
+    ['PUNTI DI ERRORE', '3'],
+    ['TEMPO', '≈ 28 min'],
+  ],
+  dopoTitle: 'CON DOLMIR',
+  dopoSteps: ([
+    { t: 'DOLMIR legge email e allegato', sys: true },
+    { t: 'Estrae i dati, ognuno con la sua fonte', sys: true },
+    { t: 'Verifica su anagrafica, giacenze, capacità', sys: true },
+    { t: 'Trova il conflitto: 40 pezzi nell’email, 60 nel PDF', amber: true },
+    { t: 'Si ferma. Una persona decide', person: true },
+    { t: 'Ordine inserito, risposta preparata, registro aggiornato', sys: true },
+  ] as readonly { t: string; sys?: boolean; amber?: boolean; person?: boolean }[]),
+  dopoNote:
+    'La persona entra una volta sola: sulla decisione che conta. Tutto il resto — leggere, cercare, ricopiare, confrontare — non passa più dalle sue mani.',
+  disclaimer: 'Esempio illustrativo sul caso dimostrativo. Passaggi e tempi descrivono lo scenario demo, non una misura presso un cliente.',
+  cta: { t: 'GUARDATE IL MOTORE VERO →', href: '/dimostrazione' },
+} as const;
+
+/**
+ * "Now picture yours" — the visitor points at their own process and sees the
+ * same shape drawn onto it. Capability descriptions only: what enters, what
+ * gets verified, where the person decides. Never an invented result.
+ */
+export const processi = {
+  n: '04',
+  label: 'I vostri processi',
+  headline: 'Adesso immaginate il vostro.',
+  body:
+    'Ogni azienda ha almeno un processo dove le informazioni arrivano da fuori, qualcuno le ricopia e qualcuno le controlla. Sceglietene uno: la forma del sistema è la stessa.',
+  flowLabels: ['INPUT', 'DOLMIR', 'VERIFICA', 'DECISIONE', 'AZIONE'],
+  items: [
+    { k: 'PREVENTIVI', input: 'Richiesta d’offerta via email, con allegato tecnico', verifica: 'Anagrafica, listini, offerte passate comparabili', persona: 'Approva il prezzo prima che l’offerta parta', azione: 'Offerta pronta e registrata' },
+    { k: 'ORDINI', input: 'Conferma d’ordine — email, PDF, portale', verifica: 'Codici articolo, quantità, capacità, date di consegna', persona: 'Decide sui conflitti fra le fonti', azione: 'Ordine inserito nel gestionale' },
+    { k: 'FATTURE', input: 'Fattura passiva in PDF', verifica: 'Ordine di riferimento, DDT, importi e scadenze', persona: 'Approva le eccezioni e le differenze', azione: 'Registrazione preparata' },
+    { k: 'RICHIESTE CLIENTI', input: 'Email, moduli dal sito, PEC', verifica: 'Storico del cliente, stato di ordini e consegne', persona: 'Rivede i casi delicati prima della risposta', azione: 'Risposta preparata, con i dati giusti' },
+    { k: 'DOCUMENTI', input: 'PDF, scansioni, allegati sparsi', verifica: 'Campi estratti, ognuno con la fonte attaccata', persona: 'Valida i campi sotto soglia di confidenza', azione: 'Archivio ordinato e interrogabile' },
+    { k: 'APPROVAZIONI', input: 'Richieste interne: acquisti, ferie, spese', verifica: 'Regole e soglie che definite voi', persona: 'Firma dove la regola non basta', azione: 'Esito eseguito e tracciato' },
+    { k: 'REPORT', input: 'Dati dai sistemi già collegati', verifica: 'Coerenza fra le fonti, anomalie segnalate', persona: 'Legge le anomalie, non le tabelle', azione: 'Report ricorrente, pronto' },
+    { k: 'ASSISTENZA', input: 'Ticket, email, segnalazioni telefoniche trascritte', verifica: 'Contratto, garanzia, storico interventi', persona: 'Gestisce i casi mai visti prima', azione: 'Risposta e intervento pianificato' },
+  ],
+  note: 'Il vostro processo non è in elenco? È comunque fatto di questi cinque passi. Portatecelo.',
+} as const;
+
+/** The trust band: seven guarantees that are architecture, not promises. */
+export const fiducia = {
+  label: 'Perché fidarsi',
+  items: [
+    { t: 'Nessuna migrazione', d: 'Lavoriamo sopra i sistemi che avete: non si butta via niente.' },
+    { t: 'Dati verificati alla fonte', d: 'Ogni valore estratto viene confrontato con il documento e con i vostri sistemi.' },
+    { t: 'Confidenza dichiarata', d: 'Il sistema dice quanto è sicuro, campo per campo. Mai una certezza finta.' },
+    { t: 'Tracciabilità completa', d: 'Cosa ha letto, cosa ha verificato, chi ha deciso: tutto resta scritto nel registro.' },
+    { t: 'Una persona nel circuito', d: 'Le decisioni che richiedono giudizio passano sempre da qualcuno con nome e cognome.' },
+    { t: 'Nessuna azione autonoma dove serve giudizio', d: 'Il sistema prepara ed aspetta. Il sì lo date voi.' },
+  ],
 } as const;
 
 /* ==================================== home === the intelligence core ========*/
@@ -486,7 +573,7 @@ export const capabilities = {
 /* ======================================== home === the simulator ============*/
 
 export const simulator = {
-  n: '03',
+  n: '05',
   label: 'Prova DOLMIR',
   headline: 'Consegnate un problema. Guardate cosa succede.',
   body:
@@ -880,11 +967,11 @@ export const chapters = {
   },
 
   human: {
-    n: '04',
+    n: '06',
     label: 'Controllo',
     headline: 'Il sistema si ferma prima di decidere.',
     body:
-      'È la parte che ci interessa di più. Un modello linguistico ha sempre una risposta fluente disponibile: il comportamento “non lo so” va costruito contro il modello, con soglie, evidenze e cancelli espliciti. Quando la confidenza non basta, il processo si interrompe e passa a una persona.',
+      'Un modello AI può sempre generare una risposta. DOLMIR è progettato per sapere quando NON deve: il comportamento «non lo so» va costruito contro il modello, con soglie, evidenze e cancelli espliciti. Quando manca un precedente, un campo è sotto soglia, un documento è illeggibile o due fonti si contraddicono, il sistema non inventa — si ferma, e il caso passa a una persona.',
     chain: [
       { k: 'NON SO', d: 'Nessun precedente comparabile, un campo sotto soglia, un documento illeggibile.' },
       { k: 'FERMA', d: 'Non viene prodotto un valore plausibile. Non viene prodotto niente.' },
@@ -904,9 +991,9 @@ export const chapters = {
 
 export const closing = {
   label: 'Il passo successivo',
-  headline: 'Il prossimo sistema potrebbe essere il vostro.',
+  headline: 'Il prossimo processo potrebbe essere il vostro.',
   body:
-    'Venticinque minuti, sei domande sul vostro processo, nessuna presentazione. Alla fine sapremo entrambi se ha senso continuare — e se non ha senso, lo diremo noi.',
+    'Venticinque minuti, sei domande sul vostro processo, nessuna presentazione. Ci mostrate dove entrano le richieste, dove vengono ricopiati i dati, dove qualcuno deve controllare e dove il processo si blocca. Alla fine sapremo entrambi se ha senso continuare — e se non ha senso, lo diremo noi.',
   bring: [
     'Quante richieste ricevete in una settimana',
     'Chi prepara le offerte, e quanto tempo serve',

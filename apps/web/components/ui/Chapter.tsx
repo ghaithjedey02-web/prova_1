@@ -13,6 +13,7 @@ export function Chapter({
   label,
   headline,
   lead,
+  id,
   size = 'm',
   align = 'left',
   className = '',
@@ -22,6 +23,8 @@ export function Chapter({
   label: string;
   headline: ReactNode;
   lead?: ReactNode;
+  /** Lands on the h2, so a section's aria-labelledby actually resolves. */
+  id?: string;
   size?: 'm' | 'l';
   align?: 'left' | 'center';
   className?: string;
@@ -37,7 +40,7 @@ export function Chapter({
         </p>
       </Reveal>
       <Reveal delay={70}>
-        <h2 className={`headline mt-7 max-w-[19ch] ${h} ${align === 'center' ? 'mx-auto' : ''}`}>{headline}</h2>
+        <h2 id={id} className={`headline mt-7 max-w-[19ch] ${h} ${align === 'center' ? 'mx-auto' : ''}`}>{headline}</h2>
       </Reveal>
       {lead && (
         <>

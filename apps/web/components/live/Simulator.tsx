@@ -362,7 +362,7 @@ export function Simulator() {
       aria-labelledby="simulator-heading"
     >
       <Container>
-        <Chapter n={simulator.n} label={simulator.label} headline={simulator.headline} lead={simulator.body} />
+        <Chapter n={simulator.n} label={simulator.label} headline={simulator.headline} lead={simulator.body} id="simulator-heading" />
 
         <Reveal delay={120}>
           <div className="glass-solid mt-[var(--space-block)]">

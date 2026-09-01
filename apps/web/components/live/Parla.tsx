@@ -135,7 +135,7 @@ export function Parla() {
       aria-labelledby="parla-heading"
     >
       <Container>
-        <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
+        <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} id="parla-heading" />
 
         <div className="mt-[var(--space-block)]">
           {/* The Core is the microphone, and the film plays around it. */}
