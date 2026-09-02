@@ -52,3 +52,29 @@ L'identità tecnica è completa (favicon 16/32/48, apple-touch, 192/512,
 manifest, canonical, Open Graph, JSON-LD). **Quando** Google aggiorni
 l'icona e lo snippet nei risultati non dipende da noi: si può sollecitare
 una nuova scansione da Search Console, ma non promettere una data.
+
+## 6. Dominio `www.dolmir.com` (Vercel → Settings → Domains)
+
+Verificato dall'esterno il 2026-09-02: `https://dolmir.com` risponde 200 a
+browser, Googlebot e Bingbot; `https://www.dolmir.com` **fallisce il TLS**
+(`ERR_CERT_COMMON_NAME_INVALID`) perché il certificato copre solo
+`dolmir.com`. Il DNS di `www` punta già a Vercel (CNAME → `dolmir.com`),
+ma il dominio non è aggiunto al progetto, quindi Vercel non ha mai emesso
+il certificato.
+
+Da fare, una volta sola, nel pannello Vercel:
+
+1. Progetto `prova-1-web` → **Settings → Domains → Add**.
+2. Inserire `www.dolmir.com`.
+3. Scegliere **Redirect to `dolmir.com`** (308).
+4. Attendere lo stato *Valid Configuration*: il certificato viene emesso
+   in automatico (nessun record CAA blocca Let's Encrypt).
+
+Il DNS non va toccato. Il codice contiene già un redirect `www → apex` in
+`apps/web/next.config.ts` come rete di sicurezza.
+
+Nota sui vecchi percorsi WordPress (`/wp-login.php`, `/xmlrpc.php`,
+`/wp-admin`, `*.php`): rispondono **403** con `x-vercel-mitigated: deny`.
+È il filtro di sistema di Vercel, attivo su tutta la piattaforma (stesso
+comportamento su `nextjs.org`), non una regola di questo progetto. Google
+scarterà quegli URL da solo; le pagine reali sono tutte 200.
