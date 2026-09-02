@@ -27,8 +27,11 @@ describe('console error classification', () => {
     expect(e.configuration).toBe(true);
   });
 
-  it('reads an empty balance as billing, other 400s as request', () => {
+  it('reads an empty balance as billing, a missing workspace as workspace, other 400s as request', () => {
     expect(classifyConsoleError(api(400, 'Your credit balance is too low to access the Anthropic API.')).reason).toBe('billing');
+    const ws = classifyConsoleError(api(400, 'anthropic-workspace-id is required when authenticating with an identity-linked API key; send the id of the workspace this request acts in.'));
+    expect(ws.reason).toBe('workspace');
+    expect(ws.configuration).toBe(true);
     expect(classifyConsoleError(api(400, 'max_tokens: must be positive')).reason).toBe('request');
   });
 

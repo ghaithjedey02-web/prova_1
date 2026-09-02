@@ -63,6 +63,7 @@ export type ConsoleErrorReason =
   | 'auth'        // key rejected by Anthropic (401/403)
   | 'model'       // the configured model is not available to this key (404)
   | 'billing'     // the account has no credit (400 with a balance message)
+  | 'workspace'   // identity-linked key without ANTHROPIC_WORKSPACE_ID (400)
   | 'request'     // any other 400/422: a bug in what we send
   | 'rate'        // upstream 429
   | 'overloaded'  // upstream 5xx/529
@@ -82,7 +83,10 @@ export class ConsoleError extends Error {
   }
   /** True when the failure is this deployment's configuration, not the weather. */
   get configuration(): boolean {
-    return this.reason === 'auth' || this.reason === 'model' || this.reason === 'billing' || this.reason === 'request';
+    return (
+      this.reason === 'auth' || this.reason === 'model' || this.reason === 'billing' ||
+      this.reason === 'workspace' || this.reason === 'request'
+    );
   }
 }
 
@@ -98,7 +102,11 @@ export function classifyConsoleError(err: unknown): ConsoleError {
   if (err instanceof Anthropic.NotFoundError) return new ConsoleError('model', 404, err.message);
   if (err instanceof Anthropic.RateLimitError) return new ConsoleError('rate', 429, err.message);
   if (err instanceof Anthropic.BadRequestError || err instanceof Anthropic.UnprocessableEntityError) {
-    return new ConsoleError(/credit|billing|balance/i.test(err.message) ? 'billing' : 'request', err.status, err.message);
+    const reason =
+      /credit|billing|balance/i.test(err.message) ? 'billing'
+      : /workspace/i.test(err.message) ? 'workspace'
+      : 'request';
+    return new ConsoleError(reason, err.status, err.message);
   }
   if (err instanceof Anthropic.APIError) {
     const status = err.status;
@@ -132,22 +140,30 @@ export function consoleModel(): string {
  * panel arrive with trailing newlines often enough that the trim is a
  * production fix, not a nicety: a newline in a header value never reaches
  * Anthropic at all.
+ *
+ * Identity-linked keys (the kind the Console issues to a person rather than
+ * to a workspace) are refused unless every request names the workspace it
+ * acts in, via the `anthropic-workspace-id` header. ANTHROPIC_WORKSPACE_ID
+ * carries that id; a workspace-scoped key does not need it and is unaffected.
  */
-function credential(): { apiKey?: string; authToken?: string } {
+function credential(): { apiKey?: string; authToken?: string; defaultHeaders?: Record<string, string> } {
+  const workspace = process.env['ANTHROPIC_WORKSPACE_ID']?.trim();
+  const defaultHeaders = workspace ? { 'anthropic-workspace-id': workspace } : undefined;
   const key = process.env['ANTHROPIC_API_KEY']?.trim();
-  if (key) return { apiKey: key };
+  if (key) return { apiKey: key, defaultHeaders };
   const token = process.env['ANTHROPIC_AUTH_TOKEN']?.trim();
-  if (token) return { authToken: token };
-  return {};
+  if (token) return { authToken: token, defaultHeaders };
+  return { defaultHeaders };
 }
 
 /** Shape of the credential for server logs — length and prefix only, never the value. */
 export function credentialShape(): string {
+  const workspace = process.env['ANTHROPIC_WORKSPACE_ID']?.trim() ? 'workspace=set' : 'workspace=unset';
   const raw = process.env['ANTHROPIC_API_KEY'];
   if (raw) {
-    return `api_key len=${raw.length} prefix=${raw.trim().startsWith('sk-ant-') ? 'sk-ant' : 'unexpected'} whitespace=${/\s/.test(raw) ? 'yes' : 'no'}`;
+    return `api_key len=${raw.length} prefix=${raw.trim().startsWith('sk-ant-') ? 'sk-ant' : 'unexpected'} whitespace=${/\s/.test(raw) ? 'yes' : 'no'} ${workspace}`;
   }
-  if (process.env['ANTHROPIC_AUTH_TOKEN']) return 'auth_token';
+  if (process.env['ANTHROPIC_AUTH_TOKEN']) return `auth_token ${workspace}`;
   return 'none';
 }
 

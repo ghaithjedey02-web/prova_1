@@ -34,7 +34,7 @@ export function Footer() {
             <div className="mt-7 flex flex-col gap-2">
               <a
                 href={`mailto:${site.email}`}
-                className="text-[length:var(--text-small)] text-ink underline decoration-rule-bright underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+                className="-my-2 inline-block self-start py-2 text-[length:var(--text-small)] text-ink underline decoration-rule-bright underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
               >
                 {site.email}
               </a>
@@ -48,7 +48,7 @@ export function Footer() {
               {footerNav.map((item) => (
                 <li key={item.href}>
                   <Link
-                    className="text-[length:var(--text-small)] text-ink-2 transition-colors hover:text-accent"
+                    className="-my-2 inline-block py-2 text-[length:var(--text-small)] text-ink-2 transition-colors hover:text-accent"
                     href={item.href}
                   >
                     {item.label}
@@ -62,18 +62,18 @@ export function Footer() {
             <p className="label mb-5 text-ink-2">Azienda</p>
             <ul className="flex flex-col gap-3">
               <li>
-                <Link className="text-[length:var(--text-small)] text-ink-2 transition-colors hover:text-accent" href="/studio">
+                <Link className="-my-2 inline-block py-2 text-[length:var(--text-small)] text-ink-2 transition-colors hover:text-accent" href="/studio">
                   Chi siamo
                 </Link>
               </li>
               <li>
-                <Link className="text-[length:var(--text-small)] text-ink-2 transition-colors hover:text-accent" href="/metodo">
+                <Link className="-my-2 inline-block py-2 text-[length:var(--text-small)] text-ink-2 transition-colors hover:text-accent" href="/metodo">
                   Come lavoriamo
                 </Link>
               </li>
               <li>
                 <Link
-                  className="text-[length:var(--text-small)] text-ink-2 transition-colors hover:text-accent"
+                  className="-my-2 inline-block py-2 text-[length:var(--text-small)] text-ink-2 transition-colors hover:text-accent"
                   href="/affidabilita"
                 >
                   Affidabilità
@@ -81,7 +81,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  className="text-[length:var(--text-small)] text-ink-2 transition-colors hover:text-accent"
+                  className="-my-2 inline-block py-2 text-[length:var(--text-small)] text-ink-2 transition-colors hover:text-accent"
                   href="/contatto"
                 >
                   Contatti
@@ -96,7 +96,7 @@ export function Footer() {
               {legalNav.map((item) => (
                 <li key={item.href}>
                   <Link
-                    className="text-[length:var(--text-small)] text-ink-2 transition-colors hover:text-accent"
+                    className="-my-2 inline-block py-2 text-[length:var(--text-small)] text-ink-2 transition-colors hover:text-accent"
                     href={item.href}
                   >
                     {item.label}

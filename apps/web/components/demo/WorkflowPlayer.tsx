@@ -217,7 +217,7 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
                 <button
                   type="button"
                   onClick={() => void run(sample)}
-                  className="bg-accent px-4 py-1.5 font-mono text-[length:var(--text-label)] uppercase tracking-[0.16em] text-accent-ink transition-colors hover:bg-accent-hover"
+                  className="min-h-9 bg-accent px-4 py-1.5 font-mono text-[length:var(--text-label)] uppercase tracking-[0.16em] text-accent-ink transition-colors hover:bg-accent-hover"
                 >
                   Avvia
                 </button>

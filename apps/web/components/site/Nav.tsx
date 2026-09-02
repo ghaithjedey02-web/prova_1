@@ -33,7 +33,7 @@ export function Nav() {
     >
       <Container>
         <div className="flex h-[var(--nav-h)] items-center justify-between gap-6">
-          <Link href="/" className="group flex items-center gap-3" aria-label={`${site.name} — home`}>
+          <Link href="/" className="group flex min-h-11 items-center gap-3" aria-label={`${site.name} — home`}>
             <Mark />
             <span className="font-display text-[0.95rem] font-semibold tracking-[0.3em] text-ink transition-colors group-hover:text-accent">
               {site.name}

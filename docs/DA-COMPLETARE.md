@@ -26,13 +26,34 @@ risparmio o referenze finché non sono verificabili.
 | variabile | cosa accende | senza di essa |
 |---|---|---|
 | `ANTHROPIC_API_KEY` | **la console AI**: modello reale, strumenti, streaming | la console dice «Modello non attivo su questo ambiente» e offre il contatto |
-| `DOLMIR_CONSOLE_MODEL` | fissa il modello (opzionale) | default interno |
+| `ANTHROPIC_WORKSPACE_ID` | **obbligatoria se la chiave è di tipo *identity-linked*** (vedi sotto) | Anthropic rifiuta ogni richiesta con 400 e la console resta offline |
+| `DOLMIR_CONSOLE_MODEL` | fissa il modello (opzionale) | default `claude-opus-5` |
 | `ELEVENLABS_API_KEY` | voce neurale italiana (consigliata) | ripiego sulla voce del browser |
 | `ELEVENLABS_VOICE_ID` / `ELEVENLABS_MODEL` | scelta della voce (opzionale) | default multilingue |
 | `OPENAI_API_KEY` | voce alternativa, se manca ElevenLabs | come sopra |
 
 `ANTHROPIC_API_KEY` è l'unica che cambia il prodotto: senza, il capitolo
 02 non ha nulla dietro.
+
+### La chiave in produzione è *identity-linked*: serve il workspace
+
+Verificato il 2026-09-02 dal log del server: Anthropic risponde
+`400 — anthropic-workspace-id is required when authenticating with an
+identity-linked API key`. La chiave presente su Vercel è legata a una
+persona, non a un workspace, e ogni richiesta deve dichiarare in quale
+workspace agisce. Il codice invia l'intestazione quando la variabile esiste.
+Due strade, una sola basta:
+
+1. **Aggiungere `ANTHROPIC_WORKSPACE_ID`** su Vercel (Production):
+   Console Anthropic → *Settings → Workspaces* → aprire il workspace →
+   copiare l'id (`wrkspc_…`). Poi *Redeploy*.
+2. **Oppure** creare in Console una chiave normale legata al workspace
+   (*API Keys → Create Key*, scegliendo il workspace) e sostituire
+   `ANTHROPIC_API_KEY`. In quel caso `ANTHROPIC_WORKSPACE_ID` non serve.
+
+Finché non è fatto, la console mostra «Modello non attivo su questo
+ambiente» — non una risposta finta — e il log di Vercel riporta
+`[parla] workspace 400 …`.
 
 ## 3. Contatto
 

@@ -284,14 +284,14 @@ export function Parla() {
             </div>
 
             {/* voice controls + honesty line */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-rule px-4 py-2.5 sm:px-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-rule px-4 py-2 sm:px-6">
               <p className="text-[length:var(--text-micro)] text-muted">{offline ? c.offlineState : c.disclaimer}</p>
               <div className="flex items-center gap-2">
                 {voice.speaking && (
                   <button
                     type="button"
                     onClick={voice.shutUp}
-                    className="border border-amber/60 px-2.5 py-1 font-mono text-[0.75rem] tracking-[0.14em] text-amber transition-colors hover:bg-amber/10"
+                    className="min-h-9 border border-amber/60 px-3 py-1.5 font-mono text-[0.75rem] tracking-[0.14em] text-amber transition-colors hover:bg-amber/10"
                   >
                     {c.interrupt}
                   </button>
@@ -300,7 +300,7 @@ export function Parla() {
                   type="button"
                   onClick={() => { setVoiceOn((v) => { if (v) voice.shutUp(); return !v; }); }}
                   aria-pressed={voiceOn}
-                  className={`border px-2.5 py-1 font-mono text-[0.75rem] tracking-[0.14em] transition-colors ${
+                  className={`min-h-9 border px-3 py-1.5 font-mono text-[0.75rem] tracking-[0.14em] transition-colors ${
                     voiceOn ? 'border-border-ui text-ink' : 'border-rule-strong text-muted'
                   }`}
                 >

@@ -53,7 +53,7 @@ export interface Turn {
  */
 export type Failure = 'rate' | 'offline' | 'overloaded' | null;
 
-const CONFIGURATION_REASONS = new Set(['auth', 'model', 'billing', 'request']);
+const CONFIGURATION_REASONS = new Set(['auth', 'model', 'billing', 'workspace', 'request']);
 const TRANSIENT_OVERLOAD = new Set(['overloaded', 'timeout', 'rate']);
 
 export interface ConsoleApi {

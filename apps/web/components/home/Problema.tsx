@@ -71,7 +71,7 @@ function Artifact({ f }: { f: Frag }) {
       return (
         <div className={`flex w-[20rem] max-w-full items-center gap-4 border-y border-rule-strong bg-surface px-3.5 py-2.5 font-mono text-[0.72rem] ${base}`}>
           <span className="whitespace-nowrap text-ink">{f.a}</span>
-          <span className="whitespace-nowrap border border-accent-line px-1.5 py-0.5 text-[0.62rem] tracking-[0.1em] text-accent">{f.b}</span>
+          <span className="whitespace-nowrap border border-accent-line px-1.5 py-0.5 text-[0.72rem] tracking-[0.08em] text-accent">{f.b}</span>
           <span className="ml-auto truncate text-muted">{f.c}</span>
         </div>
       );

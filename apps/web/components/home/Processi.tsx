@@ -95,7 +95,7 @@ export function Processi() {
         <Reveal delay={220}>
           <p className="mt-5 max-w-[70ch] text-[length:var(--text-small)] text-muted">
             {c.note}{' '}
-            <a href="/contatto" className="text-ink underline decoration-rule-bright underline-offset-4 transition-colors hover:text-accent hover:decoration-accent">
+            <a href="/contatto" className="-my-2 inline-block py-2 text-ink underline decoration-rule-bright underline-offset-4 transition-colors hover:text-accent hover:decoration-accent">
               Parliamone →
             </a>
           </p>
