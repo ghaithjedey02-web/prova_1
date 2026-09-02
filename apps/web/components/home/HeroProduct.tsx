@@ -90,6 +90,18 @@ export function HeroProduct() {
             attachment={sc.mail.attachment}
             active={snap.beat >= 1}
           />
+          {snap.checks >= 3 && (
+            <div className="settle mt-3 hidden sm:block">
+              <p className="mb-1.5 font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-faint">Storico · stesso cliente</p>
+              <div className="rounded-[4px] border border-rule bg-surface/60 px-3.5 py-2.5">
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="font-mono text-[0.8125rem] text-ink">PRV-2198</p>
+                  <p className="font-mono text-[0.6875rem] text-faint">giugno 2026</p>
+                </div>
+                <p className="mt-0.5 text-[0.8125rem] text-ink-2">SL-4410 · <span className={snap.conflict ? 'text-amber' : ''}>1.200 pz</span> · inviato</p>
+              </div>
+            </div>
+          )}
           {snap.beat >= 4 && (
             <div className="settle mt-3">
               <p className="mb-1.5 font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-faint">Azioni</p>
