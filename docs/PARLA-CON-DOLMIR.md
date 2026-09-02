@@ -139,6 +139,32 @@ Una sola variabile d'ambiente sul progetto Vercel:
 Senza la prima, tutto il resto del capitolo è inerte: è la chiave che
 trasforma la console da pagina a prodotto.
 
+## Quando il modello risponde con un errore
+
+Il caso «chiave presente ma richiesta rifiutata» è diverso dal caso «nessuna
+chiave», e fino al 2026-09-02 non era distinguibile: la route inghiottiva
+l'eccezione e il client mostrava solo «il sistema non risponde». Ora:
+
+- `classifyConsoleError()` (in `providers/anthropic-console.ts`) mappa ciò
+  che lancia l'SDK su una ragione: `auth`, `model`, `billing`, `workspace`,
+  `request` (configurazione — nessuno può avere una risposta finché un
+  operatore non interviene) oppure `rate`, `overloaded`, `timeout`,
+  `network` (transitorie — vale la pena riprovare).
+- la route scrive nel log del server **una sola riga**:
+  `[parla] <ragione> <status> model=… credential=<forma> :: <messaggio>`.
+  La forma della credenziale è lunghezza, prefisso, presenza di spazi e se
+  il workspace è impostato — mai il valore.
+- al browser arriva soltanto `{ type: 'error', reason }`.
+- il client: una ragione di configurazione toglie la domanda dal
+  transcript e porta la console nello stato offline (lo stesso del 503);
+  una ragione transitoria elimina la risposta vuota, lascia la domanda e
+  mostra una nota di ripetizione.
+
+Le credenziali vengono `trim()`ate prima dell'uso, e se esiste
+`ANTHROPIC_WORKSPACE_ID` viene inviata come intestazione
+`anthropic-workspace-id` — obbligatoria per le chiavi *identity-linked*
+(vedi `docs/DA-COMPLETARE.md`, sezione 2).
+
 ## Il prompt di sistema è parte del prodotto
 
 La prima versione si comportava da guardiano: deviava i saluti, rifiutava
