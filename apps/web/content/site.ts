@@ -20,9 +20,9 @@ export const site = {
   name: 'DOLMIR',
   domain: 'dolmir.com',
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://dolmir.com',
-  tagline: 'Sistemi digitali e AI per le imprese',
+  tagline: 'Il lavoro della vostra azienda, connesso',
   description:
-    'DOLMIR costruisce sistemi software intelligenti: leggono email e documenti, verificano i dati sui sistemi che avete già e preparano le azioni — con una persona che approva ogni decisione che richiede giudizio.',
+    'DOLMIR è il livello intelligente sopra i sistemi della vostra azienda: legge email, documenti e gestionali, verifica i dati, rileva i conflitti e prepara le azioni — con una persona che decide dove serve giudizio.',
   locale: 'it_IT',
   email: 'info@dolmir.com',
   region: 'Lombardia',
@@ -306,61 +306,147 @@ export const closing = {
 /* ================================================= page === soluzioni =========*/
 
 export const soluzioni = {
-  title: 'Sistemi',
-  headline: 'Sette processi, non sette servizi.',
+  title: 'Soluzioni',
+  headline: 'Sette processi, una sola forma.',
   lead:
-    'Non vendiamo “siti”, “AI” e “automazione” come voci separate di un listino. Ogni voce qui sotto è un processo aziendale che esiste già nella vostra azienda e che oggi costa ore. Si parte da uno.',
-  items: [
+    'Non vendiamo “siti”, “AI” e “automazione” come voci separate di un listino. Ogni voce qui sotto è un processo che esiste già nella vostra azienda e che oggi costa ore. Sotto ciascuno, la stessa catena: entra qualcosa, viene letto e verificato, una persona decide, il sistema agisce. Si parte da uno.',
+  /* Every item carries the frame it produces: the input, three read fields
+     with their state, the decision when there is one, the action. Data is
+     the demo company's, declared as simulated. */
+  items: ([
     {
-      k: '01',
-      t: 'Presenza digitale industriale',
-      lead: 'La porta d’ingresso che qualifica l’azienda in trenta secondi.',
-      d: 'Capacità produttive, macchine, materiali, tolleranze, settori serviti, documentazione tecnica. Costruita perché un ufficio acquisti capisca se siete il fornitore giusto senza dovervi telefonare.',
-      out: 'Sito tecnico, ingresso richieste strutturato, documenti scaricabili.',
-    },
-    {
-      k: '02',
       t: 'Preventivi e richieste di offerta',
       lead: 'Il processo che abbiamo costruito per primo, e quello che conosciamo meglio.',
       d: 'Le richieste in entrata vengono lette, classificate, estratte campo per campo con un livello di confidenza, confrontate con lo storico e trasformate in una bozza. Quando i dati non bastano, il sistema si ferma.',
       out: 'Bozza di offerta, coda di verifica, tracciabilità completa.',
+      frame: {
+        title: 'Richieste di offerta',
+        input: { from: 'Officine Rossi S.r.l.', subject: 'Richiesta di offerta — 2.000 pz SL-4410', time: '09:12' },
+        fields: [
+          { label: 'Cliente', value: 'Officine Rossi S.r.l.', source: 'alias «Meccanica Rossi» · anagrafica C-01', state: 'verified' },
+          { label: 'Codice', value: 'SL-4410 · staffa laser', source: 'oggetto + disegno allegato', state: 'verified' },
+          { label: 'Quantità', value: '2.000 pz', source: 'PRV-2198: 1.200 pz', state: 'conflict' },
+        ],
+        decision: 'Confermare la nuova quantità?',
+        actions: ['Bozza PRV-2206 preparata', 'In attesa di approvazione'],
+        status: { k: 'decisione richiesta', tone: 'amber' },
+      },
     },
     {
-      k: '03',
-      t: 'Ufficio AI',
+      t: 'Posta e richieste in arrivo',
       lead: 'La casella condivisa che si organizza da sola.',
       d: 'Classificazione e instradamento di tutto ciò che arriva: richieste, ordini, documenti, comunicazioni. Con priorità dichiarata e un elenco di cose da decidere invece di una lista di email da aprire.',
       out: 'Posta smistata, priorità, notifiche solo quando servono.',
+      frame: {
+        title: 'Posta commerciale',
+        input: { from: 'Fonderia Bianchi S.p.A.', subject: 'Conferma d’ordine n. 4471/2026', time: '08:41' },
+        fields: [
+          { label: 'Tipo', value: 'Conferma d’ordine', source: 'classificazione · non è una richiesta di offerta', state: 'verified' },
+          { label: 'Priorità', value: 'Normale · consegna a 30 gg', source: 'regola: data richiesta', state: 'verified' },
+          { label: 'Assegnata', value: 'Ufficio ordini', source: 'instradamento per tipo', state: 'read' },
+        ],
+        actions: ['Instradata al flusso ordini', 'Nessuna notifica superflua'],
+        status: { k: 'instradata', tone: 'good' },
+      },
     },
     {
-      k: '04',
-      t: 'Intelligenza documentale',
-      lead: 'I documenti tecnici smettono di essere allegati.',
+      t: 'Documenti tecnici',
+      lead: 'I documenti smettono di essere allegati.',
       d: 'Ordini, conferme, certificati materiale, schede tecniche, capitolati: letti, collegati alla commessa giusta e resi cercabili. Con il riferimento esatto da cui ogni dato è stato estratto.',
       out: 'Archivio collegato alle commesse, ricerca sui contenuti.',
+      frame: {
+        title: 'Documenti',
+        input: { from: 'Certificato_3.1_colata_2041B.pdf', subject: 'Certificato di collaudo materiale · 2 pagine', time: '10:05' },
+        fields: [
+          { label: 'Materiale', value: 'Acciaio C40', source: 'pag. 1, tabella analisi', state: 'verified' },
+          { label: 'Colata', value: '2041-B', source: 'pag. 1, intestazione', state: 'verified' },
+          { label: 'Commessa', value: 'ORD-10482', source: 'collegata per codice e fornitore', state: 'read' },
+        ],
+        actions: ['Archiviato sulla commessa', 'Cercabile per contenuto'],
+        status: { k: 'collegato', tone: 'good' },
+      },
     },
     {
-      k: '05',
-      t: 'Automazione dei flussi',
+      t: 'Ordini e flussi fra i sistemi',
       lead: 'I passaggi meccanici fra un sistema e l’altro.',
       d: 'Il tratto che oggi qualcuno copre a mano: dal messaggio al gestionale, dal gestionale al documento, dal documento alla notifica. Costruito sopra quello che avete già, non al posto suo.',
       out: 'Integrazioni con il gestionale esistente, registro delle operazioni.',
+      frame: {
+        title: 'Ordini',
+        input: { from: 'Officine Rossi S.r.l.', subject: 'Conferma ordine — 80 pz SL-441, consegna 12/09', time: '08:41' },
+        fields: [
+          { label: 'Articolo', value: 'PF-2205', source: 'allegato PDF · riga 3', state: 'verified' },
+          { label: 'Quantità', value: '40 pz', source: 'email: 40 · PDF: 60', state: 'conflict' },
+          { label: 'Consegna', value: '12/09', source: 'capacità disponibile dal 19/09', state: 'conflict' },
+        ],
+        decision: 'Quale quantità vale, e si conferma il 19/09?',
+        actions: ['Ordine pronto per il gestionale', 'Risposta al cliente preparata'],
+        status: { k: 'decisione richiesta', tone: 'amber' },
+      },
     },
     {
-      k: '06',
       t: 'Visibilità sulla gestione',
-      lead: 'I numeri che prima non esistevano.',
-      d: 'Volume delle richieste, tempo di risposta, offerte aperte, conversione, colli di bottiglia. Misurati dal processo stesso, non ricostruiti a posteriori con un foglio Excel.',
+      lead: 'Le anomalie, non le tabelle.',
+      d: 'Volume delle richieste, tempo di risposta, offerte aperte, colli di bottiglia. Misurati dal processo stesso, non ricostruiti a posteriori con un foglio Excel. Il sistema segnala ciò che non torna, invece di produrre un report da leggere.',
       out: 'Indicatori aggiornati, storico, esportazione.',
+      frame: {
+        title: 'Settimana 36 · dati di esempio',
+        input: { from: 'Dai sistemi collegati', subject: 'Gestionale · CRM · posta commerciale', time: 'lun 08:00' },
+        fields: [
+          { label: 'Offerte', value: '2 senza risposta da oltre 5 giorni', source: 'CRM · PRV-2201, PRV-2205', state: 'conflict' },
+          { label: 'Consegne', value: '1 ordine a rischio', source: 'gestionale · ORD-10482', state: 'conflict' },
+          { label: 'Richieste', value: 'Tutte lette e assegnate', source: 'posta commerciale', state: 'verified' },
+        ],
+        actions: ['Segnalato a chi decide', 'Storico aggiornato'],
+        status: { k: '2 anomalie', tone: 'amber' },
+      },
     },
     {
-      k: '07',
       t: 'Integrazioni',
       lead: 'Il gestionale resta dov’è.',
       d: 'Ci colleghiamo a quello che usate. Se un sistema non è integrabile in modo affidabile, lo diciamo prima di firmare invece di scoprirlo in corso d’opera.',
       out: 'Connettori, esportazioni, o inserimento assistito dove non c’è API.',
+      frame: {
+        title: 'Sistemi collegati',
+        input: { from: 'Mappa delle integrazioni', subject: 'Cosa il sistema legge e dove scrive', time: '' },
+        fields: [
+          { label: 'Gestionale', value: 'Collegato · lettura e scrittura', source: 'ordini, anagrafiche, giacenze', state: 'verified' },
+          { label: 'CRM', value: 'Collegato · lettura e scrittura', source: 'clienti, offerte, attività', state: 'verified' },
+          { label: 'Portale', value: 'Nessuna API · inserimento assistito', source: 'dichiarato prima di firmare', state: 'unknown' },
+        ],
+        actions: ['Registro di ogni operazione', 'Nessuna migrazione'],
+        status: { k: '2 di 3 con API', tone: 'info' },
+      },
     },
-  ],
+    {
+      t: 'Presenza digitale industriale',
+      lead: 'La porta d’ingresso che qualifica l’azienda in trenta secondi.',
+      d: 'Capacità produttive, macchine, materiali, tolleranze, settori serviti, documentazione tecnica. Costruita perché un ufficio acquisti capisca se siete il fornitore giusto senza dovervi telefonare — e perché ogni richiesta entri già strutturata nel flusso.',
+      out: 'Sito tecnico, ingresso richieste strutturato, documenti scaricabili.',
+      frame: {
+        title: 'Richiesta dal sito',
+        input: { from: 'Modulo tecnico', subject: 'Tornitura · acciaio C40 · 250 pz · disegno allegato', time: '11:20' },
+        fields: [
+          { label: 'Lavorazione', value: 'Tornitura con foratura', source: 'campo strutturato', state: 'verified' },
+          { label: 'Materiale', value: 'Acciaio C40', source: 'campo strutturato', state: 'verified' },
+          { label: 'Disegno', value: 'FL-2280_rev2.pdf', source: 'allegato · letto', state: 'read' },
+        ],
+        actions: ['Entra già nel flusso preventivi', 'Nessun campo da ricopiare'],
+        status: { k: 'strutturata', tone: 'good' },
+      },
+    },
+  ] as readonly {
+    t: string; lead: string; d: string; out: string;
+    frame: {
+      title: string;
+      input: { from: string; subject: string; time: string };
+      fields: readonly { label: string; value: string; source: string; state: 'read' | 'verified' | 'conflict' | 'unknown' }[];
+      decision?: string;
+      actions: readonly string[];
+      status: { k: string; tone: 'info' | 'good' | 'amber' | 'neutral' };
+    };
+  }[]),
+  disclaimer: 'Interfacce dimostrative sull’azienda di esempio: dati simulati.',
   note:
     'Un processo alla volta. Il secondo si affronta quando il primo è in produzione e misurato.',
 } as const;

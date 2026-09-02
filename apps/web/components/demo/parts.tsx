@@ -15,13 +15,13 @@ export function Pane({
   bodyClassName?: string;
 }) {
   return (
-    <section className={`panel flex min-h-0 flex-col ${className}`}>
-      <header className="flex items-center justify-between gap-3 border-b border-rule px-5 py-3.5">
-        <h3 className="label">{title}</h3>
+    <section className={`frame flex min-h-0 flex-col overflow-hidden ${className}`}>
+      <header className="frame-head">
+        <h3 className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted">{title}</h3>
         {meta}
       </header>
       {/* overscroll-contain stops a scrolled pane from chaining into the page. */}
-      <div className={`min-h-0 flex-1 overflow-auto overscroll-contain ${bodyClassName}`}>{children}</div>
+      <div tabIndex={0} className={`min-h-0 flex-1 overflow-auto overscroll-contain ${bodyClassName}`}>{children}</div>
     </section>
   );
 }
@@ -52,7 +52,7 @@ const toneMap = {
 export function Tag({ children, tone = 'neutral' }: { children: ReactNode; tone?: keyof typeof toneMap }) {
   return (
     <span
-      className={`inline-flex items-center border px-2.5 py-1 font-mono text-[length:var(--text-label)] uppercase tracking-[0.16em] ${toneMap[tone]}`}
+      className={`inline-flex items-center rounded-[3px] border px-2 py-0.5 font-mono text-[0.6875rem] uppercase tracking-[0.12em] ${toneMap[tone]}`}
     >
       {children}
     </span>
@@ -81,7 +81,7 @@ export function Verdict({
   const dot = tone === 'good' ? 'bg-good' : tone === 'amber' ? 'bg-amber' : 'bg-rule-strong';
 
   return (
-    <div className={`border ${skin}`}>
+    <div className={`overflow-hidden rounded-[var(--radius-frame)] border ${skin}`}>
       <div className="flex items-center gap-3 border-b border-inherit px-5 py-3">
         <span aria-hidden className={`block size-1.5 ${dot}`} />
         <p className={`font-mono text-[length:var(--text-label)] uppercase tracking-[0.2em] ${text}`}>{code}</p>

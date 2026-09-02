@@ -60,11 +60,11 @@ export function InAction() {
         <div className="mt-[var(--space-block)] grid gap-6 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] lg:gap-10">
           {/* the six steps — a list on wide screens, a scrolling rail on phones */}
           <Reveal className="min-w-0">
-            <ol className="-mx-[var(--gutter)] flex gap-2 overflow-x-auto px-[var(--gutter)] pb-2 lg:mx-0 lg:flex-col lg:gap-0 lg:overflow-visible lg:px-0 lg:pb-0" role="tablist" aria-label="Passi">
+            <div className="-mx-[var(--gutter)] flex gap-2 overflow-x-auto px-[var(--gutter)] pb-2 lg:mx-0 lg:flex-col lg:gap-0 lg:overflow-visible lg:px-0 lg:pb-0" role="tablist" aria-label="Passi">
               {c.steps.map((st, i) => {
                 const on = i === step;
                 return (
-                  <li key={st.k} className="flex-none lg:flex-auto">
+                  <div key={st.k} className="flex-none lg:flex-auto">
                     <button
                       type="button"
                       role="tab"
@@ -80,10 +80,10 @@ export function InAction() {
                         <span className={`hidden text-[0.875rem] leading-snug text-muted lg:block ${on ? 'lg:mt-1' : 'lg:hidden'}`}>{st.t}</span>
                       </span>
                     </button>
-                  </li>
+                  </div>
                 );
               })}
-            </ol>
+            </div>
             <p key={s.k} className="settle mt-4 text-[0.9375rem] leading-relaxed text-ink-2 lg:hidden">{s.t}</p>
           </Reveal>
 

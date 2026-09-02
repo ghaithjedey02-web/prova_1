@@ -35,7 +35,7 @@ export default function MetodoPage() {
             {m.phases.map((p, i) => (
               <Reveal key={p.k} as="li" delay={i * 50}>
                 <div className="relative grid gap-4 py-9 md:grid-cols-[auto_10rem_1fr_1fr] md:items-baseline md:gap-10 md:pl-0">
-                  <span aria-hidden className="hidden size-[0.65rem] shrink-0 translate-y-2 bg-accent md:block" />
+                  <span aria-hidden className="hidden size-[0.65rem] shrink-0 translate-y-2 rounded-full bg-accent md:block" />
                   <div className="flex items-baseline gap-4">
                     <span className="font-mono text-[length:var(--text-label)] tnum text-faint">{p.k}</span>
                     <h2 className="headline text-[length:var(--text-display-s)] text-ink">{p.t}</h2>
@@ -85,9 +85,9 @@ export default function MetodoPage() {
               <h2 className="headline mt-7 text-[length:var(--text-display-m)]">{m.handover.headline}</h2>
             </Reveal>
           </header>
-          <ul className="mt-[var(--space-block)] grid gap-px border border-rule bg-rule/70 md:grid-cols-3">
+          <ul className="mt-[var(--space-block)] grid gap-px overflow-hidden rounded-[var(--radius-frame)] border border-rule-strong bg-rule md:grid-cols-3">
             {m.handover.items.map((item, i) => (
-              <Reveal key={item.t} as="li" delay={i * 70} className="bg-surface/92 backdrop-blur-md">
+              <Reveal key={item.t} as="li" delay={i * 70} className="bg-raised">
                 <div className="h-full p-8">
                   <h3 className="text-[length:var(--text-body)] font-medium text-ink">{item.t}</h3>
                   <p className="mt-3 text-[length:var(--text-small)] leading-relaxed text-muted">{item.d}</p>

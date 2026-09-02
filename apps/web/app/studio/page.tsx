@@ -50,7 +50,7 @@ export default function StudioPage() {
       </section>
 
       {/* ------------------------------------------------------------ refuse */}
-      <section className="border-b border-rule bg-void/85 backdrop-blur-md py-[var(--space-section)]">
+      <section className="band py-[var(--space-section)]">
         <Container>
           <div className="grid gap-[var(--space-block)] lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
             <Reveal>
@@ -74,7 +74,7 @@ export default function StudioPage() {
       <section className="py-[var(--space-section)]">
         <Container>
           <Reveal>
-            <div className="plate max-w-[68ch] p-10 sm:p-14">
+            <div className="frame max-w-[68ch] p-8 sm:p-12">
               <p className="label">{s.honesty.t}</p>
               <p className="mt-7 text-[length:var(--text-display-s)] leading-snug text-ink">{s.honesty.body}</p>
               <div className="mt-10"><Button href={cta.primary.href} arrow>{cta.primary.label}</Button></div>

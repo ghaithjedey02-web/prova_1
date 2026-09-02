@@ -88,7 +88,7 @@ export function Mail({
     <div className={`rounded-[4px] border px-3.5 py-3 transition-colors duration-[var(--duration-base)] ${active ? 'border-accent-line bg-accent-soft/40' : 'border-rule bg-surface/60'}`}>
       <div className="flex items-baseline justify-between gap-3">
         <p className="truncate text-[0.875rem] font-medium text-ink">{from}</p>
-        <p className="font-mono text-[0.6875rem] text-faint">{time}</p>
+        <p className="font-mono text-[0.6875rem] text-muted">{time}</p>
       </div>
       <p className="mt-0.5 truncate text-[0.875rem] text-ink-2">{subject}</p>
       {excerpt && <p className="mt-1 line-clamp-2 text-[0.8125rem] leading-snug text-muted">{excerpt}</p>}

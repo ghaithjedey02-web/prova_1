@@ -119,14 +119,14 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
   return (
     <div className="flex flex-col gap-6">
       {/* ------------------------------------------------------- system bar */}
-      <dl className="glass-solid grid grid-cols-2 gap-px bg-rule/70 sm:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-frame)] border border-rule-strong bg-rule sm:grid-cols-4">
         {[
           ['SYS.ID', 'DOLMIR-RFQ-01'],
           ['STATO', statusCode],
           ['CONFIDENZA MEDIA', meanConfidence === null ? '—' : `${Math.round(meanConfidence * 100)}%`],
           ['DECISIONE', 'umana'],
         ].map(([k, v]) => (
-          <div key={k} className="bg-surface/92 px-5 py-4">
+          <div key={k} className="bg-raised px-5 py-4">
             <dt className="telemetry text-faint">{k}</dt>
             <dd
               className={`mt-1.5 font-mono text-[length:var(--text-micro)] ${
@@ -142,12 +142,12 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
       {/* ------------------------------------------------------ case selector */}
       <div>
         <p className="label mb-4">Scegli un caso</p>
-        <ul className="grid gap-px border border-rule bg-rule/70 sm:grid-cols-2 lg:grid-cols-5">
+        <ul className="grid gap-px overflow-hidden rounded-[var(--radius-frame)] border border-rule-strong bg-rule sm:grid-cols-2 lg:grid-cols-5">
           {workflow.samples.map((s) => {
             const on = s.id === sample.id;
             const meta = demoCopy.cases.find((c) => c.id === s.id);
             return (
-              <li key={s.id} className="bg-surface/92 backdrop-blur-md">
+              <li key={s.id} className="bg-raised">
                 <button
                   type="button"
                   onClick={() => pick(s)}
@@ -217,7 +217,7 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
                 <button
                   type="button"
                   onClick={() => void run(sample)}
-                  className="min-h-9 bg-accent px-4 py-1.5 font-mono text-[length:var(--text-label)] uppercase tracking-[0.16em] text-accent-ink transition-colors hover:bg-accent-hover"
+                  className="min-h-9 rounded-[4px] bg-accent px-4 py-1.5 font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-accent-ink transition-colors hover:bg-accent-hover"
                 >
                   Avvia
                 </button>
@@ -225,7 +225,7 @@ export function WorkflowPlayer({ workflow }: { workflow: WorkflowDefinition }) {
                 <button
                   type="button"
                   onClick={() => pick(sample)}
-                  className="border border-rule px-4 py-1.5 font-mono text-[length:var(--text-label)] uppercase tracking-[0.16em] text-muted transition-colors hover:border-rule-strong hover:text-ink"
+                  className="min-h-9 rounded-[4px] border border-border-ui px-4 py-1.5 font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-ink-2 transition-colors hover:border-accent hover:text-ink"
                 >
                   Ripeti
                 </button>
@@ -357,14 +357,14 @@ function Outcome({
   const priced = draft.suggestedUnitPriceEur !== null;
 
   return (
-    <div className="panel">
+    <div className="frame overflow-hidden">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-5 py-3.5">
         <h3 className="label">{workflow.copy.outputTitle}</h3>
         {priced ? <Tag tone="good">Bozza pronta</Tag> : <Tag tone="amber">Serve stima tecnica</Tag>}
       </header>
 
       <div className="grid gap-px bg-rule/70 lg:grid-cols-[1.05fr_1fr]">
-        <div className="bg-surface/92 backdrop-blur-md p-6 sm:p-8">
+        <div className="p-6 sm:p-8">
           {priced ? (
             <p className="font-display text-[length:var(--text-display-l)] font-semibold tnum text-ink">
               € {draft.suggestedUnitPriceEur!.toFixed(2)}
@@ -405,7 +405,7 @@ function Outcome({
           )}
         </div>
 
-        <div className="bg-void p-6 sm:p-8">
+        <div className="border-t border-rule bg-surface/60 p-6 sm:p-8">
           <p className="label mb-4">Bozza in italiano</p>
           <pre className="max-h-72 overflow-auto font-sans text-[length:var(--text-micro)] leading-relaxed whitespace-pre-wrap text-ink-2">
             {draft.draftBodyIt}

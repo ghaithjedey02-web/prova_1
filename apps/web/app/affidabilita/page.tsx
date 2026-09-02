@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
+import { Chip, type Tone } from '@/components/product/primitives';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { Reveal } from '@/components/ui/Reveal';
-import { affidabilita as a, cta } from '@/content/site';
+import { affidabilita as a, controllo, cta } from '@/content/site';
 
 export const metadata: Metadata = {
   title: a.title,
@@ -15,7 +16,7 @@ export default function AffidabilitaPage() {
   return (
     <>
       {/* ------------------------------------------------------------ hero */}
-      <section className="relative overflow-hidden border-b border-rule bg-void">
+      <section className="relative overflow-hidden border-b border-rule">
                 <Container className="relative py-[clamp(3rem,6.5vw,5.5rem)]">
           <Reveal><p className="chapter">{a.title}</p></Reveal>
           <Reveal delay={70}>
@@ -31,10 +32,18 @@ export default function AffidabilitaPage() {
       {/* ----------------------------------------------------------- chain */}
       <section className="border-b border-rule py-[var(--space-section)]">
         <Container>
-          <ol className="grid gap-px border border-rule bg-rule/70 lg:grid-cols-4">
+          {/* the five states the interface shows at all times */}
+          <Reveal>
+            <ul className="mb-[var(--space-block)] flex flex-wrap gap-2" aria-label="Stati del sistema">
+              {controllo.states.map((st) => (
+                <li key={st.k}><Chip tone={st.tone as Tone}>{st.k}</Chip></li>
+              ))}
+            </ul>
+          </Reveal>
+          <ol className="grid gap-px overflow-hidden rounded-[var(--radius-frame)] border border-rule-strong bg-rule lg:grid-cols-4">
             {a.chain.map((step, i) => (
-              <Reveal key={step.k} as="li" delay={i * 90} className="bg-surface/92 backdrop-blur-md">
-                <div className="relative flex h-full flex-col p-8">
+              <Reveal key={step.k} as="li" delay={i * 90} className="bg-raised">
+                <div className="relative flex h-full flex-col p-7">
                   {/* the connector: on wide screens the chain reads left to right */}
                   <span
                     aria-hidden
@@ -74,10 +83,10 @@ export default function AffidabilitaPage() {
             <Reveal delay={140}><p className="lead mt-7">{a.guarantees.body}</p></Reveal>
           </header>
 
-          <ul className="mt-[var(--space-block)] grid gap-px border border-rule bg-rule/70 md:grid-cols-2">
+          <ul className="mt-[var(--space-block)] grid gap-px overflow-hidden rounded-[var(--radius-frame)] border border-rule-strong bg-rule md:grid-cols-2">
             {a.guarantees.items.map((item, i) => (
-              <Reveal key={item.t} as="li" delay={i * 45} className="bg-surface/92 backdrop-blur-md">
-                <div className="flex h-full gap-4 p-7">
+              <Reveal key={item.t} as="li" delay={i * 45} className="bg-raised">
+                <div className="flex h-full gap-4 p-6">
                   <span aria-hidden className="mt-1 font-mono text-[length:var(--text-body)] leading-none text-bad">×</span>
                   <div>
                     <h3 className="text-[length:var(--text-body)] font-medium text-ink">{item.t}</h3>

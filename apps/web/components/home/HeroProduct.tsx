@@ -54,7 +54,11 @@ export function HeroProduct() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     setLive(true);
     let raf = 0;
-    const t0 = performance.now() / 1000 - 0.2;   // start just before the mail lands
+    /* Start at the decision beat: it is the frame the server already
+       rendered, so hydration changes nothing on screen and the largest paint
+       is the first one. The story then runs on to the actions and loops back
+       to the arrival. */
+    const t0 = performance.now() / 1000 - B[3];
     let last = '';
     const tick = () => {
       if (!document.hidden) {
