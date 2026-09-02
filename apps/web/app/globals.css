@@ -511,6 +511,22 @@ img, svg, video, canvas { display: block; max-width: 100%; }
 .enter   { animation: dolmir-enter var(--duration-scene) var(--ease-mech-out) both; }
 .enter-2 { animation: dolmir-enter var(--duration-scene) var(--ease-mech-out) 120ms both; }
 
+/* Information moving through the system: one dot travels the rail once. */
+@keyframes dolmir-flow {
+  from { transform: translateX(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  to   { transform: translateX(calc(100cqw - 100%)); opacity: 0; }
+}
+.flow-rail { container-type: inline-size; }
+.flow-dot {
+  position: absolute; top: -2px; left: 0;
+  width: 2.5rem; height: 5px; border-radius: 3px;
+  background: linear-gradient(90deg, transparent, var(--c-accent));
+  animation: dolmir-flow 1.4s var(--ease-mech) 1 both;
+}
+.flow-dot.amber { background: linear-gradient(90deg, transparent, var(--c-amber)); }
+
 /* A value that has just been computed. */
 @keyframes dolmir-settle {
   from { opacity: 0; transform: translateY(4px); filter: blur(3px); }
@@ -528,7 +544,8 @@ img, svg, video, canvas { display: block; max-width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scan::after, .settle, .enter, .enter-2 { animation: none; }
+  .scan::after, .settle, .enter, .enter-2, .flow-dot { animation: none; }
+  .flow-dot { display: none; }
   .scan::after { display: none; }
 }
 

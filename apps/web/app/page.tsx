@@ -1,6 +1,6 @@
 import { Hero } from '@/components/home/Hero';
 import { Problema } from '@/components/home/Problema';
-import { InAction } from '@/components/home/InAction';
+import { Context } from '@/components/home/Context';
 import { Workflow } from '@/components/home/Workflow';
 import { Parla } from '@/components/live/Parla';
 import { CaseStudy } from '@/components/home/CaseStudy';
@@ -22,9 +22,9 @@ const jsonLd = {
 /**
  * The homepage as one story, eight chapters, each answering one question.
  *
- *   01 Hero       — what is DOLMIR? One sentence, and the product doing it.
+ *   01 Hero       — what is DOLMIR? One sentence, then the product, full width.
  *   02 Problema   — why operational work fragments: the desk, drawn.
- *   03 In azione  — the intelligence layer, seen from inside the interface.
+ *   03 Il contesto — the records around one request, and how they relate.
  *   04 Il flusso  — the eight-step loop, filled with the visitor's process.
  *   05 Parla      — the real model, with tools, live.
  *   06 Il caso    — one request followed from email to quotation.
@@ -37,7 +37,7 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Hero />
       <Problema />
-      <InAction />
+      <Context />
       <Workflow />
       <Parla />
       <CaseStudy />

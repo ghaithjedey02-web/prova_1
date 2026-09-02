@@ -54,7 +54,7 @@ export const nav = [
 /** The footer carries what the four-item top bar leaves out. */
 export const footerNav = [
   { href: '/soluzioni', label: 'Soluzioni' },
-  { href: '/#in-azione', label: 'DOLMIR in azione' },
+  { href: '/#contesto', label: 'Il contesto' },
   { href: '/#parla', label: 'Parla con DOLMIR' },
   { href: '/dimostrazione', label: 'Dimostrazione' },
 ] as const;
@@ -91,6 +91,8 @@ export const hero = {
     'Email, documenti e gestionali vengono letti, verificati e trasformati in azioni. Quando serve un giudizio, decide una persona.',
   /** The four verbs under the lead. The last is amber: that one is ours. */
   ribbon: ['Legge', 'Verifica', 'Prepara', 'Si ferma quando serve una persona'],
+  /* The three surfaces of the stage: what arrives, what DOLMIR does, what comes out. */
+  panes: { inbox: 'Posta commerciale', dolmir: 'DOLMIR', outcome: 'Esito' },
   /* The captions of the hero scene, one per beat. DOM, never canvas. */
   beats: ([
     { k: 'ARRIVA', t: 'Una richiesta arriva, in mezzo a tutto il resto.' },
@@ -163,6 +165,7 @@ export const problema = {
     { kind: 'documenti',  a: 'Disegno_SL-441_rev3.pdf', b: '+ 2 allegati' },
     { kind: 'persone',    a: 'chiedere a Marco', b: 'prima di inserire' },
   ] as readonly { kind: string; a: string; b: string; c?: string }[]),
+  where: { email: 'Email', pdf: 'Allegato', excel: 'Foglio Excel', whatsapp: 'WhatsApp', telefono: 'Telefonata', gestionale: 'Gestionale', documenti: 'Cartella condivisa', persone: 'Promemoria' },
   turn: 'Qui entra DOLMIR.',
   what:
     'Costruiamo il sistema che manca: fra il lavoro delle persone e il software che avete già.',
@@ -661,23 +664,25 @@ export const legalNote =
   'Questo testo è predisposto ma non ancora verificato da un legale. Prima della pubblicazione del dominio definitivo verrà sottoposto a revisione.';
 
 
-/* ============================================ home === in action (03) ======*/
+/* ============================================ home === the context (03) =====*/
 
-export const inAction = {
+export const contesto = {
   n: '03',
-  label: 'DOLMIR in azione',
-  headline: 'Lo strato intelligente, visto da dentro.',
+  label: 'Il contesto',
+  headline: 'Ogni dato arriva con la sua storia.',
   body:
-    'Non un’illustrazione: la stessa interfaccia che usano le persone in azienda. Tre superfici — cosa arriva, cosa è stato capito, cosa è stato verificato — e il punto esatto in cui il sistema si ferma.',
-  steps: ([
-    { k: 'Arriva', t: 'La richiesta entra nella casella condivisa, fra una conferma d’ordine e una newsletter. DOLMIR la riconosce come richiesta di offerta.', pane: 'inbox' },
-    { k: 'Legge', t: 'Estrae cliente, prodotto, quantità, scadenza e priorità. Ogni dato tiene attaccata la sua fonte: la riga dell’email, l’allegato, la regola.', pane: 'fields' },
-    { k: 'Verifica', t: 'Confronta ogni dato con i sistemi già in azienda: anagrafica, listino, storico delle richieste.', pane: 'checks' },
-    { k: 'Conflitto', t: 'La quantità non coincide con l’ultima richiesta dello stesso cliente. Il sistema lo dichiara invece di scegliere.', pane: 'checks', amber: true },
-    { k: 'Persona', t: 'La decisione arriva a chi può prenderla, con l’evidenza già pronta. Approva o revisiona: due pulsanti, nessuna interpretazione.', pane: 'decision', amber: true },
-    { k: 'Agisce', t: 'Solo dopo il sì: CRM aggiornato, offerta preparata, commerciale avvisato. Tutto registrato.', pane: 'actions' },
-  ] as readonly { k: string; t: string; pane: 'inbox' | 'fields' | 'checks' | 'decision' | 'actions'; amber?: boolean }[]),
-  panes: { inbox: 'POSTA COMMERCIALE', fields: 'LETTURA', checks: 'VERIFICA' },
+    'Una richiesta non è mai sola: ha un cliente, un’offerta precedente, un ordine in corso, un disegno, una persona che ha scritto su WhatsApp. DOLMIR collega i record fra i sistemi che avete già, e il conflitto salta fuori da solo.',
+  center: { id: 'C-01', t: 'Officine Rossi S.r.l.', sub: 'Cliente · alias «Meccanica Rossi» · gestionale + CRM' },
+  nodes: ([
+    { k: 'rfq', id: 'RFQ-2026-0521', kind: 'Richiesta di offerta', t: '2.000 pz SL-4410 · consegna 30/09', state: 'conflict', src: 'posta commerciale · 09:12', d: 'La richiesta letta nell’hero. In verifica: la quantità non coincide con l’ultima offerta dello stesso codice.' },
+    { k: 'prv', id: 'PRV-2198', kind: 'Offerta precedente', t: '1.200 pz SL-4410 · giugno 2026', state: 'verified', src: 'CRM · inviata', d: 'L’ultima offerta per lo stesso codice. È il riferimento con cui la nuova quantità viene confrontata.' },
+    { k: 'ord', id: 'ORD-10482', kind: 'Ordine in corso', t: 'PF-2205 · in lavorazione', state: 'conflict', src: 'gestionale', d: 'Un altro fronte aperto con lo stesso cliente: email e allegato dicono quantità diverse (40 ↔ 60).' },
+    { k: 'doc', id: 'Disegno_SL-4410_rev3.pdf', kind: 'Documento', t: 'Allegato alla richiesta · rev. 3', state: 'verified', src: 'allegato email', d: 'Il disegno da cui il sistema ha letto il codice. Ogni campo estratto tiene attaccata la pagina da cui viene.' },
+    { k: 'who', id: 'Marco', kind: 'Referente', t: '«confermi 40 pezzi o 60?»', state: 'read', src: 'WhatsApp · ieri', d: 'La persona che ha scritto. Il messaggio è collegato all’ordine a cui si riferisce, non perso in una chat.' },
+  ] as readonly { k: string; id: string; kind: string; t: string; state: 'read' | 'verified' | 'conflict'; src: string; d: string }[]),
+  relation: { a: 'rfq', b: 'prv', label: 'quantità diversa · 2.000 ↔ 1.200' },
+  hint: 'Toccate un record per vedere cosa ne sa il sistema.',
+  disclaimer: 'Relazioni sull’azienda dimostrativa: dati simulati.',
 } as const;
 
 /* ============================================ home === the workflow (04) ====*/

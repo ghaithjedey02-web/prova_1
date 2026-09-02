@@ -102,6 +102,35 @@ What transfers:
 - **Diagrams are live.** The infrastructure is drawn with the same primitives
   as the interface.
 
+## Second inspection (final design pass) — composition, measured
+
+Re-opened on 2026-09-02 with a real browser, reading geometry rather than
+styles this time.
+
+| site | h1 | first product visual | gap below h1 | notes |
+|---|---|---|---|---|
+| Linear, 1440 | 64 px, left, spans the measure (1282 px) | full-bleed image, 1440 × 804 | 91 px | 560 animated elements, 22 mask fades; mobile h1 38 px, product image later |
+| Attio, 1440 | 64 px, centred | 74 % wide | 273 px | 6 sticky regions; long single-flow product sections |
+| Clay, 1440 | 88 px, left | full width | 120 px | "what do you want to build" picker |
+| ElevenLabs, 1440 | 48 px light | operable demo in the hero | — | pill buttons, canvases for live audio |
+| Vercel, 1440 | 64 px, tight tracking | 64 % wide | — | mono lead, 6–8 px radii, hairline rings |
+| Anthropic, 1440 | 61 px | canvas, 89 % wide | 122 px | serif lead, warm paper |
+
+The lesson that changed DOLMIR's hero: the headline takes the whole measure
+and **the product arrives immediately underneath, as wide as the page**, at
+about a headline's height of distance. A two-column hero halves the
+product; a stacked hero makes it the largest thing on the first screen.
+DOLMIR's stage is therefore full width: three surfaces of the operational
+layer side by side — what arrives, what DOLMIR makes of it, what comes out —
+with one request walking across them and a dot travelling the rail each
+time the information moves on. On phones the same three surfaces stack and
+the one the story is on opens, the others fold to their header.
+
+The second lesson (Attio) became chapter 03: the relationships between
+records drawn as the boxes they are, with hairlines measured after layout
+and the one relation that matters — new request versus previous quotation —
+in amber, labelled.
+
 ## What DOLMIR is not allowed to borrow
 
 Pill buttons and 12 px radii (Linear, Clay, ElevenLabs) — DOLMIR's corners
