@@ -136,8 +136,7 @@ export function Parla() {
               <div ref={logRef} className="max-h-[26rem] min-h-[14rem] overflow-y-auto px-4 py-5 sm:px-6 lg:max-h-[30rem]" aria-live="polite">
                 {offline ? (
                   <div className="py-1">
-                    <Chip tone="amber">{c.offlineState}</Chip>
-                    <p className="mt-3 max-w-[52ch] text-[0.9375rem] leading-relaxed text-ink-2">{c.offlineBody}</p>
+                    <p className="max-w-[52ch] text-[0.9375rem] leading-relaxed text-ink-2">{c.offlineBody}</p>
                     <a href="/contatto" className="mt-4 inline-flex min-h-10 items-center rounded-[4px] border border-accent px-4 font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-accent transition-colors hover:bg-accent hover:text-ground">
                       {c.offlineCta}
                     </a>
@@ -217,7 +216,7 @@ export function Parla() {
 
           {/* voice controls + honesty line */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-rule px-4 py-2.5 sm:px-6">
-            <p className="text-[length:var(--text-micro)] text-muted">{offline ? c.offlineState : c.disclaimer}</p>
+            <p className="text-[length:var(--text-micro)] text-muted">{c.disclaimer}</p>
             <div className="flex items-center gap-2">
               {voice.speaking && (
                 <button type="button" onClick={voice.shutUp} className="min-h-9 rounded-[4px] border border-amber/60 px-3 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-amber transition-colors hover:bg-amber/10">
