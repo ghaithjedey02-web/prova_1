@@ -146,8 +146,7 @@ export function consoleModel(): string {
  * acts in, via the `anthropic-workspace-id` header. ANTHROPIC_WORKSPACE_ID
  * carries that id; a workspace-scoped key does not need it and is unaffected.
  */
-function credential(): { apiKey?: string; authToken?: string; defaultHeaders?: Record<string, string> } {
-  const workspace = process.env['ANTHROPIC_WORKSPACE_ID']?.trim();
+function credential(workspace?: string): { apiKey?: string; authToken?: string; defaultHeaders?: Record<string, string> } {
   const defaultHeaders = workspace ? { 'anthropic-workspace-id': workspace } : undefined;
   const key = process.env['ANTHROPIC_API_KEY']?.trim();
   if (key) return { apiKey: key, defaultHeaders };
@@ -156,9 +155,81 @@ function credential(): { apiKey?: string; authToken?: string; defaultHeaders?: R
   return { defaultHeaders };
 }
 
+/* ------------------------------------------------------------ workspace ---
+   A personal or service-account key that is not scoped to one workspace must
+   name the workspace on every request. ANTHROPIC_WORKSPACE_ID does that when
+   an operator sets it. When it is absent, the deployment resolves it once by
+   itself: the same key may call the Admin API's List Workspaces endpoint
+   (only unscoped identity keys are accepted there), and if the identity can
+   act in exactly one live workspace — or one whose name says it is this
+   product's — that is the workspace. A scoped or legacy key gets a 4xx from
+   that endpoint and needs no header, so the lookup costs it nothing but one
+   request per instance. Only ids and names are ever logged.
+   ------------------------------------------------------------------------ */
+
+const WORKSPACES_URL = 'https://api.anthropic.com/v1/organizations/workspaces?limit=100';
+const WORKSPACE_TTL_MS = 10 * 60_000;
+
+export interface WorkspaceSummary { id: string; name?: string | null; archived_at?: string | null }
+
+/** The workspace a multi-workspace identity should act in, or null when it cannot be decided alone. */
+export function pickWorkspace(list: readonly WorkspaceSummary[]): string | null {
+  const live = list.filter((w) => w && typeof w.id === 'string' && !w.archived_at);
+  if (live.length === 0) return null;
+  if (live.length === 1) return live[0]!.id;
+  const named = live.find((w) => /dolmir|prod/i.test(w.name ?? ''));
+  return (named ?? live[0]!).id;
+}
+
+let resolvedWorkspace: { id: string | null; at: number } | null = null;
+let workspaceLookup: Promise<string | null> | null = null;
+
+async function discoverWorkspace(key: string): Promise<string | null> {
+  const res = await fetch(WORKSPACES_URL, {
+    headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+    signal: AbortSignal.timeout(8_000),
+  });
+  if (!res.ok) {
+    console.error(`[parla] workspace list ${res.status}: ${(await res.text()).slice(0, 200)}`);
+    return null;
+  }
+  const body = (await res.json()) as { data?: WorkspaceSummary[] };
+  const list = body.data ?? [];
+  const id = pickWorkspace(list);
+  console.error(
+    `[parla] workspace ${id ? `resolved ${id}` : 'not decidable'} from ${list.length} listed: ` +
+      list.map((w) => `${w.id}${w.name ? ` (${w.name})` : ''}${w.archived_at ? ' archived' : ''}`).join(', '),
+  );
+  return id;
+}
+
+/** The workspace header value for this request: the operator's, the discovered one, or none. */
+export async function workspaceId(): Promise<string | undefined> {
+  const env = process.env['ANTHROPIC_WORKSPACE_ID']?.trim();
+  if (env) return env;
+  const key = process.env['ANTHROPIC_API_KEY']?.trim();
+  if (!key) return undefined;
+  if (resolvedWorkspace && Date.now() - resolvedWorkspace.at < WORKSPACE_TTL_MS) return resolvedWorkspace.id ?? undefined;
+  if (!workspaceLookup) {
+    workspaceLookup = discoverWorkspace(key)
+      .catch((err: unknown) => {
+        console.error(`[parla] workspace discovery failed: ${err instanceof Error ? err.message : String(err)}`);
+        return null;
+      })
+      .then((id) => {
+        resolvedWorkspace = { id, at: Date.now() };
+        workspaceLookup = null;
+        return id;
+      });
+  }
+  return (await workspaceLookup) ?? undefined;
+}
+
 /** Shape of the credential for server logs — length and prefix only, never the value. */
 export function credentialShape(): string {
-  const workspace = process.env['ANTHROPIC_WORKSPACE_ID']?.trim() ? 'workspace=set' : 'workspace=unset';
+  const workspace = process.env['ANTHROPIC_WORKSPACE_ID']?.trim()
+    ? 'workspace=env'
+    : resolvedWorkspace?.id ? 'workspace=discovered' : 'workspace=unset';
   const raw = process.env['ANTHROPIC_API_KEY'];
   if (raw) {
     return `api_key len=${raw.length} prefix=${raw.trim().startsWith('sk-ant-') ? 'sk-ant' : 'unexpected'} whitespace=${/\s/.test(raw) ? 'yes' : 'no'} ${workspace}`;
@@ -231,7 +302,7 @@ export async function streamConsole(
   emit: (e: ConsoleEvent) => void,
   signal?: AbortSignal,
 ): Promise<ConsoleReply> {
-  const client = new Anthropic({ ...credential(), timeout: 45_000, maxRetries: 1 });
+  const client = new Anthropic({ ...credential(await workspaceId()), timeout: 45_000, maxRetries: 1 });
   const model = consoleModel();
   const tools = buildTools();
   const evidence: ConsoleEvidence[] = [];

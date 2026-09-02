@@ -51,8 +51,22 @@ Due strade, una sola basta:
    (*API Keys → Create Key*, scegliendo il workspace) e sostituire
    `ANTHROPIC_API_KEY`. In quel caso `ANTHROPIC_WORKSPACE_ID` non serve.
 
-Finché non è fatto, la console mostra «Modello non attivo su questo
-ambiente» — non una risposta finta — e il log di Vercel riporta
+Dal commit di oggi il server prova a cavarsela da solo: senza
+`ANTHROPIC_WORKSPACE_ID`, elenca i workspace in cui la chiave può agire
+(endpoint *List Workspaces*, accettato dalle chiavi identity-linked non
+vincolate) e, se ce n'è uno solo attivo — o uno chiamato DOLMIR/Production
+— usa quello, registrandolo nel log come `[parla] workspace resolved …`.
+Il valore in `ANTHROPIC_WORKSPACE_ID`, se presente, ha sempre la
+precedenza.
+
+Resta un caso in cui serve un'azione manuale: se la chiave agisce solo nel
+**Default Workspace**, l'elenco arriva vuoto (Anthropic non lo include) e il
+log dice `workspace not decidable`. Allora la strada più semplice è la 2:
+creare in Console una chiave **vincolata a un workspace** e sostituire
+`ANTHROPIC_API_KEY`.
+
+Finché uno dei due non è vero, la console mostra «Modello non attivo su
+questo ambiente» — non una risposta finta — e il log riporta
 `[parla] workspace 400 …`.
 
 ## 3. Contatto (Vercel → Settings → Environment Variables)
