@@ -47,7 +47,7 @@ export default function ContattoPage() {
                 Preferite scrivere direttamente?{' '}
                 <a
                   href={`mailto:${site.email}`}
-                  className="text-ink underline decoration-rule-strong underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+                  className="-my-2 inline-block py-2 text-ink underline decoration-rule-strong underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
                 >
                   {site.email}
                 </a>

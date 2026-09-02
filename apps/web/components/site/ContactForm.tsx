@@ -179,7 +179,7 @@ export function ContactForm() {
             type="checkbox"
             name="consenso"
             required
-            className="mt-0.5 size-4 shrink-0 accent-[var(--c-accent)]"
+            className="mt-0.5 size-5 shrink-0 accent-[var(--c-accent)]"
           />
           <span>
             Acconsento al trattamento dei dati per ricevere una risposta, secondo la{' '}
