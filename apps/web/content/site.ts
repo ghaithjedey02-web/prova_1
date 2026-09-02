@@ -82,29 +82,28 @@ export const pipeline = {
 /* =========================================================== home === hero ===*/
 
 export const hero = {
-  eyebrow: 'AI · Software · Infrastruttura digitale',
-  line1: 'Email, PDF, gestionali:',
-  line2: 'il lavoro si disperde.',
-  line3: 'DOLMIR lo ricompone.',
+  eyebrow: 'Sistemi software intelligenti per aziende',
+  /* Three lines a stranger reads while the scene beside them shows exactly
+     this happening. No "gestionale", no "infrastruttura": the jargon lives
+     further down, for whoever wants it. */
+  line1: 'Email, PDF, ordini: arrivano in disordine.',
+  line2: 'DOLMIR li legge, li verifica,',
+  line3: 'e prepara cosa fare.',
   lead:
-    'Costruiamo sistemi software intelligenti: leggono email e documenti, verificano i dati sui sistemi che avete già, applicano le vostre regole, preparano le azioni e dichiarano quanto sono sicuri — e si fermano davanti a una persona per ogni decisione che richiede giudizio.',
-  /**
-   * Four principles, not four metrics.
-   *
-   * This strip used to read CANALI 7 collegati · LATENZA < 900 ms — numbers
-   * that were never measured on anything, about an installation that does not
-   * exist. Invented performance figures in the first viewport are the fastest
-   * way to lose a technical reader and the surest way to mislead a
-   * non-technical one. These four are architectural facts: they are true of
-   * every system we build, and none of them is a number we cannot show.
-   */
-  principles: [
-    ['NESSUNA MIGRAZIONE', 'Lavoriamo sopra il gestionale che avete già.'],
-    ['DATI VERIFICATI', 'Ogni valore confrontato con la sua fonte.'],
-    ['CONFIDENZA DICHIARATA', 'Il sistema dice quanto è sicuro, campo per campo.'],
-    ['DECISIONE UMANA', 'Nessuna azione che richiede giudizio parte da sola.'],
-  ] as const,
-  scroll: 'Continuate',
+    'Quando serve una decisione vera — un dato che non torna, un caso mai visto — si ferma e chiama una persona. Tutto sopra i software che avete già.',
+  /** The product as four verbs. The last is amber, because that one is ours. */
+  ribbon: ['Legge', 'Verifica', 'Prepara', 'Si ferma quando serve una persona'],
+} as const;
+
+/** The five beats of the hero scene; the words are DOM, never canvas. */
+export const heroScene = {
+  beats: ([
+    { word: 'Arriva in disordine', line: 'Email, allegati, ordini, fatture. Ognuno per conto suo.' },
+    { word: 'DOLMIR lo legge', line: 'Capisce cosa è arrivato e lo mette in fila.' },
+    { word: 'Lo verifica', line: 'Ogni dato confrontato con i sistemi che avete già.' },
+    { word: 'Si ferma', line: 'Un dato non torna. Decide una persona, non il software.', amber: true },
+    { word: 'Agisce', line: 'Approvato: ordine inserito, risposta pronta, tutto registrato.' },
+  ] as readonly { word: string; line: string; amber?: boolean }[]),
 } as const;
 
 /* ============================================ home === the problem ==========*/
@@ -115,7 +114,19 @@ export const problema = {
   headline: 'Il lavoro non è nel gestionale.',
   body:
     'È nella casella email, negli allegati, nei fogli Excel, nelle telefonate. L’informazione esiste già — è solo frammentata. E a tenerla insieme, oggi, sono le persone: a mano, ricopiandola da un posto all’altro.',
-  fragments: ['Email', 'PDF', 'Excel', 'WhatsApp', 'Telefono', 'Gestionale', 'Documenti', 'Persone'],
+  /* Not labels — the things themselves, drawn as what they are, so the
+     reader recognises a Tuesday rather than decoding a taxonomy. Same demo
+     entities as the rest of the site. */
+  fragments: ([
+    { kind: 'email',      a: 'Officine Rossi', b: 'Conferma ordine — 80 pz SL-441, consegna 12/09', c: '08:41' },
+    { kind: 'pdf',        a: 'Allegato_ordine_184.pdf', b: 'PF-2205 · q.tà 60' },
+    { kind: 'excel',      a: 'PF-2205', b: '40', c: '12/09' },
+    { kind: 'whatsapp',   a: 'Marco', b: 'confermi 40 pezzi o 60?' },
+    { kind: 'telefono',   a: 'Chiamata · 4 min', b: '«la quantità è da rivedere»' },
+    { kind: 'gestionale', a: 'ORD-10482', b: 'IN LAVORAZIONE', c: 'Officine Rossi S.r.l.' },
+    { kind: 'documenti',  a: 'Disegno_SL-441_rev3.pdf', b: '+ 2 allegati' },
+    { kind: 'persone',    a: 'chiedere a Marco', b: 'prima di inserire' },
+  ] as readonly { kind: string; a: string; b: string; c?: string }[]),
   turn: 'Qui entra DOLMIR.',
   what:
     'Costruiamo il sistema che manca: fra il lavoro delle persone e il software che avete già.',
@@ -452,7 +463,7 @@ export const parla = {
     DECISIONE: 'Serve una persona',
     RISPOSTA: 'Sto rispondendo',
   },
-  systemPanel: 'Il sistema, mentre lavora',
+  systemPanel: 'Cosa sta facendo',
   consultedLabel: 'DATI CONSULTATI',
   nothingYet: 'In attesa di una domanda.',
   panelDegraded: 'Nessuno strumento da consultare: il modello non è collegato qui.',

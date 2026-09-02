@@ -16,6 +16,10 @@ const c = chapters.human;
 export function HumanGate() {
   return (
     <section className="relative py-[var(--space-section)]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-1/3 -z-10 h-[60vh] bg-[radial-gradient(ellipse_50%_50%_at_50%_50%,rgb(227_165_81/0.10)_0%,transparent_70%)]"
+      />
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} />
 

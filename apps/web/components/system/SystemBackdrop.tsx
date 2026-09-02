@@ -56,7 +56,11 @@ export function SystemBackdrop() {
         for (const g of STAGES) if (p >= g.at) st = g;
         railStage.current.textContent = `${st.code} · ${st.label.toUpperCase()}`;
       }
-      const base = p < 0.04 ? 1 : Math.max(0.5, 1 - (p - 0.04) * 6);
+      // Atmosphere, not protagonist. The hero now carries its own scene — the
+      // documents, the core, the amber stop — so the machine behind the page
+      // stays faint everywhere and never competes with a thing that means
+      // something.
+      const base = p < 0.04 ? 0.22 : Math.max(0.28, 0.42 - (p - 0.04) * 2);
       // The intelligence section asks for the machine back at full strength.
       const o = Math.max(base, 0.94 * backdropBoost());
       if (layer.current) layer.current.style.opacity = String(o);

@@ -11,6 +11,8 @@ export interface Palette {
   muted: string;
   rule: string;
   steel: string;
+  /** The page ground, for canvas fills that must read as "paper on the dark". */
+  ground: string;
 }
 
 function read(): Palette {
@@ -24,6 +26,7 @@ function read(): Palette {
     muted: v('--c-muted', '#7B858A'),
     rule: v('--c-rule-strong', '#2E353B'),
     steel: v('--c-steel-hi', '#6F7A80'),
+    ground: v('--c-ground', '#08090B'),
   };
 }
 

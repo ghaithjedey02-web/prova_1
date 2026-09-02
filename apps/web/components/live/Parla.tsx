@@ -7,7 +7,7 @@ import { emit, setActivity } from '@/lib/system-bus';
 import { STAGES, useConsole, type Evidence, type Stage, type Turn } from '@/lib/console-client';
 import { useVoice } from '@/lib/voice';
 import { DolmirCore, type CoreState } from './DolmirCore';
-import { FilmCinema } from './FilmCinema';
+import { CoreStage } from './CoreStage';
 import { parla as c } from '@/content/site';
 
 /**
@@ -140,14 +140,14 @@ export function Parla() {
         <div className="mt-[var(--space-block)]">
           {/* The Core is the microphone, and the film plays around it. */}
           <div className="mx-auto max-w-[52rem]">
-            <FilmCinema endStyle="bar" frame="short">
+            <CoreStage>
               <DolmirCore
                 state={coreState}
                 level={voice.level}
                 onActivate={voice.supported ? voice.listen : undefined}
                 label={voice.mic === 'listening' ? c.micStop : c.micLabel}
               />
-            </FilmCinema>
+            </CoreStage>
             <p className="mt-3 text-center text-[0.9375rem] text-ink-2">
               {voice.supported ? (
                 <>
@@ -350,7 +350,7 @@ function Answer({ turn, reduce, onDecide }: { turn: Turn; reduce: boolean; onDec
       <p className={`telemetry ${amber ? 'text-amber' : 'text-accent'}`}>DOLMIR</p>
 
       {turn.text && (
-        <p className="mt-1 max-w-[58ch] whitespace-pre-line text-[0.9375rem] leading-relaxed text-ink">
+        <p className="mt-1.5 max-w-[58ch] whitespace-pre-line text-[length:var(--text-body)] leading-relaxed text-ink">
           {turn.text}
           {turn.live && <span aria-hidden className="ml-0.5 text-accent">▌</span>}
         </p>
@@ -474,7 +474,7 @@ function SystemPanel({
   const recent = evidence.slice(-6);
   return (
     <aside className="hidden min-w-0 flex-col lg:flex" aria-label={c.systemPanel}>
-      <p className="border-b border-rule px-4 py-2.5 text-[length:var(--text-micro)] text-muted">{c.systemPanel}</p>
+      <p className="border-b border-rule px-4 py-3 text-[length:var(--text-small)] text-ink-2">{c.systemPanel}</p>
 
       {/* the pipeline, driven by real events from the server */}
       <ol className="space-y-0 border-b border-rule px-4 py-3">
