@@ -184,23 +184,39 @@ export function pickWorkspace(list: readonly WorkspaceSummary[]): string | null 
 let resolvedWorkspace: { id: string | null; at: number } | null = null;
 let workspaceLookup: Promise<string | null> | null = null;
 
+const MODELS_URL = 'https://api.anthropic.com/v1/models?limit=1';
+
 async function discoverWorkspace(key: string): Promise<string | null> {
-  const res = await fetch(WORKSPACES_URL, {
-    headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-    signal: AbortSignal.timeout(8_000),
-  });
-  if (!res.ok) {
-    console.error(`[parla] workspace list ${res.status}: ${(await res.text()).slice(0, 200)}`);
-    return null;
+  const headers = { 'x-api-key': key, 'anthropic-version': '2023-06-01' };
+
+  // 1. The identity may list the workspaces it can act in.
+  const list = await fetch(WORKSPACES_URL, { headers, signal: AbortSignal.timeout(8_000) });
+  if (list.ok) {
+    const body = (await list.json()) as { data?: WorkspaceSummary[] };
+    const rows = body.data ?? [];
+    const id = pickWorkspace(rows);
+    console.error(
+      `[parla] workspace ${id ? `resolved ${id}` : 'not decidable'} from ${rows.length} listed: ` +
+        rows.map((w) => `${w.id}${w.name ? ` (${w.name})` : ''}${w.archived_at ? ' archived' : ''}`).join(', '),
+    );
+    if (id) return id;
+  } else {
+    console.error(`[parla] workspace list ${list.status}: ${(await list.text()).slice(0, 160)}`);
   }
-  const body = (await res.json()) as { data?: WorkspaceSummary[] };
-  const list = body.data ?? [];
-  const id = pickWorkspace(list);
+
+  // 2. Any response that ran inside a workspace names it in a header — the
+  //    documented way to learn the Default Workspace's id, which no list
+  //    includes. The models endpoint is read-only and cheap.
+  const probe = await fetch(MODELS_URL, { headers, signal: AbortSignal.timeout(8_000) });
+  const fromHeader = probe.headers.get('anthropic-workspace-id')?.trim();
+  if (fromHeader) {
+    console.error(`[parla] workspace resolved ${fromHeader} from the models response header (${probe.status})`);
+    return fromHeader;
+  }
   console.error(
-    `[parla] workspace ${id ? `resolved ${id}` : 'not decidable'} from ${list.length} listed: ` +
-      list.map((w) => `${w.id}${w.name ? ` (${w.name})` : ''}${w.archived_at ? ' archived' : ''}`).join(', '),
+    `[parla] workspace not resolvable: models ${probe.status} without anthropic-workspace-id (headers: ${[...probe.headers.keys()].join(',')}) — set ANTHROPIC_WORKSPACE_ID or use a key scoped to a workspace`,
   );
-  return id;
+  return null;
 }
 
 /** The workspace header value for this request: the operator's, the discovered one, or none. */
