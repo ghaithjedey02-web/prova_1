@@ -34,12 +34,15 @@ export function DolmirCore({
   onActivate,
   label,
   level,
+  className = 'size-40 sm:size-48',
 }: {
   state: CoreState;
   onActivate?: () => void;
   label: string;
   /** Live microphone amplitude 0..1 while listening. */
   level?: React.RefObject<number>;
+  /** The box the instrument fills; the drawing scales with it. */
+  className?: string;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<CoreState>(state);
@@ -118,7 +121,7 @@ export function DolmirCore({
       // The machined body: two dark concentric rings.
       ctx!.save();
       ctx!.strokeStyle = palette!.rule;
-      ctx!.lineWidth = 5;
+      ctx!.lineWidth = Math.max(1.5, R * 0.1);
       ctx!.globalAlpha = 0.9;
       ctx!.beginPath(); ctx!.arc(cx, cy, r * 1.22, 0, Math.PI * 2); ctx!.stroke();
       ctx!.lineWidth = 1;
@@ -180,7 +183,7 @@ export function DolmirCore({
       const cx = w / 2, cy = h / 2, R = Math.min(w, h) * 0.32;
       ctx!.clearRect(0, 0, w, h);
       ctx!.strokeStyle = palette!.rule;
-      ctx!.lineWidth = 5;
+      ctx!.lineWidth = Math.max(1.5, R * 0.1);
       ctx!.beginPath(); ctx!.arc(cx, cy, R * 1.22, 0, Math.PI * 2); ctx!.stroke();
       ctx!.strokeStyle = palette!.accent;
       ctx!.lineWidth = 1.6;
@@ -207,11 +210,11 @@ export function DolmirCore({
       type="button"
       onClick={onActivate}
       aria-label={label}
-      className="group relative mx-auto block size-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent sm:size-48"
+      className={`group relative block rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${className}`}
     >
       <canvas ref={canvas} aria-hidden className="absolute inset-0 h-full w-full" />
       <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <svg width="16" height="16" viewBox="0 0 14 14" aria-hidden className="text-accent opacity-70 transition-opacity group-hover:opacity-100">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden className="text-accent opacity-70 transition-opacity group-hover:opacity-100">
           <rect x="5" y="1" width="4" height="7" rx="2" fill="currentColor" />
           <path d="M3 6v1a4 4 0 0 0 8 0V6M7 11v2" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
         </svg>

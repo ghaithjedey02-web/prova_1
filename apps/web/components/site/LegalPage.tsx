@@ -38,8 +38,8 @@ export function LegalPage({
 
         <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-rule pt-8 font-mono text-[length:var(--text-label)] tracking-[0.12em] text-muted">
           <span>Titolare · {site.name}</span>
-          <a href={`mailto:${site.email}`} className="-my-2 inline-block py-2 transition-colors hover:text-accent">{site.email}</a>
-          <Link href="/contatto" className="-my-2 inline-block py-2 transition-colors hover:text-accent">Contatto</Link>
+          <a href={`mailto:${site.email}`} className="inline-flex min-h-10 items-center transition-colors hover:text-accent">{site.email}</a>
+          <Link href="/contatto" className="inline-flex min-h-10 items-center transition-colors hover:text-accent">Contatto</Link>
         </div>
       </Container>
     </section>

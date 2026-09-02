@@ -97,7 +97,7 @@ function Artifact({ f }: { f: Frag }) {
 
 export function Problema() {
   return (
-    <section className="relative py-[var(--space-section)]" aria-labelledby="problema-heading">
+    <section className="band relative py-[var(--space-section)]" aria-labelledby="problema-heading">
       <Container>
         <Chapter n={c.n} label={c.label} headline={c.headline} lead={c.body} id="problema-heading" size="l" />
 

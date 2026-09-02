@@ -55,10 +55,20 @@ Finché non è fatto, la console mostra «Modello non attivo su questo
 ambiente» — non una risposta finta — e il log di Vercel riporta
 `[parla] workspace 400 …`.
 
-## 3. Contatto
+## 3. Contatto (Vercel → Settings → Environment Variables)
 
-`/api/contatto` risponde 501: manca un provider email (Resend, Postmark,
-SES…). Il modulo di contatto lo dice invece di fingere l'invio.
+`/api/contatto` è pronto: valida, filtra i bot (campo honeypot), limita gli
+invii per IP e spedisce via Resend con una chiamata HTTPS diretta. Senza
+provider risponde 501 e il modulo lo dice, invece di fingere l'invio.
+
+| variabile | cosa fa | default |
+|---|---|---|
+| `RESEND_API_KEY` | accende l'invio (resend.com → API Keys) | assente → 501 |
+| `CONTACT_TO` | destinatario delle richieste | `info@dolmir.com` |
+| `CONTACT_FROM` | mittente, su un dominio verificato in Resend | `DOLMIR <contatto@dolmir.com>` |
+
+Per usare `contatto@dolmir.com` come mittente va verificato `dolmir.com` in
+Resend (record DNS DKIM/SPF che Resend indica).
 
 ## 4. Film
 

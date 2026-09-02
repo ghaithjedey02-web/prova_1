@@ -256,11 +256,18 @@ export function useVoice({
     } catch { /* voice output is a bonus, never a requirement */ }
   }, []);
 
+  /* Once the server has said it has no voice provider (503), stop asking: the
+     answer will not change until a deploy, and every retry is a red line in
+     the browser console for nothing. */
+  const serverVoice = useRef(true);
+
   const speak = useCallback((text: string) => {
     if (!enabledRef.current || !text.trim()) return;
     const token = ++speakSeq.current;
     stopAudio();
     try { window.speechSynthesis?.cancel(); } catch { /* nothing to stop */ }
+
+    if (!serverVoice.current) { speakLocally(text, token); return; }
 
     void (async () => {
       try {
@@ -269,6 +276,7 @@ export function useVoice({
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ text: speakable(text) }),
         });
+        if (res.status === 503) serverVoice.current = false;
         if (speakSeq.current !== token) return;          // interrupted while waiting
         if (!res.ok) { speakLocally(text, token); return; }
         const blob = await res.blob();

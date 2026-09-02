@@ -122,12 +122,12 @@
   --font-sans:    var(--font-instrument-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono:    var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --text-hero:       clamp(2.35rem, 4.6vw, 4.5rem);
-  --text-display-xl: clamp(2.25rem, 4.4vw, 4rem);
+  --text-hero:       clamp(2.5rem, 5vw, 4.25rem);
+  --text-display-xl: clamp(2.5rem, 5vw, 4.25rem);
   --text-display-l:  clamp(1.95rem, 3.4vw, 3rem);
   --text-display-m:  clamp(1.6rem, 2.5vw, 2.3rem);
   --text-display-s:  clamp(1.25rem, 1.7vw, 1.6rem);
-  --text-lead:       clamp(1.0625rem, 1.35vw, 1.3125rem);
+  --text-lead:       clamp(1.0625rem, 1.3vw, 1.25rem);
   --text-body:       1.0625rem;
   --text-small:      0.9375rem;
   --text-micro:      0.8125rem;
@@ -135,8 +135,9 @@
 
   --radius-xs: 0px;
   --radius-sm: 2px;
-  --radius-md: 3px;
-  --radius-lg: 4px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-frame: 8px;
 
   /* Mechanical curves: accelerate, settle, never overshoot. */
   --ease-mech:     cubic-bezier(0.16, 0.84, 0.44, 1);
@@ -266,6 +267,13 @@ img, svg, video, canvas { display: block; max-width: 100%; }
 
 /* --------------------------------------------------------------- surfaces ---*/
 
+/* Chapter punctuation: a section that sits one depth up from the ground. */
+.band {
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-rule);
+  border-bottom: 1px solid var(--c-rule);
+}
+
 .panel {
   background: var(--c-surface);
   border: 1px solid var(--c-rule);
@@ -392,12 +400,39 @@ img, svg, video, canvas { display: block; max-width: 100%; }
 
 
 /* ============================================================================
-   SYSTEM LAYER
-   The site is presented as an operating system rather than a document. These
-   primitives are the chrome of that system: telemetry type, glass surfaces,
-   scan lines, node graphs and the decoding transition used when a value
-   resolves.
+   PRODUCT LAYER
+   The interface is the illustration. These primitives draw DOLMIR the way the
+   real console is drawn — a raised frame with a one-pixel top highlight, mono
+   telemetry for what the machine produced, and the state transition used when
+   a value resolves — so a product frame on the homepage and the live console
+   read as the same object.
    ========================================================================= */
+
+/* A product frame: raised surface, hairline edge, top highlight, soft drop. */
+.frame {
+  background: var(--c-raised);
+  border: 1px solid var(--c-rule-strong);
+  border-radius: var(--radius-frame);
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.04),
+    0 30px 80px -40px rgb(0 0 0 / 0.9);
+}
+.frame-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--c-rule);
+  background: color-mix(in oklab, var(--c-surface) 70%, var(--c-raised));
+  border-top-left-radius: calc(var(--radius-frame) - 1px);
+  border-top-right-radius: calc(var(--radius-frame) - 1px);
+}
+.frame-body { padding: 1rem; }
+
+/* Data rows inside a frame. */
+.row { display: flex; align-items: center; gap: 0.75rem; padding: 0.55rem 0; border-top: 1px solid var(--c-rule); }
+.row:first-child { border-top: 0; }
 
 /* Layered (see .label): telemetry is recoloured by utilities all over the
    site — accent chapter codes, amber warnings, faint footnotes. */
@@ -482,35 +517,9 @@ img, svg, video, canvas { display: block; max-width: 100%; }
     transparent);
 }
 
-/* The custom pointer. Kept to a 10px reticle so it never becomes a toy. */
-.cursor-host { cursor: none; }
-.reticle {
-  position: fixed;
-  top: 0; left: 0;
-  z-index: 300;
-  pointer-events: none;
-  mix-blend-mode: difference;
-  will-change: transform;
-}
-
-@media (hover: none), (pointer: coarse) {
-  .cursor-host { cursor: auto; }
-  .reticle { display: none; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .scan::after, .settle { animation: none; }
   .scan::after { display: none; }
-  .cursor-host { cursor: auto; }
-  .reticle { display: none; }
-}
-
-/* While the hood is open the page desaturates slightly, so the overlay reads as
-   a layer above the site rather than as part of it. */
-:root[data-inspecting] body > div:first-of-type,
-:root[data-inspecting] main {
-  filter: saturate(0.55) brightness(0.82);
-  transition: filter var(--duration-base) var(--ease-mech);
 }
 
 /* The transformation scrub — an instrument fader, not a browser slider. */
@@ -546,13 +555,3 @@ html {
   scrollbar-width: thin;
 }
 
-/* Capture stages (/scene/*): the chrome steps out of frame so a screen
-   recording of the viewport is a clean advertising master. */
-:root[data-scene] header,
-:root[data-scene] footer,
-:root[data-scene] [data-readout] {
-  display: none;
-}
-:root[data-scene] main {
-  padding-top: 2rem;
-}

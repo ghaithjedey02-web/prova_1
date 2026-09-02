@@ -43,18 +43,20 @@ export const site = {
  * look for it when they already care.
  */
 export const nav = [
-  { href: '/soluzioni', label: 'Cosa facciamo' },
-  { href: '/metodo', label: 'Come funziona' },
-  { href: '/dimostrazione', label: 'Caso reale' },
-  { href: '/#parla', label: 'Parla con DOLMIR' },
+  { href: '/soluzioni', label: 'Soluzioni' },
+  { href: '/metodo', label: 'Metodo' },
+  { href: '/dimostrazione', label: 'Dimostrazione' },
+  { href: '/affidabilita', label: 'Affidabilità' },
+  { href: '/studio', label: 'Studio' },
+  { href: '/contatto', label: 'Contatto' },
 ] as const;
 
 /** The footer carries what the four-item top bar leaves out. */
 export const footerNav = [
-  { href: '/soluzioni', label: 'I sistemi' },
+  { href: '/soluzioni', label: 'Soluzioni' },
+  { href: '/#in-azione', label: 'DOLMIR in azione' },
   { href: '/#parla', label: 'Parla con DOLMIR' },
-  { href: '/#prova', label: 'Prova il simulatore' },
-  { href: '/dimostrazione', label: 'Caso reale' },
+  { href: '/dimostrazione', label: 'Dimostrazione' },
 ] as const;
 
 export const legalNav = [
@@ -64,8 +66,9 @@ export const legalNav = [
 ] as const;
 
 export const cta = {
-  primary: { label: 'Parliamone', href: '/contatto' },
+  primary: { label: 'Parla con DOLMIR', href: '/#parla' },
   secondary: { label: 'Vedi la dimostrazione', href: '/dimostrazione' },
+  contact: { label: 'Parliamone', href: '/contatto' },
 } as const;
 
 /**
@@ -82,28 +85,61 @@ export const pipeline = {
 /* =========================================================== home === hero ===*/
 
 export const hero = {
-  eyebrow: 'Sistemi software intelligenti per aziende',
-  /* Three lines a stranger reads while the scene beside them shows exactly
-     this happening. No "gestionale", no "infrastruttura": the jargon lives
-     further down, for whoever wants it. */
-  line1: 'Email, PDF, ordini: arrivano in disordine.',
-  line2: 'DOLMIR li legge, li verifica,',
-  line3: 'e prepara cosa fare.',
+  eyebrow: 'Il livello intelligente sopra i sistemi della vostra azienda',
+  headline: 'Il lavoro della vostra azienda, finalmente connesso.',
   lead:
-    'Quando serve una decisione vera — un dato che non torna, un caso mai visto — si ferma e chiama una persona. Tutto sopra i software che avete già.',
-  /** The product as four verbs. The last is amber, because that one is ours. */
+    'Email, documenti e gestionali vengono letti, verificati e trasformati in azioni. Quando serve un giudizio, decide una persona.',
+  /** The four verbs under the lead. The last is amber: that one is ours. */
   ribbon: ['Legge', 'Verifica', 'Prepara', 'Si ferma quando serve una persona'],
+  /* The captions of the hero scene, one per beat. DOM, never canvas. */
+  beats: ([
+    { k: 'ARRIVA', t: 'Una richiesta arriva, in mezzo a tutto il resto.' },
+    { k: 'LEGGE', t: 'DOLMIR capisce di cosa si tratta ed estrae i dati, ognuno con la sua fonte.' },
+    { k: 'VERIFICA', t: 'Li confronta con anagrafica, listini e le richieste precedenti.' },
+    { k: 'SI FERMA', t: 'Qualcosa non torna. Non decide il software: decide una persona.', amber: true },
+    { k: 'AGISCE', t: 'Approvato: CRM aggiornato, offerta preparata, commerciale avvisato.' },
+  ] as readonly { k: string; t: string; amber?: boolean }[]),
 } as const;
 
-/** The five beats of the hero scene; the words are DOM, never canvas. */
-export const heroScene = {
-  beats: ([
-    { word: 'Arriva in disordine', line: 'Email, allegati, ordini, fatture. Ognuno per conto suo.' },
-    { word: 'DOLMIR lo legge', line: 'Capisce cosa è arrivato e lo mette in fila.' },
-    { word: 'Lo verifica', line: 'Ogni dato confrontato con i sistemi che avete già.' },
-    { word: 'Si ferma', line: 'Un dato non torna. Decide una persona, non il software.', amber: true },
-    { word: 'Agisce', line: 'Approvato: ordine inserito, risposta pronta, tutto registrato.' },
-  ] as readonly { word: string; line: string; amber?: boolean }[]),
+/**
+ * The one operational story every product frame on the site draws: a request
+ * for quotation from the demo company's oldest customer, with a quantity that
+ * disagrees with the previous request. The same record exists in the console's
+ * tools (get_requests), so a visitor who asks about it gets the same facts.
+ * All of it is simulated and says so.
+ */
+export const scenario = {
+  mail: {
+    from: 'Officine Rossi S.r.l.',
+    subject: 'Richiesta di offerta — 2.000 pz SL-4410',
+    time: '09:12',
+    excerpt: 'Buongiorno, vi chiediamo un’offerta per 2.000 staffe SL-4410 come da disegno allegato, consegna entro il 30/09. Cordiali saluti, Meccanica Rossi.',
+    attachment: 'Disegno_SL-4410_rev3.pdf',
+  },
+  inbox: [
+    { from: 'Fonderia Bianchi S.p.A.', subject: 'Conferma d’ordine n. 4471/2026', time: '08:41' },
+    { from: 'Officine Rossi S.r.l.', subject: 'Richiesta di offerta — 2.000 pz SL-4410', time: '09:12', active: true },
+    { from: 'newsletter@forniture-online', subject: 'Offerta del mese: utensili -20%', time: '09:15' },
+  ],
+  fields: [
+    { label: 'Cliente', value: 'Officine Rossi S.r.l.', source: 'firma «Meccanica Rossi» ≈ anagrafica C-01' },
+    { label: 'Prodotto', value: 'SL-4410 · staffa laser', source: 'oggetto + allegato' },
+    { label: 'Quantità', value: '2.000 pz', source: 'corpo email' },
+    { label: 'Scadenza', value: '30/09/2026', source: 'corpo email' },
+    { label: 'Priorità', value: 'Alta · cliente storico', source: 'regola: cliente C-01' },
+  ],
+  checks: [
+    { what: 'Cliente in anagrafica', against: 'gestionale · C-01 Officine Rossi S.r.l.', state: 'ok' },
+    { what: 'Codice e listino', against: 'listino 2026 · SL-4410 attivo', state: 'ok' },
+    { what: 'Richiesta precedente', against: 'PRV-2198 · giugno 2026 · 1.200 pz', state: 'conflict', note: 'Quantità diversa dall’ultima richiesta: 2.000 oggi, 1.200 a giugno.' },
+  ],
+  decision: {
+    question: 'Confermare la nuova quantità?',
+    detail: '2.000 pezzi contro i 1.200 dell’ultima richiesta. Un errore di battitura o un ordine più grande: lo sa il commerciale, non il software.',
+  },
+  decidedLabel: 'Approva · decisione presa da una persona (simulata)',
+  actions: ['CRM aggiornato', 'Offerta preparata', 'Commerciale notificato'],
+  disclaimer: 'Scenario dimostrativo: azienda, documenti e importi sono simulati.',
 } as const;
 
 /* ============================================ home === the problem ==========*/
@@ -148,156 +184,6 @@ export const problema = {
 
 /* ============================================ home === the system film ======*/
 
-/**
- * The film: one continuous WebGL transformation, ~25 seconds, no audio by
- * design — the captions are the voice-over, and the human gate genuinely
- * pauses the timeline until the viewer decides. Chapter times are seconds on
- * the film clock (the gate stops the clock).
- */
-export const film = {
-  poster: 'GUARDA DOLMIR LAVORARE',
-  posterSub: '25 secondi · senza audio · il finale lo decidi tu',
-  replay: 'RIVEDI',
-  chapters: [
-    { code: 'IL CAOS',        at: 0,    caption: 'Il lavoro di un’azienda non vive in un solo software.' },
-    { code: 'SCANSIONE',      at: 4.5,  caption: 'DOLMIR lo intercetta. E comincia a leggere.' },
-    { code: 'COMPRENSIONE',   at: 8.0,  caption: 'Le parole diventano dati. Con la fonte attaccata.' },
-    { code: 'CONNESSIONE',    at: 13.0, caption: 'E si collegano ai sistemi che avete già.' },
-    { code: 'REVISIONE UMANA', at: 17.5, caption: 'Poi tutto si ferma. Perché adesso tocca a voi.' },
-    { code: 'AZIONE',         at: 17.5, caption: 'Approvato. Il sistema agisce, e lo scrive nel registro.' },
-    { code: 'RISULTATO',      at: 21.0, caption: 'Da informazione, ad azione.' },
-  ],
-  /* Scene 01: the stray signals of a normal week. */
-  signals: [
-    { x: 12, y: 22, t: 'IN.EMAIL' },
-    { x: 78, y: 14, t: 'FATTURA_00482' },
-    { x: 30, y: 70, t: 'ORDINE_2026/184' },
-    { x: 86, y: 58, t: 'PDF_019' },
-    { x: 55, y: 12, t: 'RICHIESTA CLIENTE' },
-    { x: 8,  y: 52, t: 'MAGAZZINO' },
-    { x: 68, y: 80, t: 'SOLLECITO' },
-    { x: 40, y: 34, t: 'CRM ↯ ERP' },
-  ],
-  /* Scene 03: raw phrases physically becoming fields. */
-  morphs: [
-    { raw: '«consegna richiesta il 12»', k: 'CONSEGNA', v: '12/09/2026' },
-    { raw: '«ce ne servono 40»',         k: 'QUANTITÀ', v: '40 pz' },
-    { raw: '«Meccanica Rossi»',          k: 'CLIENTE',  v: 'Officine Rossi S.r.l.' },
-  ],
-  /* Scene 04: the constellation. Positions are percentages of the stage. */
-  nodes: [
-    { x: 50, y: 18, t: 'EMAIL' },
-    { x: 84, y: 34, t: 'ERP' },
-    { x: 84, y: 66, t: 'CRM' },
-    { x: 50, y: 84, t: 'ARCHIVIO' },
-    { x: 16, y: 66, t: 'MAGAZZINO' },
-    { x: 16, y: 34, t: 'DOCUMENTI' },
-  ],
-  confidence: 'CONFIDENZA 97,4%',
-  gateTitle: 'REVISIONE UMANA',
-  gateLine: 'Il sistema non indovina. Il finale di questo film lo approvate voi.',
-  rejectLine: 'Fermato. Nessuna azione eseguita — ed è un esito corretto.',
-  flow: ['INPUT', 'CAPIRE', 'VERIFICARE', 'PERSONA', 'AZIONE'],
-  stats: [
-    ['PROCESSO', '1'],
-    ['PASSAGGI MANUALI', '7 → 0'],
-    ['SISTEMI COLLEGATI', '4'],
-    ['DECISIONE UMANA', '1'],
-    ['AZIONE', '1'],
-  ],
-  closing: 'L’intelligenza che fa funzionare le aziende.',
-  endCaption: 'Fine. Questo finale lo avete deciso voi.',
-  disclaimer: 'Sequenza dimostrativa con dati di esempio.',
-} as const;
-
-/**
- * The explainer's seven beats. Every word here is rendered as real DOM by
- * components/live/Explainer.tsx — never baked into footage, so it stays
- * readable, selectable, translatable and correctable.
- */
-export const explainer = {
-  beats: ([
-    { code: 'IL PROBLEMA', word: 'CAOS', line: 'Email, allegati, fogli, telefonate. L’informazione esiste già — è solo sparsa.' },
-    { code: 'RACCOLTA',    word: 'UN SOLO FLUSSO', line: 'DOLMIR la intercetta dove nasce e la mette in fila.' },
-    { code: 'LETTURA',     word: 'DATI', line: 'Le parole diventano dati, ognuno con la sua fonte attaccata.' },
-    { code: 'CONTROLLO',   word: 'VERIFICA', line: 'Ogni dato viene confrontato con i sistemi che avete già.' },
-    { code: 'CONFLITTO',   word: 'NON TORNA', line: 'Due fonti dicono cose diverse. Il sistema non sceglie a caso.', amber: true },
-    { code: 'IL CANCELLO', word: 'DECIDE UNA PERSONA', line: 'Si ferma e chiede. È la parte che ci interessa di più.', amber: true },
-    { code: 'ESECUZIONE',  word: 'AZIONE', line: 'Approvato: il flusso riparte, ordinato, e resta scritto nel registro.' },
-  ] as readonly { code: string; word: string; line: string; amber?: boolean }[]),
-} as const;
-
-/**
- * The before/after — the demo case, walked twice.
- *
- * The counts and minutes are ILLUSTRATIVE and declared as such in the UI:
- * they describe the demo scenario, not a measurement taken at a customer.
- * The argument is the SHAPE of the process, not a ROI number.
- */
-export const caso = {
-  n: '03',
-  label: 'Un caso concreto',
-  headline: 'Lo stesso ordine, due modi di lavorare.',
-  body:
-    'Una conferma d’ordine arriva per email, con un allegato PDF. È il caso del simulatore qui sotto — dati di esempio, dichiarati. Guardate cosa succede oggi in molte aziende, e cosa cambia con un sistema in mezzo.',
-  primaTitle: 'OGGI, A MANO',
-  primaSteps: [
-    { t: 'Qualcuno apre l’email', note: 'quando la vede' },
-    { t: 'Legge il PDF allegato', note: 'e lo confronta col testo' },
-    { t: 'Cerca il cliente nel gestionale', note: 'il nome non coincide mai' },
-    { t: 'Ricopia i dati in Excel', note: 'primo punto di errore' },
-    { t: 'Inserisce l’ordine nel gestionale', note: 'secondo punto di errore' },
-    { t: 'Controlla quantità e consegna', note: 'se c’è tempo' },
-    { t: 'Scrive all’ufficio e risponde al cliente', note: 'terzo punto di errore' },
-  ],
-  primaStats: [
-    ['PASSAGGI', '7'],
-    ['PERSONE', '2'],
-    ['SISTEMI TOCCATI', '4'],
-    ['PUNTI DI ERRORE', '3'],
-    ['TEMPO', '≈ 28 min'],
-  ],
-  dopoTitle: 'CON DOLMIR',
-  dopoSteps: ([
-    { t: 'DOLMIR legge email e allegato', sys: true },
-    { t: 'Estrae i dati, ognuno con la sua fonte', sys: true },
-    { t: 'Verifica su anagrafica, giacenze, capacità', sys: true },
-    { t: 'Trova il conflitto: 40 pezzi nell’email, 60 nel PDF', amber: true },
-    { t: 'Si ferma. Una persona decide', person: true },
-    { t: 'Ordine inserito, risposta preparata, registro aggiornato', sys: true },
-  ] as readonly { t: string; sys?: boolean; amber?: boolean; person?: boolean }[]),
-  dopoNote:
-    'La persona entra una volta sola: sulla decisione che conta. Tutto il resto — leggere, cercare, ricopiare, confrontare — non passa più dalle sue mani.',
-  disclaimer: 'Esempio illustrativo sul caso dimostrativo. Passaggi e tempi descrivono lo scenario demo, non una misura presso un cliente.',
-  cta: { t: 'GUARDATE IL MOTORE VERO →', href: '/dimostrazione' },
-} as const;
-
-/**
- * "Now picture yours" — the visitor points at their own process and sees the
- * same shape drawn onto it. Capability descriptions only: what enters, what
- * gets verified, where the person decides. Never an invented result.
- */
-export const processi = {
-  n: '04',
-  label: 'I vostri processi',
-  headline: 'Adesso immaginate il vostro.',
-  body:
-    'Ogni azienda ha almeno un processo dove le informazioni arrivano da fuori, qualcuno le ricopia e qualcuno le controlla. Sceglietene uno: la forma del sistema è la stessa.',
-  flowLabels: ['INPUT', 'DOLMIR', 'VERIFICA', 'DECISIONE', 'AZIONE'],
-  items: [
-    { k: 'PREVENTIVI', input: 'Richiesta d’offerta via email, con allegato tecnico', verifica: 'Anagrafica, listini, offerte passate comparabili', persona: 'Approva il prezzo prima che l’offerta parta', azione: 'Offerta pronta e registrata' },
-    { k: 'ORDINI', input: 'Conferma d’ordine — email, PDF, portale', verifica: 'Codici articolo, quantità, capacità, date di consegna', persona: 'Decide sui conflitti fra le fonti', azione: 'Ordine inserito nel gestionale' },
-    { k: 'FATTURE', input: 'Fattura passiva in PDF', verifica: 'Ordine di riferimento, DDT, importi e scadenze', persona: 'Approva le eccezioni e le differenze', azione: 'Registrazione preparata' },
-    { k: 'RICHIESTE CLIENTI', input: 'Email, moduli dal sito, PEC', verifica: 'Storico del cliente, stato di ordini e consegne', persona: 'Rivede i casi delicati prima della risposta', azione: 'Risposta preparata, con i dati giusti' },
-    { k: 'DOCUMENTI', input: 'PDF, scansioni, allegati sparsi', verifica: 'Campi estratti, ognuno con la fonte attaccata', persona: 'Valida i campi sotto soglia di confidenza', azione: 'Archivio ordinato e interrogabile' },
-    { k: 'APPROVAZIONI', input: 'Richieste interne: acquisti, ferie, spese', verifica: 'Regole e soglie che definite voi', persona: 'Firma dove la regola non basta', azione: 'Esito eseguito e tracciato' },
-    { k: 'REPORT', input: 'Dati dai sistemi già collegati', verifica: 'Coerenza fra le fonti, anomalie segnalate', persona: 'Legge le anomalie, non le tabelle', azione: 'Report ricorrente, pronto' },
-    { k: 'ASSISTENZA', input: 'Ticket, email, segnalazioni telefoniche trascritte', verifica: 'Contratto, garanzia, storico interventi', persona: 'Gestisce i casi mai visti prima', azione: 'Risposta e intervento pianificato' },
-  ],
-  note: 'Il vostro processo non è in elenco? È comunque fatto di questi cinque passi. Portatecelo.',
-} as const;
-
-/** The trust band: seven guarantees that are architecture, not promises. */
 export const fiducia = {
   label: 'Perché fidarsi',
   items: [
@@ -312,133 +198,10 @@ export const fiducia = {
 
 /* ==================================== home === the intelligence core ========*/
 
-export const intelligence = {
-  n: '04',
-  label: 'Il livello intelligente',
-  headline: 'Un livello intelligente, sopra i sistemi che avete già.',
-  body:
-    'Ogni azienda ha già i suoi sistemi: email, gestionale, CRM, magazzino, contabilità. Il problema è che non si parlano. DOLMIR è il livello che li collega — legge, capisce, consulta la memoria aziendale, verifica — e prepara l’azione. In mezzo, sempre, una persona che decide.',
-  hint: 'Toccate un nodo per isolare il suo flusso. Scegliete un processo per vederlo attraversare il sistema.',
-  agentsLabel: 'AGENTI DOLMIR',
-  systemsLabel: 'I VOSTRI SISTEMI',
-  processesLabel: 'SEGUI UN PROCESSO',
-  core: { top: 'DOLMIR', sub: 'INTELLIGENZA' },
-  /* The idle heartbeat, cycled while nothing is selected. */
-  idle: ['IN ASCOLTO SU 6 CANALI', 'MEMORIA SINCRONIZZATA', 'CONFIDENZA MONITORATA', 'REGISTRO ATTIVO'],
-  /* The specialised intelligences DOLMIR deploys — one per family of work. */
-  agents: [
-    { id: 'ag-doc', k: 'AG · DOCUMENTI',  d: 'legge PDF, email, allegati' },
-    { id: 'ag-ven', k: 'AG · VENDITE',    d: 'preventivi e ordini' },
-    { id: 'ag-ope', k: 'AG · OPERAZIONI', d: 'commesse e consegne' },
-    { id: 'ag-fin', k: 'AG · FINANZA',    d: 'fatture e scadenze' },
-    { id: 'ag-cli', k: 'AG · CLIENTI',    d: 'richieste e supporto' },
-    { id: 'ag-acq', k: 'AG · ACQUISTI',   d: 'fornitori e riordini' },
-  ],
-  /* The company's existing systems. DOLMIR connects them; it replaces none. */
-  systems: [
-    { id: 'sy-email', k: 'EMAIL',       d: 'richieste, conferme, allegati' },
-    { id: 'sy-crm',   k: 'CRM',         d: 'clienti e trattative' },
-    { id: 'sy-erp',   k: 'ERP',         d: 'anagrafiche e commesse' },
-    { id: 'sy-mag',   k: 'MAGAZZINO',   d: 'giacenze e movimenti' },
-    { id: 'sy-con',   k: 'CONTABILITÀ', d: 'fatture e pagamenti' },
-    { id: 'sy-arc',   k: 'ARCHIVIO',    d: 'documenti e disegni' },
-  ],
-  memory: { id: 'memory', k: 'MEMORIA AZIENDALE', d: 'documenti · eventi · conoscenza · registro delle decisioni' },
-  person: { id: 'person', k: 'PERSONA', d: 'ogni azione passa da qui' },
-  /* Six processes, each a real route through the architecture. Step nodes
-     reference the ids above; particles travel the same edges the map draws. */
-  processes: [
-    {
-      k: 'ORDINE',
-      steps: [
-        { n: 'sy-email', s: 'INPUT',            line: 'Un ordine arriva via email, con un PDF allegato.' },
-        { n: 'ag-doc',   s: 'LETTURA',          line: 'L’agente documenti estrae cliente, righe, quantità, consegna.' },
-        { n: 'core',     s: 'COMPRENSIONE',     line: 'Il nucleo costruisce il contesto e calcola la confidenza.' },
-        { n: 'memory',   s: 'MEMORIA',          line: 'Cerca ordini precedenti e condizioni già concordate.' },
-        { n: 'sy-mag',   s: 'VERIFICA',         line: 'Controlla la giacenza a magazzino.' },
-        { n: 'sy-erp',   s: 'VERIFICA',         line: 'Allinea codici e listino sul gestionale.' },
-        { n: 'person',   s: 'REVISIONE UMANA',  line: 'La conferma d’ordine aspetta un’approvazione.' },
-        { n: 'sy-erp',   s: 'AZIONE',           line: 'Approvata: ordine inserito, conferma inviata, registro scritto.' },
-      ],
-    },
-    {
-      k: 'PREVENTIVO',
-      steps: [
-        { n: 'sy-email', s: 'INPUT',            line: 'Una richiesta di preventivo entra dal sito o dall’email.' },
-        { n: 'ag-ven',   s: 'ANALISI',          line: 'L’agente vendite identifica prodotto, quantità, urgenza.' },
-        { n: 'memory',   s: 'MEMORIA',          line: 'Recupera preventivi simili e prezzi già praticati.' },
-        { n: 'core',     s: 'ELABORAZIONE',     line: 'Il nucleo prepara la bozza, con la motivazione riga per riga.' },
-        { n: 'person',   s: 'REVISIONE UMANA',  line: 'La bozza aspetta chi conosce il cliente.' },
-        { n: 'sy-crm',   s: 'AZIONE',           line: 'Inviato: il CRM è aggiornato senza ricopiare nulla.' },
-      ],
-    },
-    {
-      k: 'FATTURA',
-      steps: [
-        { n: 'sy-email', s: 'INPUT',            line: 'Una fattura fornitore arriva in PDF.' },
-        { n: 'ag-doc',   s: 'LETTURA',          line: 'L’agente documenti estrae importi, scadenze, riferimenti.' },
-        { n: 'sy-erp',   s: 'RISCONTRO',        line: 'Cerca l’ordine e la bolla corrispondenti nel gestionale.' },
-        { n: 'core',     s: 'QUADRATURA',       line: 'Le tre carte coincidono? Il nucleo decide se può proseguire.' },
-        { n: 'person',   s: 'REVISIONE UMANA',  line: 'Una differenza ferma tutto: decide una persona.' },
-        { n: 'sy-con',   s: 'AZIONE',           line: 'Registrata in contabilità, con l’evidenza allegata.' },
-      ],
-    },
-    {
-      k: 'SOLLECITO',
-      steps: [
-        { n: 'sy-con',   s: 'SEGNALE',          line: 'La contabilità segnala un pagamento scaduto.' },
-        { n: 'ag-fin',   s: 'ANALISI',          line: 'L’agente finanza ricostruisce la posizione del cliente.' },
-        { n: 'memory',   s: 'MEMORIA',          line: 'Controlla accordi, note e solleciti già inviati.' },
-        { n: 'core',     s: 'ELABORAZIONE',     line: 'Prepara un sollecito proporzionato alla storia.' },
-        { n: 'person',   s: 'REVISIONE UMANA',  line: 'Il tono lo approva una persona.' },
-        { n: 'sy-email', s: 'AZIONE',           line: 'L’email parte; l’esito torna nel registro.' },
-      ],
-    },
-    {
-      k: 'SUPPORTO',
-      steps: [
-        { n: 'sy-email', s: 'INPUT',            line: 'Un cliente scrive: qualcosa non funziona.' },
-        { n: 'ag-cli',   s: 'ANALISI',          line: 'L’agente clienti classifica urgenza e argomento.' },
-        { n: 'memory',   s: 'MEMORIA',          line: 'Recupera ordini, garanzie, casi simili.' },
-        { n: 'core',     s: 'ELABORAZIONE',     line: 'Prepara la risposta o instrada a chi può risolvere.' },
-        { n: 'person',   s: 'REVISIONE UMANA',  line: 'I casi nuovi passano sempre da una persona.' },
-        { n: 'sy-crm',   s: 'AZIONE',           line: 'Il caso è tracciato nel CRM, con tutta la storia.' },
-      ],
-    },
-    {
-      k: 'CONSEGNA',
-      steps: [
-        { n: 'sy-erp',   s: 'SEGNALE',          line: 'Una commessa si avvicina alla data promessa.' },
-        { n: 'ag-ope',   s: 'ANALISI',          line: 'L’agente operazioni incrocia avanzamento e trasporti.' },
-        { n: 'sy-mag',   s: 'VERIFICA',         line: 'Verifica che il materiale sia pronto.' },
-        { n: 'core',     s: 'PREVISIONE',       line: 'Se qualcosa slitta, lo dice prima — non dopo.' },
-        { n: 'person',   s: 'REVISIONE UMANA',  line: 'La comunicazione al cliente la firma una persona.' },
-        { n: 'sy-email', s: 'AZIONE',           line: 'Il cliente sa la verità in anticipo. Il registro anche.' },
-      ],
-    },
-  ],
-  /* The guided run — the whole architecture, one pass, self-narrating. */
-  watch: {
-    cta: 'GUARDA DOLMIR AL LAVORO',
-    stop: 'FERMA',
-    steps: [
-      { n: 'sy-email', s: 'INPUT RICEVUTO',    line: 'Un documento entra nel sistema.' },
-      { n: 'ag-doc',   s: 'COMPRENSIONE',      line: 'Cliente, prodotto, quantità, scadenza — con la fonte attaccata.' },
-      { n: 'memory',   s: 'MEMORIA',           line: 'La conoscenza aziendale entra nella decisione.' },
-      { n: 'sy-crm',   s: 'VERIFICA',          line: 'Storia del cliente e condizioni: controllate sul CRM.' },
-      { n: 'sy-mag',   s: 'VERIFICA',          line: 'Giacenze e tempi: controllati a magazzino.' },
-      { n: 'core',     s: 'CONFIDENZA 97,4%',  line: 'Il nucleo decide se può proseguire in sicurezza.' },
-      { n: 'person',   s: 'REVISIONE UMANA',   line: 'Sotto soglia si ferma: il sistema non indovina.' },
-      { n: 'sy-erp',   s: 'AZIONE ESEGUITA',   line: 'ERP aggiornato, CRM allineato, email pronta, registro scritto.' },
-    ],
-  },
-  disclaimer: 'Sistema dimostrativo · dati di esempio.',
-} as const;
-
 /* ==================================== home === parla con DOLMIR =============*/
 
 export const parla = {
-  n: '02',
+  n: '05',
   label: 'Parla con DOLMIR',
   headline: 'Fategli una domanda. Il sistema risponde.',
   body:
@@ -497,6 +260,7 @@ export const parla = {
   starters: [
     { t: 'Cosa puoi fare per la mia azienda?', k: 'Il sistema, in parole sue' },
     { t: 'Quali ordini sono in ritardo?', k: 'Legge il gestionale' },
+    { t: 'Qual è l’ultima richiesta di Officine Rossi?', k: 'Trova il conflitto' },
     { t: 'Perché l’ordine 10482 è fermo?', k: 'Incrocia le fonti' },
     { t: 'Cosa faresti al posto mio su quell’ordine?', k: 'Si ferma e chiede' },
     { t: 'Cosa fai quando non sei sicuro?', k: 'Dichiara i limiti' },
@@ -505,6 +269,8 @@ export const parla = {
   thinking: 'INTERROGO I SISTEMI…',
   /* No model configured: one honest state, never a rehearsed conversation. */
   offlineState: 'Modello non attivo su questo ambiente',
+  voiceHint: 'Toccate il nucleo e parlate, oppure scrivete.',
+  voiceHintNoMic: 'Scrivete la vostra domanda.',
   offlineBody:
     'La console parla con un modello AI reale, e su questo ambiente quel modello non è collegato. Preferiamo dirvelo piuttosto che rispondervi con frasi preparate: un sistema che recita non è il sistema che costruiamo. Scriveteci e ve lo facciamo vedere mentre lavora sui vostri processi.',
   offlineCta: 'PARLIAMONE →',
@@ -518,486 +284,9 @@ export const parla = {
 
 /* ==================================== home === what DOLMIR builds ===========*/
 
-export const capabilities = {
-  n: '05',
-  label: 'Cosa costruiamo',
-  headline: 'Sei famiglie di sistemi. Un’architettura.',
-  body:
-    'Ogni sistema che costruiamo è una combinazione di queste sei famiglie. Il contenuto cambia da azienda ad azienda — manifattura, logistica, distribuzione, servizi — l’architettura no.',
-  items: [
-    {
-      k: 'automazione',
-      problem: 'Il lavoro ripetitivo passa da una persona che ricopia.',
-      result: 'Il tempo torna sulle eccezioni e sulle decisioni.',
-      label: 'Automazione',
-      claim: 'Il lavoro ripetitivo diventa un flusso con un cancello umano.',
-      builds: ['Automazione preventivi', 'Gestione ordini in ingresso', 'Instradamento richieste', 'Flussi di approvazione'],
-      diagram: 'chain',
-    },
-    {
-      k: 'ai',
-      problem: 'Documenti ed email vengono riletti a mano, ogni volta.',
-      result: 'Ogni dato arriva con la sua evidenza e la sua confidenza.',
-      label: 'AI',
-      claim: 'Documenti, email e testi diventano campi con evidenza e confidenza.',
-      builds: ['Lettura documenti', 'Assistente email', 'Estrazione dati da PDF', 'Classificazione automatica'],
-      diagram: 'extract',
-    },
-    {
-      k: 'dati',
-      problem: 'La stessa informazione vive in tre posti, diversa in ognuno.',
-      result: 'Una fonte sola, e i sistemi smettono di litigare.',
-      label: 'Dati',
-      claim: 'Informazioni che vivono in posti diversi diventano una fonte sola.',
-      builds: ['Integrazione fra gestionali', 'Riconciliazione anagrafiche', 'Archivio cercabile per contenuto', 'Sincronizzazione CRM ↔ ERP'],
-      diagram: 'merge',
-    },
-    {
-      k: 'operazioni',
-      problem: 'Nessuno sa a che punto è una pratica senza chiedere.',
-      result: 'Stati, code e responsabili visibili a colpo d’occhio.',
-      label: 'Operazioni',
-      claim: 'I processi interni prendono stati, code e responsabili espliciti.',
-      builds: ['Cruscotti operativi', 'Code di lavorazione', 'Tracciamento pratiche', 'Indicatori di processo'],
-      diagram: 'board',
-    },
-    {
-      k: 'software',
-      problem: 'Il gestionale generico costringe il processo ad adattarsi.',
-      result: 'Un’interfaccia con la forma esatta del vostro lavoro.',
-      label: 'Software',
-      claim: 'Applicazioni costruite sulla forma reale del vostro processo.',
-      builds: ['Interfacce su misura', 'Portali clienti', 'Strumenti interni', 'Sistemi di conoscenza aziendale'],
-      diagram: 'app',
-    },
-    {
-      k: 'intelligenza',
-      problem: 'Le decisioni si prendono senza lo storico sotto mano.',
-      result: 'Ogni proposta arriva motivata, e si ferma davanti a voi.',
-      label: 'Intelligenza',
-      claim: 'Un livello che ragiona sopra gli strumenti che avete già.',
-      builds: ['Agenti con supervisione', 'Confronto con lo storico', 'Suggerimenti motivati', 'Analisi delle richieste'],
-      diagram: 'layer',
-    },
-  ],
-} as const;
-
 /* ======================================== home === the simulator ============*/
 
-export const simulator = {
-  n: '05',
-  label: 'Prova DOLMIR',
-  headline: 'Consegnate un problema. Guardate cosa succede.',
-  body:
-    'Accesso temporaneo alla stessa architettura che installiamo: scegliete una situazione reale, avviatela e decidete voi, al cancello. Tutto gira nel vostro browser — nessuna chiamata esterna, nessun dato reale. Il motore vero è nel capitolo 07; qui vedete la stessa forma su sette casi.',
-  /* The one word the whole frame keys on, per phase. */
-  sysStates: {
-    idle: 'IN ATTESA',
-    running: ['SCANSIONE', 'SCANSIONE', 'ANALISI', 'ESTRAZIONE', 'VALIDAZIONE', 'CONNESSIONE', 'MISURAZIONE', 'DECISIONE'],
-    gate: 'CANCELLO UMANO',
-    approved: 'COMPLETATO',
-    rejected: 'FERMATO',
-  },
-  /* The systems the run visibly touches, and when. */
-  map: [
-    { k: 'input',   label: 'INPUT',   at: [0, 1] },
-    { k: 'core',    label: 'DOLMIR',  at: [2, 3, 6, 7] },
-    { k: 'erp',     label: 'ERP',     at: [4, 5] },
-    { k: 'crm',     label: 'CRM',     at: [5] },
-    { k: 'archivio',label: 'ARCHIVIO',at: [5] },
-    { k: 'persona', label: 'PERSONA', at: [] },
-    { k: 'azione',  label: 'AZIONE',  at: [] },
-  ],
-  /* Where the manual version of this work leaks, illustrative and labelled. */
-  bottleneck: [
-    ['PASSAGGI', '7'],
-    ['PERSONE', '2'],
-    ['SISTEMI', '4'],
-    ['PUNTI DI ERRORE', '3'],
-  ],
-  /* LAYER 1 — plain language. One sentence a company owner reads while the
-     technical telemetry runs underneath for whoever wants to inspect it. */
-  plain: {
-    idle: 'Premete AVVIA: consegnate il problema a DOLMIR.',
-    running: [
-      'Abbiamo ricevuto una richiesta.',
-      'DOLMIR sta leggendo il documento.',
-      'Sta capendo di cosa si tratta.',
-      'Sta estraendo i dati, uno per uno.',
-      'Sta controllando che i dati abbiano senso.',
-      'Sta verificando sui vostri sistemi.',
-      'Sta misurando quanto è sicuro.',
-      'Ha preparato una decisione.',
-    ],
-    gate: 'Si è fermato. Serve una decisione umana.',
-    approved: 'Azione eseguita. Tutto registrato.',
-    rejected: 'Fermato. Nessuna azione eseguita.',
-  },
-  stages: [
-    'INPUT RICEVUTO',
-    'LETTURA',
-    'COMPRENSIONE',
-    'ESTRAZIONE',
-    'VALIDAZIONE',
-    'CONFRONTO',
-    'CONFIDENZA',
-    'DECISIONE',
-  ],
-  /* The same work, done by hand. Minutes are illustrative and labelled so. */
-  manual: [
-    { t: 'Apertura e lettura', m: 4 },
-    { t: 'Ricerca dati nei sistemi', m: 6 },
-    { t: 'Copia in Excel', m: 3 },
-    { t: 'Inserimento nel gestionale', m: 5 },
-    { t: 'Controllo incrociato', m: 4 },
-    { t: 'Email interna di verifica', m: 3 },
-    { t: 'Risposta', m: 3 },
-  ],
-  withDolmir: ['INPUT', 'SISTEMA', 'PERSONA CHE APPROVA', 'AZIONE'],
-  /* The differentiator, stated as two chains rather than as an attack. */
-  generic: ['DOMANDA', 'RISPOSTA'],
-  dolmirChain: ['INPUT', 'COMPRENSIONE', 'DATI AZIENDALI', 'REGOLE', 'CONFIDENZA', 'PERSONA', 'AZIONE', 'REGISTRO'],
-  differentiatorClaim: 'Un assistente risponde. DOLMIR costruisce un sistema che lavora.',
-  differentiatorNote:
-    'Ogni passaggio è verificato sui dati aziendali, tracciato nel registro, e si ferma davanti a una persona quando serve giudizio.',
-  disclaimer: 'Simulazione con dati di esempio. I tempi indicati sono illustrativi, non misurati presso un cliente.',
-  /* Phase after the run: the visitor points at their own bottleneck and DOLMIR
-     sketches the concept — explicitly a capability visual, never an analysis. */
-  vostro: {
-    title: 'Adesso immaginate il vostro.',
-    ask: 'Dove si perde oggi il vostro lavoro?',
-    disclaimer: 'Concept — una visualizzazione della capacità, non un’analisi della vostra azienda.',
-    items: [
-      { k: 'preventivi',   label: 'Preventivi',        flow: ['RICHIESTA', 'LETTURA', 'STORICO', 'BOZZA', 'PERSONA', 'INVIO'],       systems: 'Email · Gestionale · Storico offerte', note: 'Le richieste arrivano già lette e confrontate con lo storico. La bozza si prepara da sola; il prezzo lo approva il preventivista.' },
-      { k: 'ordini',       label: 'Ordini',            flow: ['CONFERMA', 'ESTRAZIONE', 'ANAGRAFICHE', 'CONTROLLO', 'PERSONA', 'GESTIONALE'], systems: 'Email · ERP · Anagrafiche', note: 'Le righe si scrivono nel gestionale da sole; le eccezioni — codici nuovi, quantità anomale — si fermano davanti a una persona.' },
-      { k: 'fatture',      label: 'Fatture',           flow: ['FATTURA', 'LETTURA', 'VS ORDINE', 'SCOSTAMENTI', 'PERSONA', 'REGISTRAZIONE'], systems: 'PEC · ERP · Scadenzario', note: 'Ogni fattura viene confrontata con il suo ordine prima della registrazione: gli scostamenti si vedono prima, non dopo.' },
-      { k: 'richieste',    label: 'Richieste clienti', flow: ['RICHIESTA', 'CLASSIFICAZIONE', 'CONTESTO', 'BOZZA', 'PERSONA', 'RISPOSTA'],   systems: 'Email · CRM · Storico', note: 'Ogni richiesta viene classificata e instradata con il suo contesto già raccolto. Nessuna risposta parte da sola.' },
-      { k: 'documenti',    label: 'Documenti',         flow: ['ACQUISIZIONE', 'ESTRAZIONE', 'COLLEGAMENTO', 'VERIFICA', 'INDICE', 'RICERCA'], systems: 'Email · Archivio · Commesse', note: 'I dati escono dagli allegati con l’evidenza esatta e si collegano alla pratica giusta. Tutto diventa cercabile per contenuto.' },
-      { k: 'approvazioni', label: 'Approvazioni',      flow: ['INNESCO', 'CONTESTO', 'NOTIFICA', 'PERSONA', 'REGISTRO', 'RIPRESA'],   systems: 'Flussi · Documenti · Registro', note: 'La decisione resta vostra. Cambia quanto costa arrivarci: il contesto arriva già raccolto, la firma resta umana.' },
-      { k: 'report',       label: 'Report',            flow: ['DATI', 'RACCOLTA', 'STRUTTURA', 'VERIFICA', 'REPORT', 'PERSONE'],      systems: 'ERP · CRM · Fogli', note: 'I numeri che oggi qualcuno raccoglie a mano ogni settimana si raccolgono da soli, con la fonte dichiarata per ogni valore.' },
-      { k: 'assistenza',   label: 'Assistenza',        flow: ['SEGNALAZIONE', 'LETTURA', 'CONTRATTO', 'PRIORITÀ', 'PERSONA', 'TICKET'], systems: 'Email · CRM · Storico interventi', note: 'Ogni segnalazione arriva con contratto, storico e priorità proposti. L’assegnazione resta una scelta del responsabile.' },
-    ],
-  },
-  scenarios: [
-    {
-      k: 'manifattura',
-      label: 'Manifattura',
-      docKind: 'EMAIL',
-      docTitle: 'Conferma d’ordine in arrivo',
-      docMeta: ['DA · acquisti@cliente-a.example', 'OGGETTO · Conferma ordine 2026/184'],
-      docLines: [
-        'Buongiorno, confermiamo l’ordine come da vostra offerta:',
-        '· 120 pz — supporto lavorato cod. SL-4410',
-        '· 60 pz — piastra forata cod. PF-2205',
-        '· 30 pz — boccola cod. BC-118',
-        'Consegna richiesta: entro il 20 novembre 2026.',
-      ],
-      telemetry: [
-        [0, 'canale: email · 1 messaggio'],
-        [1, 'formato riconosciuto: conferma d’ordine'],
-        [2, '3 entità trovate: cliente, offerta, consegna'],
-        [3, '3 righe estratte · codici agganciati alle anagrafiche'],
-        [4, 'unità e quantità coerenti con l’offerta'],
-        [5, 'record trovato nel gestionale: offerta 2026/184'],
-        [6, 'confidenza 96,8% · nessuna ambiguità'],
-        [7, 'righe pronte per la scrittura · attesa persona'],
-      ],
-      fields: [
-        { k: 'Cliente', v: 'Cliente A', conf: 0.99 },
-        { k: 'Offerta di origine', v: '2026/184', conf: 0.98, src: 'vostra offerta' },
-        { k: 'Righe ordine', v: '3 · SL-4410, PF-2205, BC-118', conf: 0.97, src: 'SL-4410' },
-        { k: 'Consegna', v: '20-11-2026', conf: 0.95, src: '20 novembre 2026' },
-      ],
-      confidence: 96.8,
-      gateTone: 'ready',
-      gateNote: 'Tutto verificato. Le righe non vengono scritte nel gestionale finché una persona non approva.',
-      actions: ['3 righe scritte nel gestionale', 'Conferma preparata per il cliente', 'Commessa collegata all’offerta 2026/184'],
-      manualMinutes: 24,
-    },
-    {
-      k: 'logistica',
-      label: 'Logistica',
-      docKind: 'PDF',
-      docTitle: 'Richiesta di trasporto',
-      docMeta: ['DOCUMENTO · richiesta_ritiro.pdf', 'PAGINE · 1'],
-      docLines: [
-        'Richiesta ritiro merce:',
-        'Ritiro: Bergamo — magazzino 2, dalle 8:00 alle 12:00',
-        'Consegna: Bologna Interporto, blocco 5.4',
-        'Colli: 6 bancali EPAL · Peso: 2.840 kg',
-        'Data richiesta: 4 settembre 2026.',
-      ],
-      telemetry: [
-        [0, 'canale: PDF · 1 pagina'],
-        [1, 'formato riconosciuto: richiesta di ritiro'],
-        [2, '4 entità trovate: origine, destinazione, colli, data'],
-        [3, '5 campi estratti con evidenza'],
-        [4, 'peso e colli coerenti · finestra oraria valida'],
-        [5, 'tratta trovata nello storico: BG → BO'],
-        [6, 'confidenza 94,1% · nessuna ambiguità'],
-        [7, 'ordine di trasporto preparato · attesa persona'],
-      ],
-      fields: [
-        { k: 'Ritiro', v: 'Bergamo · mag. 2 · 8–12', conf: 0.96, src: 'Bergamo — magazzino 2' },
-        { k: 'Consegna', v: 'Bologna Interporto 5.4', conf: 0.95, src: 'Bologna Interporto' },
-        { k: 'Colli / peso', v: '6 EPAL · 2.840 kg', conf: 0.97, src: '6 bancali EPAL' },
-        { k: 'Data', v: '04-09-2026', conf: 0.93, src: '4 settembre 2026' },
-      ],
-      confidence: 94.1,
-      gateTone: 'ready',
-      gateNote: 'Ordine di trasporto pronto, con la tratta proposta dallo storico. Parte solo dopo l’approvazione.',
-      actions: ['Ordine di trasporto creato', 'Slot di ritiro proposto al vettore', 'Cliente aggiornato sullo stato'],
-      manualMinutes: 19,
-    },
-    {
-      k: 'distribuzione',
-      label: 'Distribuzione',
-      docKind: 'ORDINE',
-      docTitle: 'Ordine cliente a listino',
-      docMeta: ['CANALE · portale ordini', 'RIGHE · 12'],
-      docLines: [
-        'Ordine da rivenditore autorizzato:',
-        '12 righe a listino, sconto contrattuale 8%.',
-        'Richiesta consegna unica entro fine mese.',
-        'Note: urgente per 2 referenze.',
-      ],
-      telemetry: [
-        [0, 'canale: portale · ordine strutturato'],
-        [1, 'listino identificato: rivenditori 2026'],
-        [2, '12 righe riconosciute · sconto contrattuale 8%'],
-        [3, '12 righe estratte · 12 codici validati'],
-        [4, 'prezzi coerenti con il listino'],
-        [5, 'giacenze verificate: 2 righe sotto scorta', 'amber'],
-        [6, 'confidenza 88,3% · 2 avvisi da rivedere', 'amber'],
-        [7, 'proposta pronta con avvisi in evidenza · attesa persona'],
-      ],
-      fields: [
-        { k: 'Righe ordine', v: '12 · tutte a listino', conf: 0.97, src: '12 righe a listino' },
-        { k: 'Sconto', v: '8% contrattuale', conf: 0.98, src: 'sconto contrattuale 8%' },
-        { k: 'Disponibilità', v: '10 righe pronte', conf: 0.99 },
-        { k: 'Sotto scorta', v: '2 righe · riordino 6 gg', conf: 0.91, state: 'warn' },
-      ],
-      confidence: 88.3,
-      gateTone: 'attention',
-      gateNote: 'Due righe sono sotto scorta: il sistema propone consegna parziale o slittamento, ma la scelta è vostra.',
-      modify: {
-        label: 'Come gestire le 2 righe sotto scorta?',
-        options: [
-          { k: 'parziale', label: 'Consegna parziale subito', conf: 96.1, note: 'Dieci righe partono ora; le due mancanti seguono al riordino. Il cliente riceve entrambe le date.', tone: 'ready' },
-          { k: 'slittamento', label: 'Consegna unica, slittata', conf: 94.8, note: 'Tutte le righe partono insieme fra 6 giorni. La conferma indica la nuova data unica.', tone: 'ready' },
-        ],
-      },
-      actions: ['Ordine confermato per 10 righe', 'Proposta al cliente per le 2 righe mancanti', 'Riordino suggerito a magazzino'],
-      manualMinutes: 28,
-    },
-    {
-      k: 'vendite',
-      label: 'Vendite',
-      docKind: 'RICHIESTA',
-      docTitle: 'Richiesta commerciale dal sito',
-      docMeta: ['CANALE · modulo sito', 'CAMPI · 4 compilati'],
-      docLines: [
-        '«Stiamo valutando un sistema per gestire le richieste',
-        'dei clienti che oggi trattiamo via email. Vorremmo',
-        'capire tempi e modalità. Possibilmente entro l’autunno.»',
-        'Azienda: — · Budget: non indicato',
-      ],
-      telemetry: [
-        [0, 'canale: sito · modulo contatto'],
-        [1, 'testo libero · 42 parole'],
-        [2, '2 entità trovate: esigenza, orizzonte temporale'],
-        [3, '3 campi estratti · 2 campi assenti', 'amber'],
-        [4, 'azienda non identificabile dal testo', 'amber'],
-        [5, 'nessuna trattativa precedente nel CRM'],
-        [6, 'confidenza 71,2% · ambiguità rilevata', 'amber'],
-        [7, 'bozza preparata con campi da completare · serve una persona', 'amber'],
-      ],
-      fields: [
-        { k: 'Esigenza', v: 'gestione richieste email', conf: 0.9, src: 'gestire le richieste' },
-        { k: 'Orizzonte', v: 'entro l’autunno', conf: 0.82, src: 'entro l’autunno' },
-        { k: 'Azienda', v: 'NON DETERMINATO', conf: 0.31, state: 'missing', src: 'Azienda: —' },
-        { k: 'Budget', v: 'NON DETERMINATO', conf: 0.22, state: 'missing', src: 'Budget: non indicato' },
-      ],
-      confidence: 71.2,
-      gateTone: 'complete',
-      gateNote: 'Sotto soglia: il sistema non inventa l’azienda né il budget. Prepara la bozza e passa la mano, indicando cosa manca.',
-      actions: ['Task CRM creato con i campi mancanti', 'Bozza di risposta pronta da completare', 'Richiesta instradata al commerciale'],
-      manualMinutes: 14,
-    },
-    {
-      k: 'amministrazione',
-      label: 'Amministrazione',
-      docKind: 'FATTURA',
-      docTitle: 'Fattura fornitore in ingresso',
-      docMeta: ['DOCUMENTO · fattura 771/2026', 'FORMATO · PDF'],
-      docLines: [
-        'Fattura n. 771/2026',
-        'Imponibile: € 4.320,00 · IVA 22%: € 950,40',
-        'Totale: € 5.270,40 · Scadenza: 30 gg d.f.',
-        'Riferimento: vostro ordine 2026/091.',
-      ],
-      telemetry: [
-        [0, 'canale: PEC · 1 allegato'],
-        [1, 'formato riconosciuto: fattura fornitore'],
-        [2, '4 entità trovate: numero, importi, scadenza, ordine'],
-        [3, '5 campi estratti con evidenza'],
-        [4, 'partita IVA e totali verificati'],
-        [5, 'ordine 2026/091 trovato · scostamento +2,4%', 'amber'],
-        [6, 'confidenza 90,6% · 1 scostamento da approvare', 'amber'],
-        [7, 'registrazione preparata con nota · attesa persona'],
-      ],
-      fields: [
-        { k: 'Numero', v: '771/2026', conf: 0.99, src: '771/2026' },
-        { k: 'Totale', v: '€ 5.270,40', conf: 0.98, src: '€ 5.270,40' },
-        { k: 'Scadenza', v: '30 gg d.f.', conf: 0.96, src: '30 gg d.f.' },
-        { k: 'Vs ordine', v: '2026/091 · +2,4%', conf: 0.94, state: 'warn', src: 'ordine 2026/091' },
-      ],
-      confidence: 90.6,
-      gateTone: 'attention',
-      gateNote: 'La fattura supera l’ordine del 2,4%. Il sistema lo dice prima della registrazione, non dopo.',
-      actions: ['Registrazione preparata con lo scostamento in nota', 'Scadenza inserita nello scadenzario', 'Richiesta di verifica al referente acquisti'],
-      manualMinutes: 16,
-    },
-    {
-      k: 'conflitti',
-      label: 'Caso difficile',
-      docKind: 'ORDINE',
-      docTitle: 'Ordine con conflitti',
-      docMeta: ['CANALE · email + allegato', 'RIGHE · 4'],
-      docLines: [
-        'Ordine da «Meccanica Rossi» — in anagrafica esiste',
-        'solo «Officine Rossi S.r.l.». Righe:',
-        '· 80 pz cod. SL-441 (esistono SL-4410 e SL-4415)',
-        '· 40 pz PF-2205 — ma l’allegato ne indica 60',
-        'Consegna richiesta: 12 settembre. Capacità: dal 19.',
-      ],
-      telemetry: [
-        [0, 'canale: email · 1 allegato'],
-        [1, 'formato riconosciuto: ordine'],
-        [2, 'cliente «Meccanica Rossi»: 1 corrispondenza parziale', 'amber'],
-        [3, 'cod. SL-441: AMBIGUITÀ · 2 candidati', 'amber'],
-        [4, 'quantità PF-2205: CONTRADDIZIONE email ↔ allegato', 'amber'],
-        [5, 'consegna 12/09: in conflitto con la capacità (dal 19)', 'amber'],
-        [6, 'confidenza 58,4% · sotto soglia', 'amber'],
-        [7, 'il sistema non indovina · 4 punti da decidere', 'amber'],
-      ],
-      fields: [
-        { k: 'Cliente', v: '«Meccanica Rossi» ≈ Officine Rossi S.r.l.', conf: 0.55, state: 'warn', src: '«Meccanica Rossi»' },
-        { k: 'Codice', v: 'SL-441 · AMBIGUO (SL-4410 / SL-4415)', conf: 0.5, state: 'conflict', src: 'SL-441 ' },
-        { k: 'Quantità PF-2205', v: '40 ↔ 60 · CONTRADDIZIONE', conf: 0.44, state: 'conflict', src: 'l’allegato ne indica 60' },
-        { k: 'Consegna', v: '12/09 · NON COMPATIBILE', conf: 0.38, state: 'conflict', src: '12 settembre' },
-      ],
-      confidence: 58.4,
-      gateTone: 'blocked',
-      gateNote: 'DOLMIR non indovina. Quattro punti sono ambigui o contraddittori: il sistema li elenca con l’evidenza e chiede una decisione — oppure prepara le domande da fare al cliente.',
-      actions: ['Richiesta di conferma preparata per il cliente, un punto per riga', 'Bozza d’ordine sospesa, non scritta nel gestionale', 'Pratica assegnata con l’evidenza allegata'],
-      manualMinutes: 35,
-      modify: {
-        label: 'Risolvete un punto: quale codice intendeva il cliente?',
-        options: [
-          { k: 'sl4410', label: 'SL-4410 · supporto lavorato', conf: 71.9, note: 'Un’ambiguità risolta. Restano la quantità contraddittoria e la data non compatibile: la richiesta di conferma ora contiene 3 punti, non 4.', tone: 'attention' },
-          { k: 'sl4415', label: 'SL-4415 · supporto rinforzato', conf: 71.2, note: 'Un’ambiguità risolta. Restano la quantità contraddittoria e la data non compatibile: la richiesta di conferma ora contiene 3 punti, non 4.', tone: 'attention' },
-        ],
-      },
-    },
-    {
-      k: 'servizi',
-      label: 'Servizi',
-      docKind: 'PRATICA',
-      docTitle: 'Richiesta di intervento',
-      docMeta: ['CANALE · email cliente', 'CONTRATTO · attivo'],
-      docLines: [
-        '«Dalla scorsa notte il sistema di etichettatura della',
-        'linea 2 si blocca a intermittenza. Riusciamo a lavorare',
-        'ma a capacità ridotta. Potete intervenire?»',
-      ],
-      telemetry: [
-        [0, 'canale: email · cliente con contratto'],
-        [1, 'testo libero · segnalazione tecnica'],
-        [2, '3 entità trovate: impianto, sintomo, urgenza'],
-        [3, '4 campi estratti · impianto agganciato al contratto'],
-        [4, 'copertura contrattuale verificata'],
-        [5, '2 interventi simili trovati nello storico'],
-        [6, 'confidenza 95,5% · priorità alta proposta'],
-        [7, 'ticket instradato con SLA · attesa persona'],
-      ],
-      fields: [
-        { k: 'Impianto', v: 'etichettatura · linea 2', conf: 0.97, src: 'etichettatura' },
-        { k: 'Sintomo', v: 'blocco intermittente', conf: 0.95, src: 'si blocca a intermittenza' },
-        { k: 'Urgenza', v: 'alta · capacità ridotta', conf: 0.93, src: 'capacità ridotta' },
-        { k: 'Contratto', v: 'attivo · SLA 8h', conf: 0.99 },
-      ],
-      confidence: 95.5,
-      gateTone: 'ready',
-      gateNote: 'Ticket pronto, con priorità e storico allegati. L’assegnazione al tecnico resta una scelta umana.',
-      actions: ['Ticket creato con SLA 8h', 'Storico interventi allegato', 'Cliente informato della presa in carico'],
-      manualMinutes: 12,
-    },
-  ],
-} as const;
-
 /* ================================================== home === the story ========*/
-
-export const chapters = {
-  automation: {
-    n: '09',
-    label: 'Automazione',
-    headline: 'Il flusso, dall’ingresso alla firma.',
-    body:
-      'Ogni processo che costruiamo ha la stessa forma: entra qualcosa, il sistema lo capisce, verifica di poterlo trattare, prepara il risultato e si ferma davanti a una persona. Quello che cambia da azienda ad azienda è il contenuto, non l’architettura.',
-  },
-
-  software: {
-    n: '10',
-    label: 'Software',
-    headline: 'Non solo automazioni. Interfacce.',
-    body:
-      'Quando un processo diventa sistema serve anche un posto dove guardarlo. Costruiamo l’applicazione: elenchi, ricerca, stati, approvazioni, documenti collegati, indicatori. Su misura del vostro processo, non un gestionale generico da adattare.',
-    app: {
-      title: 'DOLMIR · Operativo',
-      nav: ['Panoramica', 'Richieste', 'Documenti', 'Clienti', 'Flussi', 'Impostazioni'],
-      stats: [
-        { k: 'In coda', v: 12, tone: 'ink' },
-        { k: 'Elaborate oggi', v: 47, tone: 'accent' },
-        { k: 'In attesa di persona', v: 3, tone: 'amber' },
-        { k: 'Completate', v: 219, tone: 'good' },
-      ],
-      rows: [
-        { id: 'RIC-4471', c: 'Cliente A', s: 'Bozza pronta', tone: 'good', conf: 0.94, t: '08:41',
-          trail: ['08:41 · email ricevuta e classificata', '08:41 · 6 campi estratti, tutti sopra soglia', '08:42 · precedente trovato nello storico', '08:42 · bozza preparata · in attesa di approvazione'] },
-        { id: 'RIC-4472', c: 'Cliente B', s: 'Campi da verificare', tone: 'amber', conf: 0.61, t: '08:44',
-          trail: ['08:44 · PDF letto · 5 campi estratti', '08:44 · 2 campi sotto soglia: quantità, consegna', '08:45 · assegnata a M.R. con l’evidenza allegata'] },
-        { id: 'RIC-4473', c: 'Cliente C', s: 'Serve stima tecnica', tone: 'amber', conf: 0.22, t: '08:52',
-          trail: ['08:52 · nessun precedente comparabile', '08:52 · il sistema non propone un prezzo', '08:53 · passata al preventivista con la motivazione'] },
-        { id: 'RIC-4474', c: 'Cliente D', s: 'Instradata', tone: 'neutral', conf: 0.88, t: '09:03',
-          trail: ['09:03 · riconosciuta come conferma d’ordine', '09:03 · instradata al flusso ordini, non quotata'] },
-        { id: 'RIC-4475', c: 'Cliente E', s: 'Bozza pronta', tone: 'good', conf: 0.91, t: '09:11',
-          trail: ['09:11 · email letta · 6 campi estratti', '09:12 · confronto storico: 2 offerte simili', '09:12 · bozza pronta · in attesa di approvazione'] },
-      ],
-      disclaimer: 'Interfaccia dimostrativa con dati di esempio.',
-    },
-  },
-
-  human: {
-    n: '06',
-    label: 'Controllo',
-    headline: 'Il sistema si ferma prima di decidere.',
-    body:
-      'Un modello AI può sempre generare una risposta. DOLMIR è progettato per sapere quando NON deve: il comportamento «non lo so» va costruito contro il modello, con soglie, evidenze e cancelli espliciti. Quando manca un precedente, un campo è sotto soglia, un documento è illeggibile o due fonti si contraddicono, il sistema non inventa — si ferma, e il caso passa a una persona.',
-    chain: [
-      { k: 'NON SO', d: 'Nessun precedente comparabile, un campo sotto soglia, un documento illeggibile.' },
-      { k: 'FERMA', d: 'Non viene prodotto un valore plausibile. Non viene prodotto niente.' },
-      { k: 'PERSONA', d: 'La pratica viene assegnata con indicato cosa manca e perché.' },
-      { k: 'DECIDE', d: 'Una persona completa, corregge e approva. Poi il flusso riprende.' },
-    ],
-    quote: 'REQUIRES_TECHNICAL_ESTIMATE',
-    quoteNote:
-      'È una riga vera del motore che gira su questo sito. Quando compare, il sistema ha deciso di non rispondere. Non è un guasto: è la funzione più importante che abbiamo scritto.',
-  },
-} as const;
-
-
-
 
 /* ====================================================== home === closing ======*/
 
@@ -1284,3 +573,101 @@ export const demoCopy = {
 
 export const legalNote =
   'Questo testo è predisposto ma non ancora verificato da un legale. Prima della pubblicazione del dominio definitivo verrà sottoposto a revisione.';
+
+
+/* ============================================ home === in action (03) ======*/
+
+export const inAction = {
+  n: '03',
+  label: 'DOLMIR in azione',
+  headline: 'Lo strato intelligente, visto da dentro.',
+  body:
+    'Non un’illustrazione: la stessa interfaccia che usano le persone in azienda. Tre superfici — cosa arriva, cosa è stato capito, cosa è stato verificato — e il punto esatto in cui il sistema si ferma.',
+  steps: ([
+    { k: 'Arriva', t: 'La richiesta entra nella casella condivisa, fra una conferma d’ordine e una newsletter. DOLMIR la riconosce come richiesta di offerta.', pane: 'inbox' },
+    { k: 'Legge', t: 'Estrae cliente, prodotto, quantità, scadenza e priorità. Ogni dato tiene attaccata la sua fonte: la riga dell’email, l’allegato, la regola.', pane: 'fields' },
+    { k: 'Verifica', t: 'Confronta ogni dato con i sistemi già in azienda: anagrafica, listino, storico delle richieste.', pane: 'checks' },
+    { k: 'Conflitto', t: 'La quantità non coincide con l’ultima richiesta dello stesso cliente. Il sistema lo dichiara invece di scegliere.', pane: 'checks', amber: true },
+    { k: 'Persona', t: 'La decisione arriva a chi può prenderla, con l’evidenza già pronta. Approva o revisiona: due pulsanti, nessuna interpretazione.', pane: 'decision', amber: true },
+    { k: 'Agisce', t: 'Solo dopo il sì: CRM aggiornato, offerta preparata, commerciale avvisato. Tutto registrato.', pane: 'actions' },
+  ] as readonly { k: string; t: string; pane: 'inbox' | 'fields' | 'checks' | 'decision' | 'actions'; amber?: boolean }[]),
+  panes: { inbox: 'POSTA COMMERCIALE', fields: 'LETTURA', checks: 'VERIFICA' },
+} as const;
+
+/* ============================================ home === the workflow (04) ====*/
+
+export const workflow = {
+  n: '04',
+  label: 'Il flusso',
+  headline: 'Otto passi. Sempre gli stessi, per qualunque processo.',
+  body:
+    'Quello che cambia da azienda ad azienda è il contenuto, non la forma. Scegliete un processo e guardate la stessa catena riempirsi con le vostre parole.',
+  stations: ['INPUT', 'COMPRENDE', 'ESTRAE', 'VERIFICA', 'COLLEGA', 'CONFLITTO', 'DECISIONE UMANA', 'AZIONE'],
+  human: 6,
+  items: [
+    { k: 'PREVENTIVI', input: 'Richiesta d’offerta via email, con allegato tecnico', verifica: 'Anagrafica, listini, offerte passate comparabili', collega: 'Cliente, codice articolo, ultima offerta', conflitto: 'Quantità o codice diversi dal precedente', persona: 'Approva il prezzo prima che l’offerta parta', azione: 'Offerta pronta e registrata' },
+    { k: 'ORDINI', input: 'Conferma d’ordine — email, PDF, portale', verifica: 'Codici articolo, quantità, capacità, date di consegna', collega: 'Cliente, offerta di origine, disponibilità', conflitto: 'Email e allegato non coincidono', persona: 'Decide sui conflitti fra le fonti', azione: 'Ordine inserito nel gestionale' },
+    { k: 'FATTURE', input: 'Fattura passiva in PDF', verifica: 'Ordine di riferimento, DDT, importi e scadenze', collega: 'Fornitore, ordine, bolla', conflitto: 'Importo diverso dall’ordine', persona: 'Approva le eccezioni e le differenze', azione: 'Registrazione preparata' },
+    { k: 'RICHIESTE CLIENTI', input: 'Email, moduli dal sito, PEC', verifica: 'Storico del cliente, stato di ordini e consegne', collega: 'Cliente, pratica aperta, responsabile', conflitto: 'Promessa fatta e stato reale non coincidono', persona: 'Rivede i casi delicati prima della risposta', azione: 'Risposta preparata, con i dati giusti' },
+    { k: 'DOCUMENTI', input: 'PDF, scansioni, allegati sparsi', verifica: 'Campi estratti, ognuno con la fonte attaccata', collega: 'Pratica, cliente, versione del documento', conflitto: 'Due versioni dello stesso documento', persona: 'Valida i campi sotto soglia di confidenza', azione: 'Archivio ordinato e interrogabile' },
+    { k: 'APPROVAZIONI', input: 'Richieste interne: acquisti, ferie, spese', verifica: 'Regole e soglie che definite voi', collega: 'Richiedente, centro di costo, budget', conflitto: 'Fuori soglia o fuori regola', persona: 'Firma dove la regola non basta', azione: 'Esito eseguito e tracciato' },
+    { k: 'REPORT', input: 'Dati dai sistemi già collegati', verifica: 'Coerenza fra le fonti, anomalie segnalate', collega: 'Reparto, periodo, indicatore', conflitto: 'Due sistemi dicono numeri diversi', persona: 'Legge le anomalie, non le tabelle', azione: 'Report ricorrente, pronto' },
+    { k: 'ASSISTENZA', input: 'Ticket, email, segnalazioni telefoniche trascritte', verifica: 'Contratto, garanzia, storico interventi', collega: 'Cliente, macchina, intervento precedente', conflitto: 'Garanzia scaduta ma richiesta in garanzia', persona: 'Gestisce i casi mai visti prima', azione: 'Risposta e intervento pianificato' },
+  ],
+  fixed: {
+    comprende: 'Riconosce di cosa si tratta e a quale processo appartiene',
+    estrae: 'Estrae i dati, ognuno con la sua fonte',
+  },
+  note: 'Il vostro processo non è in elenco? È comunque fatto di questi otto passi. Portatecelo.',
+} as const;
+
+/* ============================================ home === the case (06) =======*/
+
+export const caso = {
+  n: '06',
+  label: 'Un caso operativo',
+  headline: 'Una richiesta di offerta, dall’email al preventivo.',
+  body:
+    'Lo stesso caso dello scenario qui sopra, seguito passo per passo come succede in azienda: cosa fa il sistema, dove si ferma, cosa resta nelle mani di una persona.',
+  steps: ([
+    { k: 'Richiesta in arrivo', t: 'Officine Rossi chiede 2.000 staffe SL-4410 con consegna al 30/09. Email più disegno allegato, nella casella commerciale.', frame: 'mail' },
+    { k: 'Estrazione', t: 'Cinque campi, ognuno con la fonte: il cliente riconosciuto dall’alias «Meccanica Rossi», il codice dal disegno, quantità e scadenza dal testo.', frame: 'fields' },
+    { k: 'Storico', t: 'Il sistema cerca le offerte precedenti dello stesso cliente e dello stesso codice: trova PRV-2198, giugno 2026, 1.200 pezzi.', frame: 'checks' },
+    { k: 'Discrepanza', t: 'Quantità diversa dall’ultima richiesta. Non è un errore del sistema: è un fatto da chiarire, e il sistema lo dichiara.', frame: 'checks', amber: true },
+    { k: 'Decisione umana', t: 'Il commerciale vede la richiesta, il precedente e la differenza. Approva la nuova quantità o la rimanda al cliente.', frame: 'decision', amber: true },
+    { k: 'Preventivo', t: 'Con la quantità confermata, DOLMIR prepara la bozza di offerta: prezzo dal listino, motivazione, consegna richiesta.', frame: 'quote' },
+    { k: 'Sistemi aggiornati', t: 'CRM, offerta e commerciale allineati in un passaggio. Ogni azione resta nel registro, con chi l’ha approvata.', frame: 'actions' },
+  ] as readonly { k: string; t: string; frame: 'mail' | 'fields' | 'checks' | 'decision' | 'quote' | 'actions'; amber?: boolean }[]),
+  quote: {
+    id: 'PRV-2206 · bozza',
+    lines: [['SL-4410 · staffa laser', '2.000 pz'], ['Prezzo unitario', 'da listino 2026'], ['Consegna richiesta', '30/09/2026'], ['Riferimento', 'PRV-2198 (1.200 pz)']],
+    status: 'In attesa di approvazione',
+  },
+  before: {
+    title: 'OGGI, A MANO',
+    steps: ['Qualcuno apre l’email', 'Legge il disegno allegato', 'Cerca il cliente nel gestionale', 'Cerca l’ultima offerta', 'Ricopia i dati in Excel', 'Chiede conferma al commerciale', 'Scrive il preventivo'],
+    stats: [['PASSAGGI', '7'], ['PERSONE', '2'], ['SISTEMI', '4'], ['PUNTI DI ERRORE', '3']],
+  },
+  disclaimer: 'Esempio illustrativo sul caso dimostrativo. Passaggi e conteggi descrivono lo scenario demo, non una misura presso un cliente.',
+  cta: { t: 'Il motore vero, con i suoi casi →', href: '/dimostrazione' },
+} as const;
+
+/* ============================================ home === control (07) ========*/
+
+export const controllo = {
+  n: '07',
+  label: 'Controllo',
+  headline: 'Il sistema si ferma prima di decidere.',
+  body:
+    'Un modello AI può sempre generare una risposta. DOLMIR è costruito per sapere quando non deve: soglie, evidenze e cancelli espliciti. Cinque stati, sempre visibili, dicono in ogni momento quanto il sistema è sicuro e chi ha l’ultima parola.',
+  states: [
+    { k: 'VERIFICATO', tone: 'good', t: 'Il dato coincide con il documento e con i vostri sistemi. Può procedere.', ex: 'Cliente · C-01 Officine Rossi S.r.l. · anagrafica' },
+    { k: 'CONFLITTO RILEVATO', tone: 'amber', t: 'Due fonti dicono cose diverse. Il sistema lo mostra, non sceglie.', ex: 'Quantità · 2.000 (email) ↔ 1.200 (PRV-2198)' },
+    { k: 'DECISIONE RICHIESTA', tone: 'amber', t: 'Un bivio vero. Le opzioni sono già pronte, con la loro evidenza.', ex: 'Confermare la nuova quantità? · Approva / Revisiona' },
+    { k: 'NON DETERMINATO', tone: 'amber', t: 'I dati non bastano. Nessun valore plausibile viene inventato.', ex: 'Prezzo · manca il materiale · serve stima tecnica' },
+    { k: 'APPROVAZIONE UMANA', tone: 'amber', t: 'Niente parte senza un sì con nome e cognome. Poi il flusso riprende.', ex: 'Approvata da M. Rossi · 09:31 · registrata' },
+  ],
+  quote: 'REQUIRES_TECHNICAL_ESTIMATE',
+  quoteNote:
+    'È una riga vera del motore che gira su questo sito. Quando compare, il sistema ha deciso di non rispondere. Non è un guasto: è la funzione più importante che abbiamo scritto.',
+} as const;

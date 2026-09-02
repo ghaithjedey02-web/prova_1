@@ -3,89 +3,61 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
-import { Magnetic } from '@/components/ui/Magnetic';
-import { cta, hero } from '@/content/site';
-import { HeroScene } from './HeroScene';
+import { cta, hero, scenario } from '@/content/site';
+import { HeroProduct } from './HeroProduct';
 
 /**
- * The first ten seconds, redesigned around one idea: show it, then say it.
+ * The first screen: say it in one sentence, show it in one frame.
  *
- * The right half of the viewport is the product happening — documents
- * arriving in disorder, flowing through the core, leaving as verified rows,
- * one of them stopping in amber for a person. The left half is three lines
- * in plain words that describe exactly what the eye is already watching.
- * A visitor who never reads the lead still leaves knowing the shape:
- * mess in, understanding, a stop, action.
- *
- * What is gone: the abstract polyhedron (it said "technology" and nothing
- * else), the strip of spec-sheet principles, and the seven mono words. What
- * replaced the strip is four verbs in the reading typeface, the last in amber.
- *
- * On phones the scene sits above the words in a 4:3 band; the story is the
- * same, the composition stacks. Under reduced motion the scene renders its
- * composed mid-story frame and stays.
+ * Left, the claim a business owner understands without knowing what AI is.
+ * Right, the product doing exactly that — a request read, verified, stopped
+ * at a discrepancy, decided by a person, turned into actions. On phones the
+ * frame follows the words; on wide screens they sit side by side and the
+ * frame is what the eye lands on.
  */
 export function Hero() {
   const [ready, setReady] = useState(false);
-
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setReady(true); return; }
-    const id = setTimeout(() => setReady(true), 80);
+    const id = setTimeout(() => setReady(true), 60);
     return () => clearTimeout(id);
   }, []);
 
   return (
-    <section className="relative min-h-[100svh] overflow-hidden">
-      {/* the scene: full-bleed on the right at lg, a band on top below it */}
-      <div
-        aria-hidden
-        className={`pointer-events-none absolute inset-x-0 top-[var(--nav-h)] h-[50svh] transition-opacity duration-[1400ms] lg:inset-y-0 lg:left-[44%] lg:right-0 lg:h-auto lg:top-0 ${
-          ready ? 'opacity-100' : 'opacity-0'
-        }`}
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_60%_50%,transparent_35%,var(--c-ground)_100%)] lg:bg-[linear-gradient(90deg,var(--c-ground)_0%,transparent_18%,transparent_88%,var(--c-ground)_100%)]" />
-        <div className="absolute inset-0 -z-10">
-          <HeroScene />
-        </div>
-      </div>
+    <section className="relative overflow-hidden pt-[calc(var(--nav-h)+clamp(2rem,6vw,5rem))] pb-[clamp(3rem,7vw,6rem)]">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 pool opacity-70" />
+      <Container>
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14 xl:gap-20">
+          <div
+            className={`max-w-[38rem] transition-all duration-[var(--duration-scene)] ease-[var(--ease-mech-out)] ${
+              ready ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
+            }`}
+          >
+            <p className="mb-6 text-[length:var(--text-small)] font-medium text-accent">{hero.eyebrow}</p>
+            <h1 className="display text-[length:var(--text-display-xl)] text-ink">{hero.headline}</h1>
+            <p className="lead mt-7 max-w-[44ch]">{hero.lead}</p>
 
-      <Container className="relative flex min-h-[100svh] flex-col justify-end pb-12 pt-[calc(50svh+3rem)] lg:justify-center lg:pb-0 lg:pt-0">
-        <div
-          className={`max-w-[38rem] transition-all duration-[var(--duration-scene)] ease-[var(--ease-mech-out)] lg:max-w-[42%] ${
-            ready ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-4 opacity-0 blur-[6px]'
-          }`}
-        >
-          <p className="mb-6 text-[length:var(--text-small)] font-medium text-accent">{hero.eyebrow}</p>
+            <p className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[length:var(--text-small)]">
+              {hero.ribbon.map((v, i) => (
+                <span key={v} className="flex items-baseline gap-x-3">
+                  {i > 0 && <span aria-hidden className="text-faint">·</span>}
+                  <span className={i === hero.ribbon.length - 1 ? 'font-medium text-amber' : 'text-ink'}>{v}</span>
+                </span>
+              ))}
+            </p>
 
-          <h1 className="display text-[length:var(--text-display-xl)]">
-            <span className="block text-ink">{hero.line1}</span>
-            <span className="block text-ink-2">{hero.line2}</span>
-            <span className="block text-ink">{hero.line3}</span>
-          </h1>
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              <Button href={cta.primary.href} size="lg" arrow>{cta.primary.label}</Button>
+              <Button href={cta.secondary.href} variant="secondary" size="lg">{cta.secondary.label}</Button>
+            </div>
+          </div>
 
-          <p className="lead mt-7 max-w-[46ch] text-ink-2">{hero.lead}</p>
-
-          {/* four verbs — the product, in the reading face, no machine voice */}
-          <p className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[length:var(--text-small)]">
-            {hero.ribbon.map((v, i) => (
-              <span key={v} className="flex items-baseline gap-x-3">
-                {i > 0 && <span aria-hidden className="text-faint">·</span>}
-                <span className={i === hero.ribbon.length - 1 ? 'font-medium text-amber' : 'text-ink'}>{v}</span>
-              </span>
-            ))}
-          </p>
-
-          <div className="mt-9 flex flex-wrap items-center gap-3">
-            <Magnetic>
-              <Button href="/#parla" arrow className="sm:px-8 sm:py-4.5 sm:text-[length:var(--text-body)]">
-                Parla con DOLMIR
-              </Button>
-            </Magnetic>
-            <Magnetic>
-              <Button href={cta.primary.href} variant="secondary" className="sm:px-8 sm:py-4.5 sm:text-[length:var(--text-body)]">
-                Portateci un processo
-              </Button>
-            </Magnetic>
+          <div
+            className={`min-w-0 transition-all delay-150 duration-[var(--duration-scene)] ease-[var(--ease-mech-out)] ${
+              ready ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+            }`}
+          >
+            <HeroProduct />
+            <p className="mt-3 text-[length:var(--text-micro)] text-faint">{scenario.disclaimer}</p>
           </div>
         </div>
       </Container>

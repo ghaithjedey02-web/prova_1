@@ -1,11 +1,10 @@
 import { Hero } from '@/components/home/Hero';
 import { Problema } from '@/components/home/Problema';
+import { InAction } from '@/components/home/InAction';
+import { Workflow } from '@/components/home/Workflow';
 import { Parla } from '@/components/live/Parla';
-import { CasoOperativo } from '@/components/home/CasoOperativo';
-import { Processi } from '@/components/home/Processi';
-import { Simulator } from '@/components/live/Simulator';
-import { HumanGate } from '@/components/home/HumanGate';
-import { TrustBand } from '@/components/home/TrustBand';
+import { CaseStudy } from '@/components/home/CaseStudy';
+import { Control } from '@/components/home/Control';
 import { Closing } from '@/components/home/Closing';
 import { site } from '@/content/site';
 
@@ -17,29 +16,20 @@ const jsonLd = {
   description: site.description,
   areaServed: { '@type': 'AdministrativeArea', name: 'Lombardia, Italia' },
   knowsLanguage: ['it'],
-  serviceType: 'Sistemi digitali, automazione AI e integrazioni per imprese',
+  serviceType: 'Sistemi software intelligenti, automazione AI e integrazioni per imprese',
 };
 
 /**
- * The homepage as a B2B landing: understand → recognise → try → picture it →
- * trust → act.
+ * The homepage as one story, eight chapters, each answering one question.
  *
- *   Hero          — what DOLMIR is, in one sentence and seven words.
- *   Problema (01) — "il lavoro non è nel gestionale", and the three things
- *                   we do NOT replace or change.
- *   Parla    (02) — the product, live: the explainer tells the story, then
- *                   the visitor talks to the system themselves.
- *   Caso     (03) — the same order twice: seven manual hops today, one human
- *                   decision with DOLMIR. Illustrative and declared.
- *   Processi (04) — "adesso immaginate il vostro": eight processes, one
- *                   shape, the visitor's own bottleneck drawn onto it.
- *   Simulator(05) — their hands on it: run the case, hit the gate, decide.
- *   HumanGate(06) — why it stops. The trust thesis, in the engine's words.
- *   TrustBand     — six architectural guarantees, right before the ask.
- *   Closing       — one concrete action, with what to bring to it.
- *
- * The technology showcases (operating-layer map, 3D case, pipeline demo)
- * keep their own routes; the homepage's job is the visitor's own process.
+ *   01 Hero       — what is DOLMIR? One sentence, and the product doing it.
+ *   02 Problema   — why operational work fragments: the desk, drawn.
+ *   03 In azione  — the intelligence layer, seen from inside the interface.
+ *   04 Il flusso  — the eight-step loop, filled with the visitor's process.
+ *   05 Parla      — the real model, with tools, live.
+ *   06 Il caso    — one request followed from email to quotation.
+ *   07 Controllo  — the five states, the refusal constant, the guarantees.
+ *   08 Il passo   — one action, and what to bring to it.
  */
 export default function HomePage() {
   return (
@@ -47,12 +37,11 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Hero />
       <Problema />
+      <InAction />
+      <Workflow />
       <Parla />
-      <CasoOperativo />
-      <Processi />
-      <Simulator />
-      <HumanGate />
-      <TrustBand />
+      <CaseStudy />
+      <Control />
       <Closing />
     </>
   );

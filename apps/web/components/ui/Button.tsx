@@ -4,13 +4,13 @@ import type { ReactNode } from 'react';
 type Variant = 'primary' | 'secondary' | 'ghost';
 
 const base =
-  'group inline-flex items-center justify-center gap-3 rounded-sm font-medium select-none ' +
+  'group inline-flex min-h-11 items-center justify-center gap-3 rounded-[4px] font-medium select-none ' +
   'transition-[background-color,border-color,color,box-shadow,transform] duration-[var(--duration-fast)] ' +
   'ease-[var(--ease-mech)] active:translate-y-px';
 
 const sizes = {
-  md: 'px-6 py-3.5 text-[length:var(--text-small)]',
-  lg: 'px-8 py-4.5 text-[length:var(--text-body)]',
+  md: 'px-6 py-3 text-[length:var(--text-small)]',
+  lg: 'px-7 py-3.5 text-[length:var(--text-body)] sm:px-8',
 } as const;
 
 const variants: Record<Variant, string> = {

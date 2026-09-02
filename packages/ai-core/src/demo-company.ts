@@ -62,6 +62,7 @@ const ORDERS: DemoOrder[] = [
 ];
 
 const QUOTATIONS = [
+  { id: 'PRV-2198', customer: 'Officine Rossi S.r.l.', amountEur: 9480.0, status: 'inviato', note: 'Giugno 2026: 1.200 staffe SL-4410. Riferimento per la richiesta RFQ-2026-0521.' },
   { id: 'PRV-2201', customer: 'Fonderia Bianchi S.p.A.', amountEur: 3340.0, status: 'inviato', note: 'Flangia DN80 lavorata, 12 pezzi. Preventivo preparato dal sistema e approvato da una persona.' },
   { id: 'PRV-2205', customer: 'LogiTre S.p.A.', amountEur: 11250.0, status: 'in_approvazione', note: 'Bozza pronta: aspetta l’approvazione umana prima dell’invio.' },
 ] as const;
@@ -88,10 +89,21 @@ const CONFLICTS = [
   { orderId: 'ORD-10482', field: 'consegna', detail: 'Richiesta 12/09; la tornitura è satura fino al 18/09.' },
 ] as const;
 
+/**
+ * Requests for quotation — the case every product frame on the site draws:
+ * Officine Rossi asking for 2.000 SL-4410 with a delivery date, where the
+ * quantity disagrees with the same customer's previous request.
+ */
+const REQUESTS = [
+  { id: 'RFQ-2026-0521', customer: 'Officine Rossi S.r.l.', code: 'SL-4410', description: 'staffa laser, come da disegno rev.3', qty: 2000, delivery: '2026-09-30', received: '2026-09-02 09:12', status: 'in_verifica', previous: 'PRV-2198', conflict: 'Quantità diversa dall’ultima richiesta: 2.000 oggi, 1.200 nella PRV-2198 di giugno 2026.' },
+  { id: 'RFQ-2026-0517', customer: 'LogiTre S.p.A.', code: 'PF-2205', description: 'piastra forata, lotto ripetitivo', qty: 300, delivery: '2026-10-10', received: '2026-08-29 15:40', status: 'quotata', previous: 'PRV-2205', conflict: null },
+] as const;
+
 const DOCUMENTS = [
   { id: 'DOC-EMAIL-482', kind: 'email', order: 'ORD-10482', text: 'Buongiorno, confermiamo l’ordine: 80 pz SL-441 e 40 pz PF-2205, consegna richiesta il 12 settembre. Cordiali saluti, Meccanica Rossi.' },
   { id: 'DOC-PDF-482', kind: 'pdf', order: 'ORD-10482', text: 'Allegato ordine n. 184/2026 — righe: SL-441 q.tà 80; PF-2205 q.tà 60. Resa franco ns. stabilimento.' },
   { id: 'DOC-EMAIL-488', kind: 'email', order: 'ORD-10488', text: 'Vi ricordiamo che la consegna dei 200 pz SL-4410 resta confermata per il 15/09 come da accordi.' },
+  { id: 'DOC-EMAIL-521', kind: 'email', order: 'RFQ-2026-0521', text: 'Buongiorno, vi chiediamo un’offerta per 2.000 staffe SL-4410 come da disegno allegato, consegna entro il 30/09. Cordiali saluti, Meccanica Rossi.' },
 ] as const;
 
 /* ------------------------------------------------------------------ tools */
@@ -154,6 +166,15 @@ export const DEMO_TOOLS: Record<string, { description: string; input_schema: Rec
       return c
         ? { label: `CLIENTE · ${c.name}`, summary: '1 cliente trovato', data: c }
         : { label: 'CLIENTE · non trovato', summary: 'Nessun cliente corrispondente in anagrafica', data: null };
+    },
+  },
+  get_requests: {
+    description: 'Richieste di offerta ricevute: tutte, o per cliente (nome anche parziale). Ogni richiesta indica l’offerta precedente dello stesso cliente e l’eventuale incongruenza rilevata.',
+    input_schema: { type: 'object', properties: { customer: { type: 'string' } }, additionalProperties: false },
+    run: (i) => {
+      const q = norm(i['customer']);
+      const rows = q ? REQUESTS.filter((r) => norm(r.customer).includes(q) || (q.includes('rossi') && norm(r.customer).includes('rossi'))) : [...REQUESTS];
+      return { label: `RICHIESTE · ${rows.length}`, summary: plural(rows.length, 'richiesta di offerta consultata', 'richieste di offerta consultate'), data: rows };
     },
   },
   get_quotation: {

@@ -40,7 +40,7 @@ export function Nav() {
             </span>
           </Link>
 
-          <nav aria-label="Principale" className="hidden items-center gap-7 lg:flex">
+          <nav aria-label="Principale" className="hidden items-center gap-5 lg:flex xl:gap-7">
             {nav.map((item) => {
               const active = pathname === item.href;
               return (
@@ -48,12 +48,12 @@ export function Nav() {
                   key={item.href}
                   href={item.href}
                   aria-current={active ? 'page' : undefined}
-                  className={`relative py-1 text-[length:var(--text-small)] transition-colors duration-[var(--duration-fast)] ${
+                  className={`relative inline-flex min-h-10 items-center text-[length:var(--text-small)] transition-colors duration-[var(--duration-fast)] ${
                     active ? 'text-ink' : 'text-muted hover:text-ink'
                   }`}
                 >
                   {item.label}
-                  {active && <span aria-hidden className="absolute -bottom-0.5 left-0 h-px w-full bg-accent" />}
+                  {active && <span aria-hidden className="absolute bottom-1 left-0 h-px w-full bg-accent" />}
                 </Link>
               );
             })}
@@ -62,7 +62,7 @@ export function Nav() {
           <div className="flex items-center gap-2.5">
             <Link
               href={cta.primary.href}
-              className="hidden rounded-sm bg-accent px-5 py-2.5 text-[length:var(--text-micro)] font-medium text-accent-ink transition-colors duration-[var(--duration-fast)] hover:bg-accent-hover sm:inline-flex"
+              className="hidden min-h-10 items-center rounded-[4px] bg-accent px-4 text-[length:var(--text-micro)] font-medium text-accent-ink transition-colors duration-[var(--duration-fast)] hover:bg-accent-hover sm:inline-flex"
             >
               {cta.primary.label}
             </Link>
@@ -72,7 +72,7 @@ export function Nav() {
               aria-expanded={open}
               aria-controls="mobile-nav"
               aria-label={open ? 'Chiudi menu' : 'Apri menu'}
-              className="grid size-9 place-items-center rounded-sm border border-rule text-ink lg:hidden"
+              className="grid size-10 place-items-center rounded-[4px] border border-rule-strong text-ink lg:hidden"
             >
               <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden>
                 {open ? (
@@ -104,7 +104,7 @@ export function Nav() {
               ))}
               <Link
                 href={cta.primary.href}
-                className="mt-5 mb-4 rounded-sm bg-accent px-5 py-4 text-center text-[length:var(--text-small)] font-medium text-accent-ink"
+                className="mt-5 mb-4 rounded-[4px] bg-accent px-5 py-4 text-center text-[length:var(--text-small)] font-medium text-accent-ink"
               >
                 {cta.primary.label}
               </Link>

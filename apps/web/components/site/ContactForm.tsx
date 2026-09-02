@@ -61,7 +61,7 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="panel p-7 md:p-10" noValidate={false}>
+    <form onSubmit={onSubmit} className="frame relative p-6 sm:p-8 md:p-10" noValidate={false}>
       <fieldset>
         <legend className="label">Cosa volete far funzionare meglio?</legend>
         <div role="presentation" className="mt-5 grid gap-2 sm:grid-cols-2">
@@ -157,6 +157,13 @@ export function ContactForm() {
         aria-hidden={!area}
         inert={!area}
       >
+        {/* honeypot: invisible to people, irresistible to bots */}
+        <div aria-hidden className="absolute -left-[9999px] top-0 h-px w-px overflow-hidden">
+          <label htmlFor="sito">Sito web</label>
+          <input id="sito" name="sito" type="text" tabIndex={-1} autoComplete="off" />
+        </div>
+        <input type="hidden" name="area" value={area?.k ?? ''} />
+        <input type="hidden" name="settore" value={settore ?? ''} />
         <Field name="azienda" label="Azienda" required autoComplete="organization" />
         <Field name="nome" label="Nome e cognome" required autoComplete="name" />
         <Field name="email" label="Email" type="email" required autoComplete="email" />
