@@ -94,7 +94,7 @@ export function Parla() {
   }, [stage, voice.mic]);
 
   useEffect(() => {
-    if (failure) setNote(failure === 'rate' ? c.busyNote : c.offlineNote);
+    if (failure) setNote(failure === 'rate' ? c.busyNote : failure === 'overloaded' ? c.overloadedNote : c.offlineNote);
   }, [failure]);
 
   useEffect(() => {

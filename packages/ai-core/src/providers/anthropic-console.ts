@@ -50,7 +50,64 @@ export type ConsoleEvent =
   | { type: 'delta'; text: string }
   | { type: 'gate'; question: string; options: GateOption[]; stake?: string }
   | { type: 'unknown'; question: string; missing: string[] }
-  | { type: 'done'; text: string };
+  | { type: 'done'; text: string }
+  | { type: 'error'; reason: ConsoleErrorReason };
+
+/**
+ * Why a turn failed, in a form the interface may show and the server log may
+ * keep. Configuration reasons (auth, model, billing, request) mean this
+ * deployment cannot answer anyone until an operator acts; the others are
+ * transient and worth a retry. Never carries the credential or its value.
+ */
+export type ConsoleErrorReason =
+  | 'auth'        // key rejected by Anthropic (401/403)
+  | 'model'       // the configured model is not available to this key (404)
+  | 'billing'     // the account has no credit (400 with a balance message)
+  | 'request'     // any other 400/422: a bug in what we send
+  | 'rate'        // upstream 429
+  | 'overloaded'  // upstream 5xx/529
+  | 'timeout'     // connection timed out before the first byte
+  | 'network'     // could not reach Anthropic at all
+  | 'aborted'     // the visitor left
+  | 'unknown';
+
+export class ConsoleError extends Error {
+  constructor(
+    public readonly reason: ConsoleErrorReason,
+    public readonly status: number | undefined,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'ConsoleError';
+  }
+  /** True when the failure is this deployment's configuration, not the weather. */
+  get configuration(): boolean {
+    return this.reason === 'auth' || this.reason === 'model' || this.reason === 'billing' || this.reason === 'request';
+  }
+}
+
+/** Maps whatever the SDK threw onto one of the reasons above. */
+export function classifyConsoleError(err: unknown): ConsoleError {
+  if (err instanceof ConsoleError) return err;
+  if (err instanceof Anthropic.APIUserAbortError) return new ConsoleError('aborted', undefined, 'aborted by the client');
+  if (err instanceof Anthropic.APIConnectionTimeoutError) return new ConsoleError('timeout', undefined, err.message);
+  if (err instanceof Anthropic.APIConnectionError) return new ConsoleError('network', undefined, err.message);
+  if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) {
+    return new ConsoleError('auth', err.status, err.message);
+  }
+  if (err instanceof Anthropic.NotFoundError) return new ConsoleError('model', 404, err.message);
+  if (err instanceof Anthropic.RateLimitError) return new ConsoleError('rate', 429, err.message);
+  if (err instanceof Anthropic.BadRequestError || err instanceof Anthropic.UnprocessableEntityError) {
+    return new ConsoleError(/credit|billing|balance/i.test(err.message) ? 'billing' : 'request', err.status, err.message);
+  }
+  if (err instanceof Anthropic.APIError) {
+    const status = err.status;
+    return new ConsoleError(status !== undefined && status >= 500 ? 'overloaded' : 'unknown', status, err.message);
+  }
+  const message = err instanceof Error ? err.message : String(err);
+  if (/abort/i.test(message)) return new ConsoleError('aborted', undefined, message);
+  return new ConsoleError('unknown', undefined, message);
+}
 
 export interface ConsoleReply {
   text: string;
@@ -59,8 +116,40 @@ export interface ConsoleReply {
   unknown?: { question: string; missing: string[] };
 }
 
-const MODEL = process.env['DOLMIR_CONSOLE_MODEL'] ?? 'claude-opus-5';
+const DEFAULT_MODEL = 'claude-opus-5';
 const MAX_TOOL_ROUNDS = 5;
+/* Room for adaptive thinking plus a full answer. Thinking tokens count against
+   this cap, so a tight value truncates the reply before it starts. */
+const MAX_TOKENS = 4096;
+
+/** The model this deployment talks to; read at call time so a changed variable needs no rebuild. */
+export function consoleModel(): string {
+  return process.env['DOLMIR_CONSOLE_MODEL']?.trim() || DEFAULT_MODEL;
+}
+
+/**
+ * The credential exactly as the SDK should see it. Keys pasted into a hosting
+ * panel arrive with trailing newlines often enough that the trim is a
+ * production fix, not a nicety: a newline in a header value never reaches
+ * Anthropic at all.
+ */
+function credential(): { apiKey?: string; authToken?: string } {
+  const key = process.env['ANTHROPIC_API_KEY']?.trim();
+  if (key) return { apiKey: key };
+  const token = process.env['ANTHROPIC_AUTH_TOKEN']?.trim();
+  if (token) return { authToken: token };
+  return {};
+}
+
+/** Shape of the credential for server logs — length and prefix only, never the value. */
+export function credentialShape(): string {
+  const raw = process.env['ANTHROPIC_API_KEY'];
+  if (raw) {
+    return `api_key len=${raw.length} prefix=${raw.trim().startsWith('sk-ant-') ? 'sk-ant' : 'unexpected'} whitespace=${/\s/.test(raw) ? 'yes' : 'no'}`;
+  }
+  if (process.env['ANTHROPIC_AUTH_TOKEN']) return 'auth_token';
+  return 'none';
+}
 
 export const SYSTEM = `Sei DOLMIR: un sistema software intelligente costruito per aziende industriali italiane, e la persona con cui il visitatore sta parlando adesso.
 
@@ -109,7 +198,7 @@ function buildTools(): Anthropic.Tool[] {
 }
 
 export function consoleConfigured(): boolean {
-  return Boolean(process.env['ANTHROPIC_API_KEY'] ?? process.env['ANTHROPIC_AUTH_TOKEN']);
+  return Boolean(process.env['ANTHROPIC_API_KEY']?.trim() || process.env['ANTHROPIC_AUTH_TOKEN']?.trim());
 }
 
 const REFUSAL =
@@ -126,7 +215,8 @@ export async function streamConsole(
   emit: (e: ConsoleEvent) => void,
   signal?: AbortSignal,
 ): Promise<ConsoleReply> {
-  const client = new Anthropic({ timeout: 45_000, maxRetries: 1 });
+  const client = new Anthropic({ ...credential(), timeout: 45_000, maxRetries: 1 });
+  const model = consoleModel();
   const tools = buildTools();
   const evidence: ConsoleEvidence[] = [];
   let gate: ConsoleReply['gate'];
@@ -143,28 +233,33 @@ export async function streamConsole(
   for (let round = 0; round <= MAX_TOOL_ROUNDS; round++) {
     if (signal?.aborted) return { text, evidence, gate, unknown };
 
-    const stream = client.messages.stream(
-      {
-        model: MODEL,
-        max_tokens: 1600,
-        system: [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }],
-        tools,
-        messages,
-        output_config: { effort: 'medium' },
-      },
-      { signal },
-    );
+    let res: Anthropic.Message;
+    try {
+      const stream = client.messages.stream(
+        {
+          model,
+          max_tokens: MAX_TOKENS,
+          system: [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }],
+          tools,
+          messages,
+          output_config: { effort: 'medium' },
+        },
+        { signal },
+      );
 
-    let spoke = false;
-    for await (const ev of stream) {
-      if (ev.type === 'content_block_delta' && ev.delta.type === 'text_delta' && ev.delta.text) {
-        if (!spoke) { spoke = true; emit({ type: 'stage', stage: 'RISPOSTA' }); }
-        text += ev.delta.text;
-        emit({ type: 'delta', text: ev.delta.text });
+      let spoke = false;
+      for await (const ev of stream) {
+        if (ev.type === 'content_block_delta' && ev.delta.type === 'text_delta' && ev.delta.text) {
+          if (!spoke) { spoke = true; emit({ type: 'stage', stage: 'RISPOSTA' }); }
+          text += ev.delta.text;
+          emit({ type: 'delta', text: ev.delta.text });
+        }
       }
-    }
 
-    const res = await stream.finalMessage();
+      res = await stream.finalMessage();
+    } catch (err) {
+      throw classifyConsoleError(err);
+    }
 
     if (res.stop_reason === 'refusal') {
       emit({ type: 'delta', text: REFUSAL });

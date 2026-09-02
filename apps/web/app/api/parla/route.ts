@@ -1,4 +1,12 @@
-import { consoleConfigured, streamConsole, type ConsoleEvent, type ConsoleTurn } from '@dolmir/ai-core/console';
+import {
+  classifyConsoleError,
+  consoleConfigured,
+  consoleModel,
+  credentialShape,
+  streamConsole,
+  type ConsoleEvent,
+  type ConsoleTurn,
+} from '@dolmir/ai-core/console';
 
 /**
  * PARLA CON DOLMIR — the server side.
@@ -10,8 +18,11 @@ import { consoleConfigured, streamConsole, type ConsoleEvent, type ConsoleTurn }
  * the model can only reach the demo-company tools — there is no path from this
  * route to a real customer system.
  *
- * Without a key the route answers 503 and the console falls back to its
- * scripted mode, saying so in the interface.
+ * Without a key the route answers 503 and the console shows its honest
+ * offline state. When the model call fails, the failure is classified, logged
+ * server-side (reason, status, model, credential shape — never the value) and
+ * sent to the client as a reason code only, so the interface can tell a
+ * misconfigured deployment from a busy afternoon.
  *
  * The guards are deliberately blunt for a public demo: bounded history,
  * bounded message length, a small per-IP rate bucket (per instance — enough to
@@ -21,6 +32,9 @@ import { consoleConfigured, streamConsole, type ConsoleEvent, type ConsoleTurn }
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+/* A tool loop over several model rounds can take a while; Vercel's default
+   would cut a long answer mid-sentence. */
+export const maxDuration = 60;
 
 const MAX_TURNS = 16;
 const MAX_CHARS = 600;
@@ -88,9 +102,15 @@ export async function POST(req: Request) {
       };
       try {
         await streamConsole(history, send, req.signal);
-      } catch {
-        send({ type: 'delta', text: '' });
-        if (open) controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error' })}\n\n`));
+      } catch (err) {
+        const e = classifyConsoleError(err);
+        if (e.reason !== 'aborted') {
+          // The one place the real message is kept: the server log.
+          console.error(
+            `[parla] ${e.reason}${e.status ? ` ${e.status}` : ''} model=${consoleModel()} credential=${credentialShape()} :: ${e.message.slice(0, 400)}`,
+          );
+        }
+        send({ type: 'error', reason: e.reason });
       } finally {
         open = false;
         try { controller.close(); } catch { /* already closed by the client */ }

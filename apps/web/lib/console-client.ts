@@ -12,9 +12,10 @@ import { useCallback, useRef, useState } from 'react';
  * the whole point: the visitor is watching the system work, not a progress
  * animation.
  *
- * Two honest failure modes, both visible in the interface: `degraded` when the
- * server has no model configured (503) and answers from the scripted set, and
- * `offline` when the stream breaks.
+ * Honest failure modes, all visible in the interface: `degraded` when the
+ * server has no working model (503, or a configuration error reported by the
+ * stream) — the console shows its offline state and offers a person; and
+ * `failure` when a turn could not be completed for a transient reason.
  */
 
 export interface Evidence { tool: string; label: string; summary: string; data: unknown }
@@ -42,7 +43,18 @@ export interface Turn {
   live?: boolean;
 }
 
-export type Failure = 'rate' | 'offline' | null;
+/**
+ * `rate`: this visitor is sending too fast. `overloaded`: Anthropic is busy or
+ * slow right now — worth a retry in a moment. `offline`: the stream broke or
+ * the server could not be reached. A configuration failure (key rejected,
+ * model unavailable, no credit) is not a Failure at all: it becomes the
+ * console's offline state, because nobody can get an answer until an operator
+ * acts, and the visitor should be offered a person instead of a retry.
+ */
+export type Failure = 'rate' | 'offline' | 'overloaded' | null;
+
+const CONFIGURATION_REASONS = new Set(['auth', 'model', 'billing', 'request']);
+const TRANSIENT_OVERLOAD = new Set(['overloaded', 'timeout', 'rate']);
 
 export interface ConsoleApi {
   turns: Turn[];
@@ -155,6 +167,7 @@ export function useConsole({ onReply }: { onReply?: (text: string) => void } = {
     const decoder = new TextDecoder();
     let buffer = '';
     let full = '';
+    let errored: string | null = null;
 
     try {
       for (;;) {
@@ -199,7 +212,7 @@ export function useConsole({ onReply }: { onReply?: (text: string) => void } = {
               patch((t) => ({ ...t, text: full, live: false }));
               break;
             case 'error':
-              setFailure('offline');
+              errored = String(e['reason'] ?? 'unknown');
               break;
             default:
               break;
@@ -207,8 +220,30 @@ export function useConsole({ onReply }: { onReply?: (text: string) => void } = {
         }
       }
     } catch {
-      setFailure('offline');
+      errored ??= 'network';
     }
+
+    if (errored && CONFIGURATION_REASONS.has(errored)) {
+      // This deployment cannot answer anyone. Take the exchange back out of
+      // the transcript and show the one honest state, exactly as for a 503.
+      setTurns((t) => t.filter((x) => x.id !== youId && x.id !== replyId));
+      setDegraded(true);
+      setBusy(false);
+      setStage(null);
+      degradedFn.current?.(clean);
+      return;
+    }
+
+    if (errored && !full.trim()) {
+      // Nothing was said: drop the empty answer, keep the question so it can
+      // be asked again, and say what happened.
+      setTurns((t) => t.filter((x) => x.id !== replyId));
+      setFailure(errored === 'rate' ? 'rate' : TRANSIENT_OVERLOAD.has(errored) ? 'overloaded' : 'offline');
+      setBusy(false);
+      setStage(null);
+      return;
+    }
+    if (errored) setFailure('offline');   // the answer was cut short; keep what arrived
 
     patch((t) => ({ ...t, live: false }));
     setBusy(false);

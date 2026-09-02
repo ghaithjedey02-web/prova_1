@@ -510,6 +510,7 @@ export const parla = {
   offlineCta: 'PARLIAMONE →',
   offlinePlaceholder: 'Console non attiva su questo ambiente',
   busyNote: 'Troppe richieste ravvicinate — riprovate fra qualche secondo.',
+  overloadedNote: 'Il modello è momentaneamente sovraccarico. Riprovate fra qualche secondo: la domanda è rimasta qui sopra.',
   offlineNote: 'Il sistema non risponde in questo momento. Riprovate, oppure scrivete a info@dolmir.com.',
   disclaimer: 'Demo live · AI reale · dati aziendali simulati · nessun dato di clienti veri.',
   contextNote: 'Potete fare domande di seguito: «e per i preventivi?» o «quale è ancora in ritardo?» — DOLMIR ricorda di cosa state parlando.',
