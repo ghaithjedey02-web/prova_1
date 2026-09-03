@@ -9,7 +9,7 @@ pagina.
 
 | dato | dove | stato oggi |
 |---|---|---|
-| Partita IVA | `apps/web/content/site.ts` → `site.vat` | `'in registrazione'` |
+| Partita IVA | `apps/web/content/site.ts` → `site.vat` | **inserita** (04282240136, dal documento Agenzia delle Entrate) |
 | Ragione sociale completa | `site.legalName` | `'DOLMIR'` |
 | Sede legale | non ancora mostrata | assente |
 | Telefono | non ancora mostrato | assente |

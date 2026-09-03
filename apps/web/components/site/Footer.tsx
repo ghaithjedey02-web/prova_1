@@ -114,7 +114,7 @@ export function Footer() {
           </p>
           <p className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <span>
-              P.IVA <span className="text-faint">{site.vat}</span>
+              P. IVA: <span className="tnum text-ink-2">{site.vat}</span>
             </span>
             <span>{site.domain}</span>
           </p>

@@ -37,7 +37,8 @@ export function LegalPage({
         {children}
 
         <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-rule pt-8 font-mono text-[length:var(--text-label)] tracking-[0.12em] text-muted">
-          <span>Titolare · {site.name}</span>
+          <span>Titolare · {site.legalName}</span>
+          <span className="tnum">P. IVA: {site.vat}</span>
           <a href={`mailto:${site.email}`} className="inline-flex min-h-10 items-center transition-colors hover:text-accent">{site.email}</a>
           <Link href="/contatto" className="inline-flex min-h-10 items-center transition-colors hover:text-accent">Contatto</Link>
         </div>

@@ -27,13 +27,12 @@ export const site = {
   email: 'info@dolmir.com',
   region: 'Lombardia',
   /**
-   * Legal identifiers. NOT INVENTED — see docs/DA-COMPLETARE.md.
-   * A P.IVA printed on every page of an Italian company's website is a legal
-   * statement, not a design placeholder, so until the real one exists this
-   * says exactly that.
+   * Legal identifiers, taken verbatim from the Agenzia delle Entrate
+   * registration document (never inferred, never the accountant's code).
+   * Anything still missing is listed in docs/DA-COMPLETARE.md.
    */
   legalName: 'DOLMIR',
-  vat: 'in registrazione',
+  vat: '04282240136',
 } as const;
 
 /**
